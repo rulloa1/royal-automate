@@ -95,7 +95,7 @@ const PricingSection = () => {
           >
             {/* Best Value Badge */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-gradient-to-r from-accent to-amber-500 text-accent-foreground text-xs font-bold px-4 py-1 rounded-full">
+              <span className="bg-gradient-to-r from-accent to-copper-light text-accent-foreground text-xs font-bold px-4 py-1 rounded-full">
                 Best Value
               </span>
             </div>
