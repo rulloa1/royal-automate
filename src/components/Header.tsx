@@ -48,19 +48,19 @@ const Header = () => {
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
               <button
                 key={link.href}
                 onClick={() => scrollToSection(link.href)}
-                className="text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium"
+                className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm"
               >
                 {link.label}
               </button>
             ))}
             <button
               onClick={() => scrollToSection("#contact")}
-              className="gradient-button"
+              className="gradient-button text-sm"
             >
               Get Started
             </button>
@@ -98,14 +98,14 @@ const Header = () => {
               <button
                 key={link.href}
                 onClick={() => scrollToSection(link.href)}
-                className="text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium text-left py-2"
+                className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm text-left py-2"
               >
                 {link.label}
               </button>
             ))}
             <button
               onClick={() => scrollToSection("#contact")}
-              className="gradient-button text-center"
+              className="gradient-button text-center text-sm"
             >
               Get Started
             </button>

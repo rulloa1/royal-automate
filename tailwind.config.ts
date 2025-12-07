@@ -15,6 +15,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Poppins", "system-ui", "sans-serif"],
+        condensed: ["Oswald", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -55,9 +57,10 @@ export default {
           light: "hsl(var(--gold-light))",
           dark: "hsl(var(--gold-dark))",
         },
-        copper: {
-          DEFAULT: "hsl(var(--copper))",
-          light: "hsl(var(--copper-light))",
+        "progress-red": {
+          DEFAULT: "hsl(var(--progress-red))",
+          light: "hsl(var(--progress-red-light))",
+          dark: "hsl(var(--progress-red-dark))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
