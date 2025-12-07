@@ -1,6 +1,39 @@
 import { ArrowUpRight, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 
 const HeroSection = () => {
+  const vantaRef = useRef<HTMLDivElement>(null);
+  const [vantaEffect, setVantaEffect] = useState<any>(null);
+
+  useEffect(() => {
+    if (!vantaEffect && vantaRef.current) {
+      // Dynamically import Vanta to avoid SSR issues
+      import("vanta/dist/vanta.net.min").then((VANTA) => {
+        const effect = VANTA.default({
+          el: vantaRef.current,
+          THREE: THREE,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 1.0,
+          color: 0xffc72c, // Royal Gold
+          backgroundColor: 0x0a0a0a, // Deep Space Black
+          points: 12.0,
+          maxDistance: 22.0,
+          spacing: 18.0,
+        });
+        setVantaEffect(effect);
+      });
+    }
+    return () => {
+      if (vantaEffect) vantaEffect.destroy();
+    };
+  }, [vantaEffect]);
+
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
@@ -10,70 +43,11 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Neural Network Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
-        
-        {/* Animated glowing orbs */}
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] animate-pulse-glow" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent/8 rounded-full blur-[100px] animate-pulse-glow animation-delay-400" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[80px] animate-pulse-glow animation-delay-800" />
+      {/* Vanta.js NET Background */}
+      <div ref={vantaRef} className="absolute inset-0 z-0" />
 
-        {/* Circuitry SVG Background */}
-        <svg
-          className="absolute inset-0 w-full h-full opacity-20"
-          viewBox="0 0 1200 800"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Circuit paths */}
-          <path
-            d="M0 400 Q 300 350, 600 400 T 1200 400"
-            stroke="hsl(45 100% 59% / 0.3)"
-            strokeWidth="1"
-            fill="none"
-            className="animate-circuit-flow"
-            strokeDasharray="10 5"
-          />
-          <path
-            d="M0 200 Q 400 250, 800 200 T 1200 200"
-            stroke="hsl(340 77% 48% / 0.3)"
-            strokeWidth="1"
-            fill="none"
-            className="animate-circuit-flow animation-delay-200"
-            strokeDasharray="10 5"
-          />
-          <path
-            d="M0 600 Q 300 550, 700 600 T 1200 600"
-            stroke="hsl(45 100% 59% / 0.2)"
-            strokeWidth="1"
-            fill="none"
-            className="animate-circuit-flow animation-delay-400"
-            strokeDasharray="10 5"
-          />
-          
-          {/* Glowing nodes */}
-          <circle cx="300" cy="350" r="4" fill="hsl(45 100% 59%)" className="animate-pulse-glow" />
-          <circle cx="600" cy="400" r="4" fill="hsl(340 77% 48%)" className="animate-pulse-glow animation-delay-200" />
-          <circle cx="900" cy="380" r="4" fill="hsl(45 100% 59%)" className="animate-pulse-glow animation-delay-400" />
-          <circle cx="400" cy="250" r="3" fill="hsl(340 77% 48%)" className="animate-pulse-glow animation-delay-600" />
-          <circle cx="800" cy="200" r="3" fill="hsl(45 100% 59%)" className="animate-pulse-glow animation-delay-800" />
-          <circle cx="200" cy="600" r="4" fill="hsl(45 100% 59%)" className="animate-pulse-glow animation-delay-400" />
-          <circle cx="700" cy="580" r="3" fill="hsl(340 77% 48%)" className="animate-pulse-glow animation-delay-600" />
-          <circle cx="1000" cy="620" r="4" fill="hsl(45 100% 59%)" className="animate-pulse-glow animation-delay-200" />
-        </svg>
-
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(hsl(45 100% 59% / 0.5) 1px, transparent 1px),
-                            linear-gradient(90deg, hsl(45 100% 59% / 0.5) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
-          }}
-        />
-      </div>
+      {/* Overlay gradient for readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background z-[1]" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
@@ -137,7 +111,7 @@ const HeroSection = () => {
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent z-[2]" />
     </section>
   );
 };
