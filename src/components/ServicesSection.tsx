@@ -1,109 +1,108 @@
-import { LayoutGrid, Zap, Check } from "lucide-react";
+import { LayoutGrid, Zap, Brain, ArrowUp } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 const ServicesSection = () => {
   const { ref, isVisible } = useIntersectionObserver();
 
-  const foundationFeatures = [
-    "Custom Website Design",
-    "Mobile-Responsive",
-    "SEO Optimization",
-    "SSL Security",
-    "CMS Integration",
-    "Analytics Integration",
-  ];
-
-  const growthFeatures = [
-    "AI Lead Generation",
-    "Automated Email/SMS",
-    "CRM Integration",
-    "Smart Chatbot",
-    "Appointment Scheduling",
-    "Analytics Dashboard",
-    "Social Media Automation",
-    "24/7 Support",
+  const services = [
+    {
+      icon: LayoutGrid,
+      title: "Web Development",
+      description: "Premium, conversion-optimized websites designed to establish your digital presence and drive results.",
+      features: [
+        "Custom Website Design",
+        "Mobile-First Responsive",
+        "SEO Optimization",
+        "Performance Tuning",
+      ],
+      gradient: "from-primary to-gold-dark",
+    },
+    {
+      icon: Zap,
+      title: "AI Automation",
+      description: "Intelligent automation systems that handle repetitive tasks, freeing your team to focus on growth.",
+      features: [
+        "Workflow Automation",
+        "Email & SMS Sequences",
+        "CRM Integration",
+        "Smart Scheduling",
+      ],
+      gradient: "from-primary to-accent",
+      featured: true,
+    },
+    {
+      icon: Brain,
+      title: "Lead Generation",
+      description: "AI-powered lead capture and nurturing systems that work around the clock to grow your pipeline.",
+      features: [
+        "Smart Chatbots",
+        "Lead Scoring",
+        "Multi-Channel Outreach",
+        "Analytics Dashboard",
+      ],
+      gradient: "from-accent to-progress-red-dark",
+    },
   ];
 
   return (
-    <section id="services" className="py-24 relative" ref={ref}>
-      <div className="container mx-auto px-4">
+    <section id="services" className="py-28 relative" ref={ref}>
+      {/* Background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px]" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className={`text-center mb-16 ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
-          <div className="inline-flex items-center gap-2 glass-card px-4 py-2 mb-6">
-            <span className="text-sm font-medium text-primary">Our Services</span>
+        <div className={`text-center mb-20 ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
+          <div className="inline-flex items-center gap-2 glass-card px-5 py-2.5 mb-6">
+            <span className="text-sm font-condensed font-medium tracking-wider uppercase text-primary">Our Services</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
             Enterprise Solutions for{" "}
             <span className="gradient-text">Modern Businesses</span>
           </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Comprehensive AI-powered solutions designed to automate, optimize, and scale your business operations.
+          </p>
         </div>
 
-        {/* Service Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {/* Foundation Package */}
-          <div
-            className={`glass-card-hover p-8 ${
-              isVisible ? "animate-slide-in-left animation-delay-200" : "opacity-0"
-            }`}
-          >
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-6">
-              <LayoutGrid className="w-7 h-7 text-primary-foreground" />
-            </div>
-            <h3 className="text-2xl font-bold mb-3">Foundation Package</h3>
-            <p className="text-muted-foreground mb-6">
-              Launch your digital presence with premium, conversion-optimized
-              websites designed to impress and convert.
-            </p>
-            <ul className="space-y-3 mb-6">
-              {foundationFeatures.map((feature, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="glass-card p-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                Perfect for businesses establishing their digital foundation
-              </p>
-            </div>
-          </div>
+        {/* Service Cards - 3 columns */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {services.map((service, index) => (
+            <div
+              key={service.title}
+              className={`glass-card-hover p-8 relative ${service.featured ? "featured-border" : ""} ${
+                isVisible ? `animate-fade-in-up animation-delay-${(index + 2) * 200}` : "opacity-0"
+              }`}
+            >
+              {service.featured && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="bg-primary text-primary-foreground text-xs font-condensed font-semibold tracking-wider uppercase px-4 py-1.5 rounded-full">
+                    Most Popular
+                  </span>
+                </div>
+              )}
 
-          {/* Growth Engine Package */}
-          <div
-            className={`glass-card-hover p-8 featured-border relative ${
-              isVisible ? "animate-slide-in-right animation-delay-200" : "opacity-0"
-            }`}
-          >
-            {/* Most Popular Badge */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1 rounded-full">
-                Most Popular
-              </span>
-            </div>
-
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6">
-              <Zap className="w-7 h-7 text-primary-foreground" />
-            </div>
-            <h3 className="text-2xl font-bold mb-3">Growth Engine</h3>
-            <p className="text-muted-foreground mb-6">
-              Intelligent lead generation, automated workflows, and AI-powered
-              engagement that works for you 24/7.
-            </p>
-            <ul className="space-y-3 mb-6">
-              {growthFeatures.map((feature, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 text-center">
-              <p className="text-sm text-primary font-medium">
-                Perfect for businesses ready to scale and dominate
+              <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6`}>
+                <service.icon className="w-7 h-7 text-primary-foreground" />
+              </div>
+              
+              <h3 className="text-2xl font-display font-bold mb-3">{service.title}</h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                {service.description}
               </p>
+              
+              <ul className="space-y-3">
+                {service.features.map((feature, featureIndex) => (
+                  <li key={featureIndex} className="flex items-center gap-3">
+                    <ArrowUp className="w-4 h-4 text-accent flex-shrink-0" />
+                    <span className="text-muted-foreground text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

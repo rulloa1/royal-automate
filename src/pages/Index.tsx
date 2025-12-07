@@ -5,6 +5,7 @@ import ServicesSection from "@/components/ServicesSection";
 import PricingSection from "@/components/PricingSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 
 const Index = () => {
   return (
@@ -37,6 +38,7 @@ const Index = () => {
           <ContactSection />
         </main>
         <Footer />
+        <BackToTop />
       </div>
     </>
   );
