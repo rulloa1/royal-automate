@@ -12,6 +12,38 @@ const PRICES = {
   growth: "price_1SbrSOAFk5ZoDrBAXneypcjR", // $997/month
 };
 
+// Simple in-memory rate limiting (resets on function cold start)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 5;
+
+const isRateLimited = (ip: string): boolean => {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    return true;
+  }
+  
+  record.count++;
+  return false;
+};
+
+// Input validation helpers
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.length <= 255;
+};
+
+const sanitizeString = (str: string, maxLength: number): string => {
+  return str.trim().slice(0, maxLength);
+};
+
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
@@ -25,12 +57,59 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const { packageType, email, name } = await req.json();
-    logStep("Request received", { packageType, email, name });
-
-    if (!packageType || !PRICES[packageType as keyof typeof PRICES]) {
-      throw new Error("Invalid package type");
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+                     req.headers.get("cf-connecting-ip") || 
+                     "unknown";
+    
+    // Check rate limit
+    if (isRateLimited(clientIP)) {
+      logStep("Rate limited", { ip: clientIP });
+      return new Response(JSON.stringify({ error: "Too many requests. Please try again later." }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 429,
+      });
     }
+
+    const body = await req.json();
+    
+    // Validate packageType
+    const packageType = body.packageType;
+    if (!packageType || !["foundation", "growth"].includes(packageType)) {
+      logStep("Invalid package type", { packageType });
+      return new Response(JSON.stringify({ error: "Invalid package type" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
+    // Validate and sanitize email (optional but must be valid if provided)
+    let email: string | undefined;
+    if (body.email) {
+      if (typeof body.email !== "string" || !isValidEmail(body.email)) {
+        logStep("Invalid email format");
+        return new Response(JSON.stringify({ error: "Invalid email format" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        });
+      }
+      email = sanitizeString(body.email, 255);
+    }
+
+    // Validate and sanitize name (optional)
+    let name: string | undefined;
+    if (body.name) {
+      if (typeof body.name !== "string") {
+        logStep("Invalid name format");
+        return new Response(JSON.stringify({ error: "Invalid name format" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        });
+      }
+      name = sanitizeString(body.name, 100);
+    }
+
+    logStep("Request validated", { packageType, hasEmail: !!email, hasName: !!name });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -100,7 +179,8 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    // Return generic error to client
+    return new Response(JSON.stringify({ error: "Unable to create checkout session" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
