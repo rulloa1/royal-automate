@@ -33,16 +33,12 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <a href="#" className="flex items-center gap-3 mb-4">
+            <a href="#" className="flex items-center mb-4">
               <img
                 src={logo}
                 alt="Royal AI Solutions"
-                className="h-10 w-10 object-contain"
+                className="h-12 object-contain"
               />
-              <span className="text-xl font-bold">
-                Royal<span className="text-accent">AI</span>
-                <span className="text-muted-foreground font-normal">Solutions</span>
-              </span>
             </a>
             <p className="text-muted-foreground">
               Empowering businesses through automation and innovation.
