@@ -32,8 +32,8 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-background/80 backdrop-blur-xl shadow-lg shadow-background/50"
-          : "bg-transparent"
+          ? "bg-background/95 backdrop-blur-xl shadow-lg shadow-background/50"
+          : "bg-gradient-to-b from-background/80 to-transparent"
       }`}
     >
       <div className="container mx-auto px-4 py-4">
@@ -43,7 +43,7 @@ const Header = () => {
             <img
               src={logo}
               alt="Royal AI Solutions"
-              className="h-12 object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-14 md:h-16 object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
             />
           </a>
 
