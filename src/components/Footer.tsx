@@ -10,14 +10,15 @@ const Footer = () => {
   };
 
   const serviceLinks = [
-    { label: "Foundation Package", href: "#services" },
-    { label: "Growth Engine", href: "#services" },
+    { label: "Web Development", href: "#services" },
+    { label: "AI Automation", href: "#services" },
+    { label: "Lead Generation", href: "#services" },
     { label: "Pricing", href: "#pricing" },
   ];
 
   const companyLinks = [
     { label: "Contact", href: "#contact" },
-    { label: "About", href: "#" },
+    { label: "About Us", href: "#" },
     { label: "Support", href: "#contact" },
   ];
 
@@ -28,32 +29,37 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="py-16 border-t border-border">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+    <footer className="py-20 border-t border-border/50 relative">
+      {/* Subtle background gradient */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/3 rounded-full blur-[120px]" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <a href="#" className="flex items-center mb-4">
+            <a href="#" className="flex items-center mb-6">
               <img
                 src={logo}
-                alt="Royal AI Solutions"
-                className="h-12 object-contain"
+                alt="AI Solutions"
+                className="h-14 object-contain"
               />
             </a>
-            <p className="text-muted-foreground">
-              Empowering businesses through automation and innovation.
+            <p className="text-muted-foreground leading-relaxed">
+              Empowering businesses through AI automation, intelligent lead generation, and enterprise-grade solutions.
             </p>
           </div>
 
           {/* Services */}
           <div>
-            <h4 className="font-semibold mb-4">Services</h4>
-            <ul className="space-y-3">
+            <h4 className="font-display font-semibold text-lg mb-6">Services</h4>
+            <ul className="space-y-4">
               {serviceLinks.map((link, index) => (
                 <li key={index}>
                   <button
                     onClick={() => scrollToSection(link.href)}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
                   </button>
@@ -64,13 +70,13 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-4">Company</h4>
-            <ul className="space-y-3">
+            <h4 className="font-display font-semibold text-lg mb-6">Company</h4>
+            <ul className="space-y-4">
               {companyLinks.map((link, index) => (
                 <li key={index}>
                   <button
                     onClick={() => scrollToSection(link.href)}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
                   </button>
@@ -81,32 +87,36 @@ const Footer = () => {
 
           {/* Connect */}
           <div>
-            <h4 className="font-semibold mb-4">Connect</h4>
-            <div className="flex gap-4">
+            <h4 className="font-display font-semibold text-lg mb-6">Connect</h4>
+            <div className="flex gap-3">
               {socialLinks.map((link, index) => (
                 <a
                   key={index}
                   href={link.href}
                   aria-label={link.label}
-                  className="w-10 h-10 glass-card-hover flex items-center justify-center rounded-lg"
+                  className="w-12 h-12 glass-card-hover flex items-center justify-center rounded-lg hover:text-primary"
                 >
                   <link.icon className="w-5 h-5" />
                 </a>
               ))}
             </div>
+            <p className="mt-6 text-muted-foreground text-sm">
+              <span className="font-condensed tracking-wider uppercase text-xs block mb-1">Email</span>
+              contact@royalsolutions.me
+            </p>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-10 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">
-            © 2024 Royal Solutions. All rights reserved.
+            © {new Date().getFullYear()} <span className="text-primary">AI Solutions</span>. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">
+          <div className="flex gap-8 text-sm text-muted-foreground">
+            <a href="#" className="hover:text-primary transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-foreground transition-colors">
+            <a href="#" className="hover:text-primary transition-colors">
               Terms of Service
             </a>
           </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, Clock, Check, Send } from "lucide-react";
+import { Mail, Phone, Clock, Check, Send, ArrowUpRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useToast } from "@/hooks/use-toast";
 
@@ -63,18 +63,28 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-24 relative" ref={ref}>
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+    <section id="contact" className="py-28 relative" ref={ref}>
+      {/* Background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
           {/* Left: Contact Info */}
           <div className={isVisible ? "animate-slide-in-left" : "opacity-0"}>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <div className="inline-flex items-center gap-2 glass-card px-5 py-2.5 mb-6">
+              <span className="text-sm font-condensed font-medium tracking-wider uppercase text-primary">Get In Touch</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
               Start Your{" "}
-              <span className="gradient-text">Transition</span>
+              <span className="gradient-text">Transformation</span>
             </h2>
-            <p className="text-muted-foreground text-lg mb-10">
-              Ready to transform your business with automation? Let's discuss how
-              we can help you scale.
+            <p className="text-lg text-muted-foreground mb-12 leading-relaxed">
+              Ready to transform your business with AI automation? Let's discuss how
+              we can help you scale and dominate your market.
             </p>
 
             <div className="space-y-4">
@@ -83,12 +93,12 @@ const ContactSection = () => {
                   key={index}
                   className="glass-card-hover p-5 flex items-center gap-4"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center flex-shrink-0">
                     <item.icon className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">{item.label}</p>
-                    <p className="font-semibold">{item.value}</p>
+                    <p className="text-sm font-condensed tracking-wider uppercase text-muted-foreground">{item.label}</p>
+                    <p className="font-semibold text-lg">{item.value}</p>
                   </div>
                 </div>
               ))}
@@ -97,83 +107,87 @@ const ContactSection = () => {
 
           {/* Right: Contact Form */}
           <div
-            className={`glass-card p-8 ${
+            className={`glass-card p-8 lg:p-10 ${
               isVisible ? "animate-slide-in-right animation-delay-200" : "opacity-0"
             }`}
           >
             {isSubmitted ? (
-              <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
-                  <Check className="w-8 h-8 text-primary" />
+              <div className="h-full flex flex-col items-center justify-center text-center py-16">
+                <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-8">
+                  <Check className="w-10 h-10 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2">Message Sent!</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-3xl font-display font-bold mb-4">Message Sent!</h3>
+                <p className="text-muted-foreground text-lg">
                   We'll get back to you within 24 hours.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Full Name <span className="text-destructive">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                    placeholder="John Doe"
-                  />
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
+                      Full Name <span className="text-accent">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
+                      Email <span className="text-accent">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      placeholder="john@company.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
+                      Company Name
+                    </label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      placeholder="Your Company"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
+                      Package Interest
+                    </label>
+                    <select
+                      name="package"
+                      value={formData.package}
+                      onChange={handleChange}
+                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                    >
+                      <option value="">Select a package</option>
+                      <option value="foundation">Foundation Package</option>
+                      <option value="growth">Growth Engine</option>
+                      <option value="consultation">Free Consultation</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Email <span className="text-destructive">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                    placeholder="john@company.com"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Company Name
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                    placeholder="Your Company"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Package
-                  </label>
-                  <select
-                    name="package"
-                    value={formData.package}
-                    onChange={handleChange}
-                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                  >
-                    <option value="">Select a package</option>
-                    <option value="foundation">Foundation Package</option>
-                    <option value="growth">Growth Engine</option>
-                    <option value="consultation">Free Consultation</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
                     Message
                   </label>
                   <textarea
@@ -181,17 +195,18 @@ const ContactSection = () => {
                     value={formData.message}
                     onChange={handleChange}
                     rows={4}
-                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none"
-                    placeholder="Tell us about your project..."
+                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none text-foreground"
+                    placeholder="Tell us about your project and goals..."
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full gradient-button py-4 flex items-center justify-center gap-2"
+                  className="w-full gradient-button py-4 flex items-center justify-center gap-3 text-lg group"
                 >
                   <Send className="w-5 h-5" />
-                  Send Message
+                  <span>Send Message</span>
+                  <ArrowUpRight className="w-5 h-5 text-accent transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </button>
               </form>
             )}
