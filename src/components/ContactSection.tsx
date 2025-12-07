@@ -53,7 +53,7 @@ const ContactSection = () => {
     {
       icon: Phone,
       label: "Phone",
-      value: "+1 (234) 567-890",
+      value: "346-298-5038",
     },
     {
       icon: Clock,
