@@ -1,15 +1,9 @@
 import { Check } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import CheckoutButton from "./CheckoutButton";
 
 const PricingSection = () => {
   const { ref, isVisible } = useIntersectionObserver();
-
-  const scrollToContact = () => {
-    const element = document.querySelector("#contact");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   const foundationFeatures = [
     "Premium Website Design",
@@ -79,12 +73,12 @@ const PricingSection = () => {
               ))}
             </ul>
 
-            <button
-              onClick={scrollToContact}
+            <CheckoutButton
+              packageType="foundation"
               className="w-full glass-card-hover py-4 font-semibold text-foreground text-center"
             >
               Get Started
-            </button>
+            </CheckoutButton>
           </div>
 
           {/* Growth Engine Package */}
@@ -122,12 +116,12 @@ const PricingSection = () => {
               ))}
             </ul>
 
-            <button
-              onClick={scrollToContact}
+            <CheckoutButton
+              packageType="growth"
               className="w-full gradient-button py-4 text-center"
             >
               Start Your Transition
-            </button>
+            </CheckoutButton>
           </div>
         </div>
 
