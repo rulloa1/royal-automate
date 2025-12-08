@@ -39,12 +39,17 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <a href="#" className="flex items-center group">
+          <a href="#" className="flex items-center gap-2 group">
             <img
               src={logo}
               alt="Royal AI Solutions"
               className="h-14 md:h-16 object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
             />
+            <span className="font-headline text-xl md:text-2xl font-bold tracking-tight">
+              <span className="text-white">Roy</span>
+              <span className="text-primary">al</span>
+              <span className="text-white">.me</span>
+            </span>
           </a>
 
           {/* Desktop Navigation */}
