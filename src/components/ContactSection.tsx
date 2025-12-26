@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Mail, Phone, Clock, Check, Send, ArrowUpRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactSection = () => {
   const { ref, isVisible } = useIntersectionObserver();
@@ -42,17 +43,12 @@ const ContactSection = () => {
         status: "new"
       };
 
-      const response = await fetch(
-        "https://ulloarory.app.n8n.cloud/webhook/ea381b86-653a-478f-8a67-1f8af3830ca1",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(webhookData),
-        }
-      );
+      const { error } = await supabase.functions.invoke("submit-contact", {
+        body: webhookData,
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
+      if (error) {
+        throw new Error(error.message || "Failed to submit form");
       }
 
       setIsSubmitted(true);
