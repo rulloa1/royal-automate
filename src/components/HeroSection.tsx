@@ -2,6 +2,7 @@ import { ArrowUpRight, Sparkles, MessageCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import partnerLogo from "@/assets/royscompany-logo.png";
+import { scrollToSection } from "@/lib/utils";
 
 const HeroSection = () => {
   const vantaRef = useRef<HTMLDivElement>(null);
@@ -34,13 +35,6 @@ const HeroSection = () => {
       if (vantaEffect) vantaEffect.destroy();
     };
   }, [vantaEffect]);
-
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">

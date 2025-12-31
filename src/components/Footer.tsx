@@ -1,15 +1,9 @@
 import { Linkedin, Twitter, Send } from "lucide-react";
 import logo from "@/assets/royal-logo.png";
 import partnerLogo from "@/assets/royscompany-logo.png";
+import { scrollToSection } from "@/lib/utils";
 
 const Footer = () => {
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const serviceLinks = [
     { label: "Web Development", href: "#services" },
     { label: "AI Automation", href: "#services" },
