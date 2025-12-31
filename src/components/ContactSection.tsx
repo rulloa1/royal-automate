@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Mail, Phone, Clock, Check, Send, ArrowUpRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+
+// Replace this with your actual Formspree Form ID
+// Sign up at https://formspree.io/ to get one
+const FORMSPREE_FORM_ID = "YOUR_FORM_ID_HERE"; 
 
 const ContactSection = () => {
   const { ref, isVisible } = useIntersectionObserver();
@@ -32,23 +35,23 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      const webhookData = {
-        business_name: formData.company || "",
-        email: formData.email,
-        phone: "",
-        city: "",
-        state: "TX",
-        source: "website",
-        notes: `Name: ${formData.name}, Package: ${formData.package || "Not specified"}, Message: ${formData.message || "No message"}`,
-        status: "new"
-      };
-
-      const { error } = await supabase.functions.invoke("submit-contact", {
-        body: webhookData,
+      // Sending to Formspree
+      const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          package: formData.package,
+          message: formData.message,
+        }),
       });
 
-      if (error) {
-        throw new Error(error.message || "Failed to submit form");
+      if (!response.ok) {
+        throw new Error("Failed to submit form");
       }
 
       setIsSubmitted(true);
@@ -60,7 +63,7 @@ const ContactSection = () => {
     } catch (error) {
       toast({
         title: "Submission failed",
-        description: "Please try again or contact us directly.",
+        description: "Please try again or check your Formspree configuration.",
         variant: "destructive",
       });
     } finally {
