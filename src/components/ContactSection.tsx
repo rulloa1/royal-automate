@@ -128,7 +128,7 @@ const ContactSection = () => {
             </div>
 
             <p className="text-sm text-muted-foreground mt-8 opacity-70">
-              An affiliate of <a href="https://royscompany.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">royscompany.com</a>
+              An affiliate of <a href="https://www.royscompany.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.royscompany.com</a>
             </p>
           </div>
 

@@ -121,7 +121,7 @@ const HeroSection = () => {
           {/* Partner Badge */}
           <div className="mt-12 animate-fade-in-up animation-delay-1000">
             <a 
-              href="https://royscompany.com" 
+              href="https://www.royscompany.com" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 glass-card px-6 py-3 hover:bg-white/5 transition-colors"

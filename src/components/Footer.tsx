@@ -111,7 +111,7 @@ const Footer = () => {
           <p className="text-muted-foreground text-sm flex flex-col md:flex-row items-center gap-2">
             <span>© {new Date().getFullYear()} <span className="text-primary">AI Solutions</span>. All rights reserved.</span>
             <span className="hidden md:inline text-muted-foreground/30">|</span>
-            <a href="https://royscompany.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <a href="https://www.royscompany.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
               <span>RoyalSolutions.me is a proud affiliate of</span>
               <img src={partnerLogo} alt="RoysCompany" className="h-5 object-contain" />
             </a>
