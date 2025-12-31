@@ -1,6 +1,4 @@
-// Replace this with your actual Formspree Form ID
-const FORMSPREE_FORM_ID = "YOUR_FORM_ID_HERE"; // Replace this with your actual Formspree Form ID
-const FORMSPREE_FORM_ID = "YOUR_FORM_ID_HERE"; import { useState } from "react";
+import { useState } from "react";
 import { Mail, Phone, Clock, Check, Send, ArrowUpRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useToast } from "@/hooks/use-toast";
@@ -42,6 +40,7 @@ const ContactSection = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({
           name: formData.name,
