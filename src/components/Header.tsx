@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 import logo from "@/assets/royal-logo.png";
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,6 +44,10 @@ const Header = () => {
             {navLinks.map(link => <button key={link.href} onClick={() => scrollToSection(link.href)} className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm">
                 {link.label}
               </button>)}
+            <a href="https://t.me/royAIsolutionsBot" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm flex items-center gap-2">
+              <MessageCircle className="w-4 h-4" />
+              Chat with AI
+            </a>
             <button onClick={() => scrollToSection("#contact")} className="gradient-button text-sm">
               Get Started
             </button>
@@ -64,6 +68,10 @@ const Header = () => {
             {navLinks.map(link => <button key={link.href} onClick={() => scrollToSection(link.href)} className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm text-left py-2">
                 {link.label}
               </button>)}
+            <a href="https://t.me/royAIsolutionsBot" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm text-left py-2 flex items-center gap-2">
+              <MessageCircle className="w-4 h-4" />
+              Chat with AI
+            </a>
             <button onClick={() => scrollToSection("#contact")} className="gradient-button text-center text-sm">
               Get Started
             </button>

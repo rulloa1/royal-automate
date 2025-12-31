@@ -1,6 +1,7 @@
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles, MessageCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import partnerLogo from "@/assets/royscompany-logo.png";
 
 const HeroSection = () => {
   const vantaRef = useRef<HTMLDivElement>(null);
@@ -90,6 +91,15 @@ const HeroSection = () => {
             >
               <span>Explore Services</span>
             </button>
+            <a
+              href="https://t.me/royAIsolutionsBot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card-hover px-8 py-4 font-semibold text-foreground inline-flex items-center justify-center gap-2 text-lg border border-primary/20 hover:border-primary/50 transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span>Chat with AI</span>
+            </a>
           </div>
 
           {/* Stats Row */}
@@ -106,6 +116,19 @@ const HeroSection = () => {
               <span className="text-3xl font-display font-bold text-primary">99.9%</span>
               <span className="text-sm font-condensed tracking-wider uppercase text-muted-foreground">System Uptime</span>
             </div>
+          </div>
+
+          {/* Partner Badge */}
+          <div className="mt-12 animate-fade-in-up animation-delay-1000">
+            <a 
+              href="https://royscompany.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 glass-card px-6 py-3 hover:bg-white/5 transition-colors"
+            >
+              <span className="text-sm text-muted-foreground font-condensed uppercase tracking-wider">Partner of</span>
+              <img src={partnerLogo} alt="RoysCompany" className="h-8 object-contain" />
+            </a>
           </div>
         </div>
       </div>

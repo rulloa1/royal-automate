@@ -79,16 +79,6 @@ const ContactSection = () => {
 
   const contactInfo = [
     {
-      icon: Mail,
-      label: "Email",
-      value: "contact@royalsolutions.me",
-    },
-    {
-      icon: Phone,
-      label: "Phone",
-      value: "346-298-5038",
-    },
-    {
       icon: Clock,
       label: "Response Time",
       value: "Within 24 hours",
@@ -136,6 +126,10 @@ const ContactSection = () => {
                 </div>
               ))}
             </div>
+
+            <p className="text-sm text-muted-foreground mt-8 opacity-70">
+              An affiliate of <a href="https://royscompany.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">royscompany.com</a>
+            </p>
           </div>
 
           {/* Right: Contact Form */}

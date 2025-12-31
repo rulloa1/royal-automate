@@ -1,5 +1,6 @@
-import { Linkedin, Twitter, Mail } from "lucide-react";
+import { Linkedin, Twitter, Send } from "lucide-react";
 import logo from "@/assets/royal-logo.png";
+import partnerLogo from "@/assets/royscompany-logo.png";
 
 const Footer = () => {
   const scrollToSection = (href: string) => {
@@ -25,7 +26,7 @@ const Footer = () => {
   const socialLinks = [
     { icon: Linkedin, href: "#", label: "LinkedIn" },
     { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Mail, href: "mailto:contact@royalsolutions.me", label: "Email" },
+    { icon: Send, href: "https://t.me/royAIsolutionsBot", label: "Telegram" },
   ];
 
   return (
@@ -93,6 +94,8 @@ const Footer = () => {
                 <a
                   key={index}
                   href={link.href}
+                  target={link.label === "Telegram" ? "_blank" : undefined}
+                  rel={link.label === "Telegram" ? "noopener noreferrer" : undefined}
                   aria-label={link.label}
                   className="w-12 h-12 glass-card-hover flex items-center justify-center rounded-lg hover:text-primary"
                 >
@@ -100,17 +103,18 @@ const Footer = () => {
                 </a>
               ))}
             </div>
-            <p className="mt-6 text-muted-foreground text-sm">
-              <span className="font-condensed tracking-wider uppercase text-xs block mb-1">Email</span>
-              contact@royalsolutions.me
-            </p>
           </div>
         </div>
 
         {/* Bottom */}
         <div className="pt-10 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} <span className="text-primary">AI Solutions</span>. All rights reserved.
+          <p className="text-muted-foreground text-sm flex flex-col md:flex-row items-center gap-2">
+            <span>© {new Date().getFullYear()} <span className="text-primary">AI Solutions</span>. All rights reserved.</span>
+            <span className="hidden md:inline text-muted-foreground/30">|</span>
+            <a href="https://royscompany.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <span>RoyalSolutions.me is a proud affiliate of</span>
+              <img src={partnerLogo} alt="RoysCompany" className="h-5 object-contain" />
+            </a>
           </p>
           <div className="flex gap-8 text-sm text-muted-foreground">
             <a href="#" className="hover:text-primary transition-colors">
