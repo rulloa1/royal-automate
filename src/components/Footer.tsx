@@ -8,7 +8,7 @@ const Footer = () => {
     { label: "Web Development", href: "#services" },
     { label: "AI Automation", href: "#services" },
     { label: "Lead Generation", href: "#services" },
-    { label: "Pricing", href: "#pricing" },
+    { label: "Digital Marketing", href: "#services" },
   ];
 
   const companyLinks = [

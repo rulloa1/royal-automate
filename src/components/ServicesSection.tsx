@@ -1,4 +1,4 @@
-import { LayoutGrid, Zap, Brain, ArrowUp } from "lucide-react";
+import { LayoutGrid, Zap, Brain, ArrowUp, TrendingUp } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 const ServicesSection = () => {
@@ -42,6 +42,18 @@ const ServicesSection = () => {
       ],
       gradient: "from-accent to-progress-red-dark",
     },
+    {
+      icon: TrendingUp,
+      title: "Digital Marketing",
+      description: "Data-driven marketing strategies that boost your online presence and maximize ROI across all channels.",
+      features: [
+        "SEO & SEM",
+        "Social Media Management",
+        "Content Marketing",
+        "PPC Advertising",
+      ],
+      gradient: "from-gold-dark to-primary",
+    },
   ];
 
   return (
@@ -67,8 +79,8 @@ const ServicesSection = () => {
           </p>
         </div>
 
-        {/* Service Cards - 3 columns */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {/* Service Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
           {services.map((service, index) => (
             <div
               key={service.title}
