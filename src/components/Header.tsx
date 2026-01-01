@@ -51,7 +51,7 @@ const Header = () => {
                 {link.label}
               </button>
             ))}
-            <a href="https://t.me/royAIsolutionsBot" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm flex items-center gap-2">
+            <a href="https://t.me/RoysCompany" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
               Chat with AI
             </a>
@@ -100,7 +100,7 @@ const Header = () => {
                 {link.label}
               </button>
             ))}
-            <a href="https://t.me/royAIsolutionsBot" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm text-left py-2 flex items-center gap-2">
+            <a href="https://t.me/RoysCompany" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors duration-200 font-condensed font-medium tracking-wider uppercase text-sm text-left py-2 flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
               Chat with AI
             </a>

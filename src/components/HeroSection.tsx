@@ -86,7 +86,7 @@ const HeroSection = () => {
               <span>Explore Services</span>
             </button>
             <a
-              href="https://t.me/royAIsolutionsBot"
+              href="https://t.me/RoysCompany"
               target="_blank"
               rel="noopener noreferrer"
               className="glass-card-hover px-8 py-4 font-semibold text-foreground inline-flex items-center justify-center gap-2 text-lg border border-primary/20 hover:border-primary/50 transition-colors"
