@@ -1,10 +1,20 @@
 import { useState } from "react";
-import { Send, ArrowUpRight, Check } from "lucide-react";
+import { Send, ArrowUpRight, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+interface LeadQualification {
+  score: number;
+  priority: "high" | "medium" | "low";
+  insights: string;
+  recommended_action: string;
+  tags: string[];
+}
 
 const LeadForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [qualification, setQualification] = useState<LeadQualification | null>(null);
   const [formData, setFormData] = useState({
     business_name: "",
     city: "",
@@ -21,23 +31,59 @@ const LeadForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const generateSessionId = () => {
+    return `web-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setQualification(null);
+
+    const sessionId = generateSessionId();
 
     try {
+      // Step 1: Qualify the lead with AI
+      console.log("Qualifying lead...");
+      const { data: qualifyData, error: qualifyError } = await supabase.functions.invoke(
+        "lead-qualifier",
+        {
+          body: { formData, sessionId },
+        }
+      );
+
+      if (qualifyError) {
+        console.error("Lead qualification error:", qualifyError);
+        // Continue with webhook even if qualification fails
+      } else if (qualifyData?.qualification) {
+        console.log("Lead qualified:", qualifyData.qualification);
+        setQualification(qualifyData.qualification);
+      }
+
+      // Step 2: Submit to n8n webhook with qualification data
+      const webhookPayload = {
+        ...formData,
+        qualification: qualifyData?.qualification || null,
+        sessionId,
+      };
+
       const response = await fetch(
         "https://ulloarory.app.n8n.cloud/webhook/new-lead",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(webhookPayload),
         }
       );
 
       if (response.ok) {
         setIsSubmitted(true);
-        toast.success("Lead submitted successfully!");
+        const priority = qualifyData?.qualification?.priority;
+        if (priority === "high") {
+          toast.success("High priority lead submitted!");
+        } else {
+          toast.success("Lead submitted successfully!");
+        }
         setFormData({
           business_name: "",
           city: "",
@@ -50,6 +96,7 @@ const LeadForm = () => {
         toast.error("Failed to submit lead. Please try again.");
       }
     } catch (error) {
+      console.error("Submit error:", error);
       toast.error("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -64,11 +111,39 @@ const LeadForm = () => {
             <Check className="w-10 h-10 text-primary" />
           </div>
           <h3 className="text-3xl font-display font-bold mb-4">Lead Submitted!</h3>
+          
+          {qualification && (
+            <div className="mb-6 p-4 rounded-lg bg-secondary/50 border border-border max-w-md">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">AI Qualification</span>
+              </div>
+              <div className="flex items-center gap-4 mb-2">
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  qualification.priority === 'high' 
+                    ? 'bg-green-500/20 text-green-400' 
+                    : qualification.priority === 'medium'
+                    ? 'bg-yellow-500/20 text-yellow-400'
+                    : 'bg-muted text-muted-foreground'
+                }`}>
+                  {qualification.priority.toUpperCase()} PRIORITY
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  Score: {qualification.score}/100
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">{qualification.insights}</p>
+            </div>
+          )}
+          
           <p className="text-muted-foreground text-lg">
             We'll follow up with you shortly.
           </p>
           <button
-            onClick={() => setIsSubmitted(false)}
+            onClick={() => {
+              setIsSubmitted(false);
+              setQualification(null);
+            }}
             className="mt-8 text-primary hover:underline"
           >
             Submit another lead
