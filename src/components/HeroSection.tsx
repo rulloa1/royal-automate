@@ -43,7 +43,7 @@ const HeroSection = () => {
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
             <a
-              href="https://t.me/royAIsolutionsBot"
+              href="https://t.me/RoysCompany"
               target="_blank"
               rel="noopener noreferrer"
               className="gradient-button-secondary inline-flex items-center justify-center gap-3 text-base"

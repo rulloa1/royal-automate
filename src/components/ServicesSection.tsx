@@ -35,6 +35,18 @@ const ServicesSection = () => {
         "12M+ viewer reach",
       ],
     },
+    {
+      icon: TrendingUp,
+      title: "Digital Marketing",
+      description: "Data-driven marketing strategies that boost your online presence and maximize ROI across all channels.",
+      features: [
+        "SEO & SEM",
+        "Social Media Management",
+        "Content Marketing",
+        "PPC Advertising",
+      ],
+      gradient: "from-gold-dark to-primary",
+    },
   ];
 
   return (
