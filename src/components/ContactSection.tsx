@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { Mail, Phone, Clock, Check, Send, ArrowUpRight } from "lucide-react";
+import { Clock, Check, Send, ArrowRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useToast } from "@/hooks/use-toast";
 
-// Replace this with your actual Formspree Form ID
-// Sign up at https://formspree.io/ to get one
 const FORMSPREE_FORM_ID = "xgovwbrv"; 
 
 const ContactSection = () => {
@@ -35,7 +33,6 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      // Sending to Formspree
       const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
         method: "POST",
         headers: {
@@ -81,112 +78,88 @@ const ContactSection = () => {
     }));
   };
 
-  const contactInfo = [
-    {
-      icon: Clock,
-      label: "Response Time",
-      value: "Within 24 hours",
-    },
-  ];
-
   return (
-    <section id="contact" className="py-28 relative" ref={ref}>
-      {/* Background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
+    <section id="contact" className="py-32 relative" ref={ref}>
+      <div className="container mx-auto px-4">
+        <div className="grid lg:grid-cols-2 gap-16 max-w-5xl mx-auto">
           {/* Left: Contact Info */}
           <div className={isVisible ? "animate-slide-in-left" : "opacity-0"}>
-            <div className="inline-flex items-center gap-2 glass-card px-5 py-2.5 mb-6">
-              <span className="text-sm font-condensed font-medium tracking-wider uppercase text-primary">Get In Touch</span>
-            </div>
+            <p className="text-sm text-muted-foreground uppercase tracking-wider mb-4">Get In Touch</p>
             
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6">
-              Start Your{" "}
-              <span className="gradient-text">Transformation</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl mb-6">
+              Start Your Transformation
             </h2>
-            <p className="text-lg text-muted-foreground mb-12 leading-relaxed">
+            <p className="text-muted-foreground mb-12 leading-relaxed">
               Ready to transform your business with AI automation? Let's discuss how
               we can help you scale and dominate your market.
             </p>
 
-            <div className="space-y-4">
-              {contactInfo.map((item, index) => (
-                <div
-                  key={index}
-                  className="glass-card-hover p-5 flex items-center gap-4"
-                >
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-6 h-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-condensed tracking-wider uppercase text-muted-foreground">{item.label}</p>
-                    <p className="font-semibold text-lg">{item.value}</p>
-                  </div>
-                </div>
-              ))}
+            <div className="glass-card p-5 flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Response Time</p>
+                <p className="font-medium">Within 24 hours</p>
+              </div>
             </div>
 
-            <p className="text-sm text-muted-foreground mt-8 opacity-70">
-              An affiliate of <a href="https://www.royscompany.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.royscompany.com</a>
+            <p className="text-xs text-muted-foreground">
+              An affiliate of <a href="https://www.royscompany.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">www.royscompany.com</a>
             </p>
           </div>
 
           {/* Right: Contact Form */}
           <div
-            className={`glass-card p-8 lg:p-10 ${
+            className={`glass-card p-8 ${
               isVisible ? "animate-slide-in-right animation-delay-200" : "opacity-0"
             }`}
           >
             {isSubmitted ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-16">
-                <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-8">
-                  <Check className="w-10 h-10 text-primary" />
+                <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-6">
+                  <Check className="w-8 h-8" />
                 </div>
-                <h3 className="text-3xl font-display font-bold mb-4">Message Sent!</h3>
-                <p className="text-muted-foreground text-lg">
+                <h3 className="text-2xl font-medium mb-3">Message Sent!</h3>
+                <p className="text-muted-foreground">
                   We'll get back to you within 24 hours.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
-                      Full Name <span className="text-accent">*</span>
+                    <label className="block text-xs uppercase tracking-wider mb-2 text-muted-foreground">
+                      Full Name <span className="text-foreground">*</span>
                     </label>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      className="w-full bg-secondary border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-foreground/30 transition-colors text-foreground text-sm"
                       placeholder="John Doe"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
-                      Email <span className="text-accent">*</span>
+                    <label className="block text-xs uppercase tracking-wider mb-2 text-muted-foreground">
+                      Email <span className="text-foreground">*</span>
                     </label>
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      className="w-full bg-secondary border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-foreground/30 transition-colors text-foreground text-sm"
                       placeholder="john@company.com"
                     />
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-6">
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
+                    <label className="block text-xs uppercase tracking-wider mb-2 text-muted-foreground">
                       Company Name
                     </label>
                     <input
@@ -194,20 +167,20 @@ const ContactSection = () => {
                       name="company"
                       value={formData.company}
                       onChange={handleChange}
-                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      className="w-full bg-secondary border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-foreground/30 transition-colors text-foreground text-sm"
                       placeholder="Your Company"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
+                    <label className="block text-xs uppercase tracking-wider mb-2 text-muted-foreground">
                       Package Interest
                     </label>
                     <select
                       name="package"
                       value={formData.package}
                       onChange={handleChange}
-                      className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                      className="w-full bg-secondary border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-foreground/30 transition-colors text-foreground text-sm"
                     >
                       <option value="">Select a package</option>
                       <option value="foundation">Foundation Package</option>
@@ -218,7 +191,7 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-condensed tracking-wider uppercase mb-2 text-muted-foreground">
+                  <label className="block text-xs uppercase tracking-wider mb-2 text-muted-foreground">
                     Message
                   </label>
                   <textarea
@@ -226,7 +199,7 @@ const ContactSection = () => {
                     value={formData.message}
                     onChange={handleChange}
                     rows={4}
-                    className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3.5 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none text-foreground"
+                    className="w-full bg-secondary border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-foreground/30 transition-colors resize-none text-foreground text-sm"
                     placeholder="Tell us about your project and goals..."
                   />
                 </div>
@@ -234,12 +207,12 @@ const ContactSection = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full gradient-button py-4 flex items-center justify-center gap-3 text-lg group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full gradient-button py-4 flex items-center justify-center gap-3 text-sm group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4" />
                   <span>{isSubmitting ? "Sending..." : "Send Message"}</span>
                   {!isSubmitting && (
-                    <ArrowUpRight className="w-5 h-5 text-accent transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   )}
                 </button>
               </form>

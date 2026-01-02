@@ -13,8 +13,6 @@ const Footer = () => {
 
   const companyLinks = [
     { label: "Contact", href: "#contact" },
-    { label: "About Us", href: "#" },
-    { label: "Support", href: "#contact" },
   ];
 
   const socialLinks = [
@@ -24,98 +22,85 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="py-20 border-t border-border/50 relative">
-      {/* Subtle background gradient */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/3 rounded-full blur-[120px]" />
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+    <footer className="py-16 border-t border-border">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div className="max-w-sm">
             <a href="#" className="flex items-center mb-6">
               <img
                 src={logo}
                 alt="AI Solutions"
-                className="h-14 object-contain"
+                className="h-10 object-contain"
               />
             </a>
-            <p className="text-muted-foreground leading-relaxed">
-              Empowering businesses through AI automation, intelligent lead generation, and enterprise-grade solutions.
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              We automate content, workflows, and decision-making so your business scales without adding headcount.
             </p>
           </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="font-display font-semibold text-lg mb-6">Services</h4>
-            <ul className="space-y-4">
-              {serviceLinks.map((link, index) => (
-                <li key={index}>
-                  <button
-                    onClick={() => scrollToSection(link.href)}
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Navigation */}
+          <div className="flex flex-col sm:flex-row gap-12">
+            <div>
+              <h4 className="text-sm font-medium mb-4">Navigation</h4>
+              <ul className="space-y-3">
+                {navLinks.map((link, index) => (
+                  <li key={index}>
+                    <button
+                      onClick={() => scrollToSection(link.href)}
+                      className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="font-display font-semibold text-lg mb-6">Company</h4>
-            <ul className="space-y-4">
-              {companyLinks.map((link, index) => (
-                <li key={index}>
-                  <button
-                    onClick={() => scrollToSection(link.href)}
-                    className="text-muted-foreground hover:text-primary transition-colors"
+            <div>
+              <h4 className="text-sm font-medium mb-4">Connect</h4>
+              <div className="flex gap-2">
+                {socialLinks.map((link, index) => (
+                  <a
+                    key={index}
+                    href={link.href}
+                    target={link.label === "Telegram" ? "_blank" : undefined}
+                    rel={link.label === "Telegram" ? "noopener noreferrer" : undefined}
+                    aria-label={link.label}
+                    className="w-10 h-10 rounded-lg border border-border flex items-center justify-center hover:border-foreground/30 hover:bg-secondary transition-all"
                   >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Connect */}
-          <div>
-            <h4 className="font-display font-semibold text-lg mb-6">Connect</h4>
-            <div className="flex gap-3">
-              {socialLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.href}
-                  target={link.label === "Telegram" ? "_blank" : undefined}
-                  rel={link.label === "Telegram" ? "noopener noreferrer" : undefined}
-                  aria-label={link.label}
-                  className="w-12 h-12 glass-card-hover flex items-center justify-center rounded-lg hover:text-primary"
-                >
-                  <link.icon className="w-5 h-5" />
-                </a>
-              ))}
+                    <link.icon className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Divider */}
+        <div className="divider mb-8" />
+
         {/* Bottom */}
-        <div className="pt-10 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm flex flex-col md:flex-row items-center gap-2">
-            <span>© {new Date().getFullYear()} <span className="text-primary">AI Solutions</span>. All rights reserved.</span>
-            <span className="hidden md:inline text-muted-foreground/30">|</span>
-            <a href="https://www.royscompany.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <span>RoyalSolutions.me is a proud affiliate of</span>
-              <img src={partnerLogo} alt="RoysCompany" className="h-5 object-contain" />
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-muted-foreground text-xs flex flex-wrap items-center justify-center gap-2">
+            <span>© {new Date().getFullYear()} AI Solutions. All rights reserved.</span>
+            <span className="text-border">•</span>
+            <a 
+              href="https://www.royscompany.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+            >
+              <span>Affiliate of</span>
+              <img src={partnerLogo} alt="RoysCompany" className="h-4 object-contain" />
             </a>
           </p>
-          <div className="flex gap-8 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-primary transition-colors">
-              Privacy Policy
+          <div className="flex gap-6 text-xs text-muted-foreground">
+            <a href="#" className="hover:text-foreground transition-colors">
+              Privacy
             </a>
-            <a href="#" className="hover:text-primary transition-colors">
-              Terms of Service
+            <a href="#" className="hover:text-foreground transition-colors">
+              Terms
             </a>
           </div>
         </div>

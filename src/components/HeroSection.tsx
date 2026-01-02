@@ -1,134 +1,85 @@
-import { ArrowUpRight, Sparkles, MessageCircle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import partnerLogo from "@/assets/royscompany-logo.png";
 import { scrollToSection } from "@/lib/utils";
 
 const HeroSection = () => {
-  const vantaRef = useRef<HTMLDivElement>(null);
-  const [vantaEffect, setVantaEffect] = useState<any>(null);
-
-  useEffect(() => {
-    if (!vantaEffect && vantaRef.current) {
-      // Dynamically import Vanta to avoid SSR issues
-      import("vanta/dist/vanta.net.min").then((VANTA) => {
-        const effect = VANTA.default({
-          el: vantaRef.current,
-          THREE: THREE,
-          mouseControls: true,
-          touchControls: true,
-          gyroControls: false,
-          minHeight: 200.0,
-          minWidth: 200.0,
-          scale: 1.0,
-          scaleMobile: 1.0,
-          color: 0xffc72c, // Royal Gold
-          backgroundColor: 0x0a0a0a, // Deep Space Black
-          points: 12.0,
-          maxDistance: 22.0,
-          spacing: 18.0,
-        });
-        setVantaEffect(effect);
-      });
-    }
-    return () => {
-      if (vantaEffect) vantaEffect.destroy();
-    };
-  }, [vantaEffect]);
-
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Vanta.js NET Background */}
-      <div ref={vantaRef} className="absolute inset-0 z-0" />
-
-      {/* Overlay gradient for readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background z-[1]" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-20">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-card/30" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 glass-card px-5 py-2.5 mb-10 animate-fade-in-up">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-            </span>
-            <span className="text-sm font-condensed font-medium tracking-wider uppercase text-muted-foreground">
-              Enterprise AI Solutions
-            </span>
+          <div className="flex justify-center mb-12 animate-fade-in">
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-border bg-card/50">
+              <span className="status-dot" />
+              <span className="text-sm text-muted-foreground">
+                AI Systems Engineered
+              </span>
+            </div>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold mb-8 animate-fade-in-up animation-delay-200 leading-tight">
-            Automate Your{" "}
-            <span className="gradient-text">Growth</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-center mb-8 animate-fade-in-up animation-delay-200 leading-[1.1] text-balance">
+            <span className="text-muted-foreground">AI</span>
+            <span className="text-foreground">SYSTEM</span>
+            <br />
+            <span className="text-foreground">ENGINEERED</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto animate-fade-in-up animation-delay-400 leading-relaxed">
-            Transform your business with enterprise-grade AI automation, 
-            intelligent lead generation, and powerful workflow systems.
+          <p className="text-lg md:text-xl text-muted-foreground text-center mb-16 max-w-2xl mx-auto animate-fade-in-up animation-delay-400 leading-relaxed">
+            We automate content, workflows, and decision-making so your business scales without adding headcount.
           </p>
 
-          {/* CTA Button - Royal Gold rectangle with arrow */}
-          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-20 animate-fade-in-up animation-delay-600">
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-24 animate-fade-in-up animation-delay-600">
             <button
               onClick={() => scrollToSection("#contact")}
-              className="gradient-button inline-flex items-center justify-center gap-3 text-lg group"
+              className="gradient-button inline-flex items-center justify-center gap-3 text-base group"
             >
-              <Sparkles className="w-5 h-5" />
               <span>Start Your Transformation</span>
-              <ArrowUpRight className="w-5 h-5 text-accent transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-            </button>
-            <button
-              onClick={() => scrollToSection("#services")}
-              className="glass-card-hover px-8 py-4 font-semibold text-foreground inline-flex items-center justify-center gap-2 text-lg"
-            >
-              <span>Explore Services</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
             <a
               href="https://t.me/RoysCompany"
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-card-hover px-8 py-4 font-semibold text-foreground inline-flex items-center justify-center gap-2 text-lg border border-primary/20 hover:border-primary/50 transition-colors"
+              className="gradient-button-secondary inline-flex items-center justify-center gap-3 text-base"
             >
-              <MessageCircle className="w-5 h-5" />
+              <MessageCircle className="w-4 h-4" />
               <span>Chat with AI</span>
             </a>
           </div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-fade-in-up animation-delay-800">
-            <div className="glass-card p-5 flex flex-col items-center gap-2">
-              <span className="text-3xl font-display font-bold text-primary">10x</span>
-              <span className="text-sm font-condensed tracking-wider uppercase text-muted-foreground">Lead Generation</span>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-8 sm:gap-16 animate-fade-in-up animation-delay-800">
+            <div className="text-center">
+              <span className="text-4xl md:text-5xl font-medium text-foreground">150+</span>
+              <p className="text-sm text-muted-foreground mt-2">Videos Generated</p>
             </div>
-            <div className="glass-card p-5 flex flex-col items-center gap-2">
-              <span className="text-3xl font-display font-bold text-primary">24/7</span>
-              <span className="text-sm font-condensed tracking-wider uppercase text-muted-foreground">AI Automation</span>
-            </div>
-            <div className="glass-card p-5 flex flex-col items-center gap-2">
-              <span className="text-3xl font-display font-bold text-primary">99.9%</span>
-              <span className="text-sm font-condensed tracking-wider uppercase text-muted-foreground">System Uptime</span>
+            <div className="hidden sm:block w-px h-12 bg-border" />
+            <div className="text-center">
+              <span className="text-4xl md:text-5xl font-medium text-foreground">10M+</span>
+              <p className="text-sm text-muted-foreground mt-2">Views Generated</p>
             </div>
           </div>
 
           {/* Partner Badge */}
-          <div className="mt-12 animate-fade-in-up animation-delay-1000">
+          <div className="mt-16 flex justify-center animate-fade-in-up animation-delay-1000">
             <a 
               href="https://www.royscompany.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 glass-card px-6 py-3 hover:bg-white/5 transition-colors"
+              className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-border bg-card/30 hover:bg-card/50 transition-colors"
             >
-              <span className="text-sm text-muted-foreground font-condensed uppercase tracking-wider">Partner of</span>
-              <img src={partnerLogo} alt="RoysCompany" className="h-8 object-contain" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Partner of</span>
+              <img src={partnerLogo} alt="RoysCompany" className="h-6 object-contain" />
             </a>
           </div>
         </div>
       </div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent z-[2]" />
     </section>
   );
 };
