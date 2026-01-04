@@ -44,7 +44,7 @@ const sanitizeString = (str: string, maxLength: number): string => {
   return str.trim().slice(0, maxLength);
 };
 
-const logStep = (step: string, details?: any) => {
+const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
