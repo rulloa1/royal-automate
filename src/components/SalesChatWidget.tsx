@@ -33,6 +33,7 @@ export function SalesChatWidget() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sessionIdRef = useRef<string>(`chat_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -69,7 +70,7 @@ export function SalesChatWidget() {
       apiMessages.push({ role: "user", content: userMsg.content });
 
       const { data, error } = await supabase.functions.invoke("sales-chat", {
-        body: { messages: apiMessages },
+        body: { messages: apiMessages, sessionId: sessionIdRef.current },
       });
 
       if (error) {
