@@ -4,12 +4,19 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 type Message = {
   id: string;
   role: "user" | "bot";
   content: string;
   timestamp: Date;
+};
+
+type ApiMessage = {
+  role: "user" | "assistant";
+  content: string;
 };
 
 export function SalesChatWidget() {
@@ -19,7 +26,7 @@ export function SalesChatWidget() {
       id: "1",
       role: "bot",
       content:
-        "Hello! I represent Roy's Company. I can help find the perfect products for you or setting up a trial. What's your business name?",
+        "Hello! I'm the AI assistant for Roy's Company. I can help you learn about our AI automation, web development, and lead generation services. What's your business name?",
       timestamp: new Date(),
     },
   ]);
@@ -36,7 +43,7 @@ export function SalesChatWidget() {
   }, [messages, isOpen]);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
 
     const userMsg: Message = {
       id: Date.now().toString(),
@@ -49,18 +56,51 @@ export function SalesChatWidget() {
     setInput("");
     setIsTyping(true);
 
-    // TODO: Connect to actual agent backend
-    setTimeout(() => {
+    try {
+      // Convert messages to API format
+      const apiMessages: ApiMessage[] = messages
+        .filter((m) => m.id !== "1") // Skip initial greeting
+        .map((m) => ({
+          role: m.role === "user" ? "user" : "assistant",
+          content: m.content,
+        }));
+      
+      // Add the new user message
+      apiMessages.push({ role: "user", content: userMsg.content });
+
+      const { data, error } = await supabase.functions.invoke("sales-chat", {
+        body: { messages: apiMessages },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "bot",
-        content:
-          "Thanks for sharing! I'm researching your business needs now...",
+        content: data.content,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMsg]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      toast.error("Failed to get response. Please try again.");
+      
+      const errorMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "bot",
+        content: "I apologize, I'm having trouble responding right now. Please try again in a moment.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
