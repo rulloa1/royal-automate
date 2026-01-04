@@ -4,21 +4,16 @@ import partnerLogo from "@/assets/royscompany-logo.png";
 import { scrollToSection } from "@/lib/utils";
 
 const Footer = () => {
-  const serviceLinks = [
-    { label: "Web Development", href: "#services" },
-    { label: "AI Automation", href: "#services" },
-    { label: "Lead Generation", href: "#services" },
-    { label: "Digital Marketing", href: "#services" },
-  ];
-
-  const companyLinks = [
+  const navLinks = [
+    { label: "Services", href: "#services" },
+    { label: "Pricing", href: "#pricing" },
     { label: "Contact", href: "#contact" },
   ];
 
   const socialLinks = [
     { icon: Linkedin, href: "#", label: "LinkedIn" },
     { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Send, href: "https://t.me/RoysCompany", label: "Telegram" },
+    { icon: Send, href: "https://t.me/royAIsolutionsBot", label: "Telegram" },
   ];
 
   return (
