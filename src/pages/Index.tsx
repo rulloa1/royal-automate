@@ -6,6 +6,7 @@ import PricingSection from "@/components/PricingSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import { SalesChatWidget } from "@/components/SalesChatWidget";
 
 const Index = () => {
   return (
@@ -39,6 +40,7 @@ const Index = () => {
         </main>
         <Footer />
         <BackToTop />
+        <SalesChatWidget />
       </div>
     </>
   );
