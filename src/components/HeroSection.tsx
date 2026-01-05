@@ -56,28 +56,17 @@ const HeroSection = () => {
           {/* Stats Row */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-8 sm:gap-16 animate-fade-in-up animation-delay-800">
             <div className="text-center">
-              <span className="text-4xl md:text-5xl font-medium text-foreground">150+</span>
-              <p className="text-sm text-muted-foreground mt-2">Videos Generated</p>
+              <span className="text-4xl md:text-5xl font-medium text-foreground">50+</span>
+              <p className="text-sm text-muted-foreground mt-2">Clients Automated</p>
             </div>
             <div className="hidden sm:block w-px h-12 bg-border" />
             <div className="text-center">
-              <span className="text-4xl md:text-5xl font-medium text-foreground">10M+</span>
-              <p className="text-sm text-muted-foreground mt-2">Views Generated</p>
+              <span className="text-4xl md:text-5xl font-medium text-foreground">24/7</span>
+              <p className="text-sm text-muted-foreground mt-2">System Uptime</p>
             </div>
           </div>
 
-          {/* Partner Badge */}
-          <div className="mt-16 flex justify-center animate-fade-in-up animation-delay-1000">
-            <a
-              href="https://www.royscompany.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-border bg-card/30 hover:bg-card/50 transition-colors"
-            >
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Partner of</span>
-              <img src={partnerLogo} alt="RoysCompany" className="h-6 object-contain" />
-            </a>
-          </div>
+
         </div>
       </div>
     </section>

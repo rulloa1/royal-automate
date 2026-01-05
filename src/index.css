@@ -1,25 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
-@layer base {
   :root {
     /* ... existing vars ... */
     --background: 0 0% 0%;
-/* ... */
+    /* ... */
 
-/* ... in @layer components ... */
-  /* Gradient text - Gold */
-  .gradient-text-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#BF953F] animate-gradient-shift bg-300%;
-  }
-  
-  .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-neutral-200 to-neutral-400;
-  }
+    /* ... in @layer components ... */
+    /* Gradient text - Gold */
+    .gradient-text-gold {
+      @apply bg-clip-text text-transparent bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#BF953F] animate-gradient-shift bg-300%;
+    }
+
+    .gradient-text {
+      @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-neutral-200 to-neutral-400;
+    }
+
     --foreground: 0 0% 100%;
 
     /* Cards with very subtle gray */
@@ -81,12 +81,18 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-medium tracking-tight;
   }
 }
 
 @layer components {
+
   /* Clean minimal card */
   .glass-card {
     @apply bg-card border border-border rounded-2xl;
@@ -181,6 +187,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -191,6 +198,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -202,6 +210,7 @@
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -213,6 +222,7 @@
     opacity: 0;
     transform: translateX(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
