@@ -6,6 +6,7 @@ import { scrollToSection } from "@/lib/utils";
 const Footer = () => {
   const navLinks = [
     { label: "Services", href: "#services" },
+    { label: "Chatbot Dev", href: "/services/chatbot-development" },
     { label: "Pricing", href: "#pricing" },
     { label: "Contact", href: "#contact" },
   ];
@@ -80,10 +81,10 @@ const Footer = () => {
           <p className="text-muted-foreground text-xs flex flex-wrap items-center justify-center gap-2">
             <span>© {new Date().getFullYear()} AI Solutions. All rights reserved.</span>
             <span className="text-border">•</span>
-            <a 
-              href="https://www.royscompany.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://www.royscompany.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
             >
               <span>Affiliate of</span>
