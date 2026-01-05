@@ -38,6 +38,12 @@ const Blog = () => {
                     name="description"
                     content="Explore our latest articles on AI automation, chatbot development, and business growth strategies. Stay ahead of the curve."
                 />
+                <meta property="og:title" content="Blog | Insights & AI Strategies | RoysCompany" />
+                <meta property="og:description" content="Explore our latest articles on AI automation, chatbot development, and business growth strategies." />
+                <meta property="og:type" content="blog" />
+                <meta property="og:url" content="https://www.royscompany.com/blog" />
+                <meta property="og:image" content="/og-image.png" />
+                <link rel="canonical" href="https://www.royscompany.com/blog" />
             </Helmet>
 
             <div className="min-h-screen bg-background">
