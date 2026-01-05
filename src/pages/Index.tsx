@@ -27,7 +27,7 @@ const Index = () => {
           content="Enterprise-grade automation solutions for modern businesses. AI-powered lead generation, automated workflows, and premium web design."
         />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://royalsolutions.me" />
+        <link rel="canonical" href="https://royscompany.com/" />
       </Helmet>
 
       <div className="min-h-screen bg-background">
