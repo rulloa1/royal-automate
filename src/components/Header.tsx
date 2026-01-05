@@ -18,6 +18,7 @@ const Header = () => {
   const navLinks = [
     { href: "#services", label: "Services" },
     { href: "/services/chatbot-development", label: "Chatbot Dev" },
+    { href: "/blog", label: "Blog" },
     { href: "#pricing", label: "Pricing" },
     { href: "#contact", label: "Contact" },
   ];
@@ -35,7 +36,7 @@ const Header = () => {
           <a href="#" className="flex items-center gap-2 group">
             <img
               src={logo}
-              alt="Royal AI Solutions"
+              alt="RoysCompany"
               className="h-10 md:h-12 object-contain transition-opacity duration-300 group-hover:opacity-80"
             />
           </a>

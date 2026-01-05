@@ -7,8 +7,8 @@ const Leads = () => {
   return (
     <>
       <Helmet>
-        <title>Lead Capture | Royal Solutions</title>
-        <meta name="description" content="Internal lead capture form for Royal Solutions team." />
+        <title>Lead Capture | RoysCompany</title>
+        <meta name="description" content="Internal lead capture form for RoysCompany team." />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -21,8 +21,8 @@ const Leads = () => {
 
         <div className="container mx-auto px-4 py-12 relative z-10">
           {/* Back link */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />

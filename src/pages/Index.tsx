@@ -6,22 +6,22 @@ import PricingSection from "@/components/PricingSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
-import { SalesChatWidget } from "@/components/SalesChatWidget";
+import { BlogSection } from "@/components/BlogSection";
 
 const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Royal AI Solutions | Premium Automation & Lead Generation</title>
+        <title>RoysCompany | Premium Automation & Lead Generation</title>
         <meta
           name="description"
-          content="Transform your business with enterprise-grade websites, intelligent lead generation, and powerful AI automation systems. Built for businesses ready to scale."
+          content="Transform your business with enterprise-grade websites, intelligent lead generation, and powered by RoysCompany automation systems."
         />
         <meta
           name="keywords"
           content="AI automation, lead generation, business automation, website design, CRM integration, chatbot"
         />
-        <meta property="og:title" content="Royal AI Solutions | Automate Your Growth" />
+        <meta property="og:title" content="RoysCompany | Automate Your Growth" />
         <meta
           property="og:description"
           content="Enterprise-grade automation solutions for modern businesses. AI-powered lead generation, automated workflows, and premium web design."
@@ -35,12 +35,12 @@ const Index = () => {
         <main>
           <HeroSection />
           <ServicesSection />
+          <BlogSection />
           <PricingSection />
           <ContactSection />
         </main>
         <Footer />
         <BackToTop />
-        <SalesChatWidget />
       </div>
     </>
   );

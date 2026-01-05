@@ -7,6 +7,7 @@ const Footer = () => {
   const navLinks = [
     { label: "Services", href: "#services" },
     { label: "Chatbot Dev", href: "/services/chatbot-development" },
+    { label: "Blog", href: "/blog" },
     { label: "Pricing", href: "#pricing" },
     { label: "Contact", href: "#contact" },
   ];
