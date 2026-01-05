@@ -21,11 +21,11 @@ const HeroSection = () => {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-center mb-8 animate-fade-in-up animation-delay-200 leading-[1.1] text-balance">
-            <span className="text-muted-foreground">AI</span>
-            <span className="text-foreground">SYSTEM</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-center mb-8 animate-fade-in-up animation-delay-200 leading-[1.1] text-balance tracking-tight">
+            <span className="text-muted-foreground font-light">AI</span>
+            <span className="gradient-text-gold font-bold ml-4">SYSTEMS</span>
             <br />
-            <span className="text-foreground">ENGINEERED</span>
+            <span className="text-foreground font-medium">ENGINEERED</span>
           </h1>
 
           {/* Subheadline */}
@@ -68,9 +68,9 @@ const HeroSection = () => {
 
           {/* Partner Badge */}
           <div className="mt-16 flex justify-center animate-fade-in-up animation-delay-1000">
-            <a 
-              href="https://www.royscompany.com" 
-              target="_blank" 
+            <a
+              href="https://www.royscompany.com"
+              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-border bg-card/30 hover:bg-card/50 transition-colors"
             >

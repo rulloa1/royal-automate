@@ -36,6 +36,36 @@ const ServicesSection = () => {
         "12M+ viewer reach",
       ],
     },
+    {
+      icon: Workflow,
+      title: "Business Process Automation",
+      description: "Eliminate repetitive manual tasks. We build n8n and Make.com workflows that integrate your entire tech stack.",
+      features: [
+        "CRM & Email automation",
+        "Document processing (OCR)",
+        "Automated reporting",
+      ],
+    },
+    {
+      icon: Cpu,
+      title: "Custom AI Development",
+      description: "Beyond standard tools. We build custom LLM agents and fine-tuned models tailored to your specific business logic.",
+      features: [
+        "Custom GPT Assistants",
+        "Sentiment Analysis",
+        "Proprietary Data RAG",
+      ],
+    },
+    {
+      icon: Zap,
+      title: "Consulting & Strategy",
+      description: "Expert guidance on AI adoption. We help you identify high-ROI opportunities and implement them effectively.",
+      features: [
+        "AI Readiness Audits",
+        "Implementation Roadmaps",
+        "Team Training",
+      ],
+    },
   ];
 
   return (
