@@ -3,9 +3,23 @@
 @tailwind utilities;
 
 @layer base {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+@layer base {
   :root {
-    /* Pure black background - matching RoysCompany */
+    /* ... existing vars ... */
     --background: 0 0% 0%;
+/* ... */
+
+/* ... in @layer components ... */
+  /* Gradient text - Gold */
+  .gradient-text-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#BF953F] animate-gradient-shift bg-300%;
+  }
+  
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-neutral-200 to-neutral-400;
+  }
     --foreground: 0 0% 100%;
 
     /* Cards with very subtle gray */
