@@ -27,6 +27,8 @@ const Index = () => {
           content="Enterprise-grade automation solutions for modern businesses. AI-powered lead generation, automated workflows, and premium web design."
         />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.royscompany.com/" />
+        <meta property="og:image" content="/og-image.png" />
         <link rel="canonical" href="https://royscompany.com/" />
       </Helmet>
 

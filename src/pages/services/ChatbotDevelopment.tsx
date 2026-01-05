@@ -54,6 +54,12 @@ const ChatbotDevelopment = () => {
                     name="keywords"
                     content="chatbot development, custom ai chatbot, ai automation, lead generation bot, customer support ai"
                 />
+                <meta property="og:title" content="Chatbot Development | Custom AI Chatbot | RoysCompany" />
+                <meta property="og:description" content="Expert chatbot development services. We build custom AI chatbots that automate support, qualify leads, and drive revenue 24/7." />
+                <meta property="og:type" content="service" />
+                <meta property="og:url" content="https://www.royscompany.com/services/chatbot-development" />
+                <meta property="og:image" content="/og-image.png" />
+                <link rel="canonical" href="https://www.royscompany.com/services/chatbot-development" />
             </Helmet>
 
             <div className="min-h-screen bg-background">
