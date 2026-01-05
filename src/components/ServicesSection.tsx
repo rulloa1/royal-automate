@@ -1,5 +1,6 @@
 import { Workflow, Cpu, Zap, ChevronRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { InteractiveCard } from "@/components/ui/InteractiveCard";
 
 const ServicesSection = () => {
   const { ref, isVisible } = useIntersectionObserver();
@@ -53,27 +54,28 @@ const ServicesSection = () => {
           {services.map((service, index) => (
             <div
               key={service.title}
-              className={`glass-card-hover p-8 group ${
-                isVisible ? `animate-fade-in-up animation-delay-${(index + 2) * 200}` : "opacity-0"
-              }`}
+              className={`${isVisible ? `animate-fade-in-up animation-delay-${(index + 2) * 200}` : "opacity-0"
+                }`}
             >
-              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors">
-                <service.icon className="w-6 h-6 text-foreground" />
-              </div>
-              
-              <h3 className="text-xl font-medium mb-4">{service.title}</h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
-                {service.description}
-              </p>
-              
-              <ul className="space-y-3">
-                {service.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-center gap-3 text-sm">
-                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    <span className="text-muted-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              <InteractiveCard>
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors">
+                  <service.icon className="w-6 h-6 text-foreground" />
+                </div>
+
+                <h3 className="text-xl font-medium mb-4">{service.title}</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
+                  {service.description}
+                </p>
+
+                <ul className="space-y-3">
+                  {service.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center gap-3 text-sm">
+                      <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </InteractiveCard>
             </div>
           ))}
         </div>

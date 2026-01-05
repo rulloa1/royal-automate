@@ -11,10 +11,13 @@ import Leads from "./pages/Leads";
 
 const queryClient = new QueryClient();
 
+import { VisualEffects } from "@/components/ui/VisualEffects";
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <VisualEffects />
         <Toaster />
         <Sonner />
         <BrowserRouter>
