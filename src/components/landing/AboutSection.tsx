@@ -8,7 +8,7 @@ const AboutSection = () => {
                     <div className="w-full md:w-1/3">
                         <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 grayscale hover:grayscale-0 transition-all duration-700 bg-neutral-900">
                             {/* Placeholder image tailored for dark theme */}
-                            <img src="/rory-ulloa.jpg" alt="Rory Ulloa" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                            <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/b1215c84-a614-448d-9358-8d4515451e7d_800w.png" alt="Rory Ulloa" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
                         </div>
                     </div>
                     <div className="w-full md:w-2/3 space-y-6">

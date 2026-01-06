@@ -31,12 +31,7 @@ const LandingHeader = () => {
                 </nav>
 
                 <div className="flex items-center gap-4">
-                    <a
-                        href="https://cal.com/catalyst-creators-studio-kadfk6/15min"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hidden md:flex items-center gap-2 text-xs font-medium text-neutral-300 hover:text-white transition-colors"
-                    >
+                    <a href="#contact" onClick={(e) => scrollToSection('contact', e)} className="hidden md:flex items-center gap-2 text-xs font-medium text-neutral-300 hover:text-white transition-colors">
                         Book Strategy Call <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                     {/* Mobile Menu Button */}
@@ -51,14 +46,7 @@ const LandingHeader = () => {
                     <a href="#services" onClick={(e) => scrollToSection('services', e)} className="text-neutral-400 hover:text-white text-sm">Services</a>
                     <a href="#process" onClick={(e) => scrollToSection('process', e)} className="text-neutral-400 hover:text-white text-sm">Methodology</a>
                     <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="text-neutral-400 hover:text-white text-sm">Use Cases</a>
-                    <a
-                        href="https://cal.com/catalyst-creators-studio-kadfk6/15min"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-400 text-sm font-medium"
-                    >
-                        Book Strategy Call
-                    </a>
+                    <a href="#contact" onClick={(e) => scrollToSection('contact', e)} className="text-blue-400 text-sm font-medium">Book Strategy Call</a>
                 </div>
             )}
         </header>
