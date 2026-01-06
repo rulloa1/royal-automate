@@ -22,10 +22,11 @@ const LeadForm = () => {
     setResult(null);
 
     try {
-      // Call n8n webhook
-      // Note: We use the production n8n URL provided by the user.
+      // Call local n8n webhook
+      // Note: In production, this request might need to go through a backend proxy to avoid CORS
+      // if not configured correctly, but we enabled CORS for royscompany.com & lovable.
       const response = await fetch(
-        "https://ulloarory.app.n8n.cloud/webhook/analyze-lead",
+        "http://localhost:5679/webhook/analyze-lead",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
