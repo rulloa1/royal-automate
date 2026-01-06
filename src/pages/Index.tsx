@@ -14,11 +14,12 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Rory Ulloa | RoysCompany.com</title>
+        <title>Rory Ulloa | RoysCompany.com - AI Automation Agency</title>
         <meta
           name="description"
           content="I architect AI systems that replace manual workflows. Specialized in n8n, Vapi, and LLM automation."
         />
+        <link rel="canonical" href="https://www.royscompany.com/" />
       </Helmet>
 
       <SalesChatWidget />
