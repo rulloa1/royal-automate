@@ -1,0 +1,82 @@
+{
+    "name": "Real Estate Website Sales Campaign",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "trigger-manual",
+            "name": "When clicking \"Execute Workflow\"",
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "sheetId": "YOUR_GOOGLE_SHEET_ID_HERE",
+                "range": "A:E",
+                "options": {}
+            },
+            "id": "read-sheet",
+            "name": "Read Leads Sheet",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                470,
+                300
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_CREDENTIAL_ID",
+                    "name": "Google Sheets Account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "subject": "I built {{ $json['Business Name'] }}'s website already",
+                "html": "Hi {{ $json['First Name'] }},<br><br>I found your profile while looking for top real estate agents in {{ $json['City'] }}, and I noticed you didn't have a dedicated website.<br><br>Most agencies charge $5,000+ and take weeks to build one. I do things differently.<br><br><b>I have already built a premium, high-converting website for {{ $json['Business Name'] }}.</b><br><br>It’s fully finished. I just need your approval to launch it.<br><br><b>The Price: $1,000 flat.</b> (One-time fee).<br><ul><li>No waiting weeks.</li><li>No design meetings.</li><li>It's ready to generate leads today.</li></ul><br>Can I send you the preview link to look at?<br><br>Best,<br><br>Rory Ulloa<br>RoysCompany.com",
+                "toEmail": "={{ $json['Email'] }}"
+            },
+            "id": "send-email",
+            "name": "Send Hook Email",
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.1,
+            "position": [
+                690,
+                300
+            ],
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "YOUR_GMAIL_CREDENTIAL_ID",
+                    "name": "Gmail Account"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "When clicking \"Execute Workflow\"": {
+            "main": [
+                [
+                    {
+                        "node": "Read Leads Sheet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Read Leads Sheet": {
+            "main": [
+                [
+                    {
+                        "node": "Send Hook Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
