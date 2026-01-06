@@ -1,37 +1,13 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
-import { BlogCard, BlogPost } from "@/components/BlogCard";
+import { BlogCard } from "@/components/BlogCard";
+import { blogPosts } from "@/data/blogPosts";
 import { ArrowRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 export const BlogSection = () => {
-    const [posts, setPosts] = useState<BlogPost[]>([]);
-    const [loading, setLoading] = useState(true);
+    const posts = blogPosts.slice(0, 3);
     const { ref, isVisible } = useIntersectionObserver();
 
-    useEffect(() => {
-        const fetchLatestPosts = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from("posts")
-                    .select("*")
-                    .order("created_at", { ascending: false })
-                    .limit(3);
-
-                if (error) throw error;
-                if (data) setPosts(data);
-            } catch (error) {
-                console.error("Error fetching blog posts:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchLatestPosts();
-    }, []);
-
-    if (loading) return null; // Or a skeleton loader
     if (posts.length === 0) return null; // Don't show empty section
 
     return (
