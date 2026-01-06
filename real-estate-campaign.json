@@ -14,7 +14,7 @@
         },
         {
             "parameters": {
-                "sheetId": "YOUR_GOOGLE_SHEET_ID_HERE",
+                "sheetId": "1878509876",
                 "range": "A:E",
                 "options": {}
             },
