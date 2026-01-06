@@ -14,7 +14,7 @@ const FluidBackground = () => {
             SIM_RESOLUTION: 128,
             DYE_RESOLUTION: 1024,
             CAPTURE_RESOLUTION: 512,
-            DENSITY_DISSIPATION: 1.2,
+            DENSITY_DISSIPATION: 2.5,
             VELOCITY_DISSIPATION: 0.3,
             PRESSURE: 0.8,
             PRESSURE_ITERATIONS: 20,
@@ -24,7 +24,7 @@ const FluidBackground = () => {
             SHADING: true,
             COLOR_UPDATE_SPEED: 10,
             PAUSED: false,
-            BACK_COLOR: { r: 5, g: 5, b: 5 },
+            BACK_COLOR: { r: 0, g: 0, b: 0 },
             TRANSPARENT: true,
         };
 
@@ -600,14 +600,14 @@ const FluidBackground = () => {
         update();
 
         const handleMouseMove = (e: MouseEvent) => {
-            splat(e.clientX, e.clientY, e.movementX * 10, -e.movementY * 10, { r: 0.0, g: 0.2, b: 0.5 });
+            splat(e.clientX, e.clientY, e.movementX * 10, -e.movementY * 10, { r: 0.2, g: 0.4, b: 1.0 });
         }
 
         const handleTouchMove = (e: TouchEvent) => {
             const t = e.touches[0];
             // Simple approximation for touch movement, real touch movement logic is more complex
             // For now just splat at the point
-            splat(t.clientX, t.clientY, 10, 10, { r: 0.0, g: 0.2, b: 0.5 });
+            splat(t.clientX, t.clientY, 10, 10, { r: 0.2, g: 0.4, b: 1.0 });
         }
 
         window.addEventListener('mousemove', handleMouseMove);
@@ -617,7 +617,7 @@ const FluidBackground = () => {
         // Initial burst
         setTimeout(() => {
             if (canvas) {
-                splat(window.innerWidth / 2, window.innerHeight / 2, 0, -50, { r: 0.1, g: 0.2, b: 0.8 });
+                splat(window.innerWidth / 2, window.innerHeight / 2, 0, -20, { r: 0.5, g: 0.5, b: 0.5 });
             }
         }, 500);
 
