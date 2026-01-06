@@ -1,34 +1,12 @@
-import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { supabase } from "@/lib/supabase";
-import { BlogCard, BlogPost } from "@/components/BlogCard";
+import { BlogCard } from "@/components/BlogCard";
+import { blogPosts } from "@/data/blogPosts";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
 
 const Blog = () => {
-    const [posts, setPosts] = useState<BlogPost[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from("posts")
-                    .select("*")
-                    .order("created_at", { ascending: false });
-
-                if (error) throw error;
-                if (data) setPosts(data);
-            } catch (error) {
-                console.error("Error fetching blog posts:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPosts();
-    }, []);
+    const posts = blogPosts;
 
     return (
         <>
@@ -58,24 +36,16 @@ const Blog = () => {
                             </p>
                         </div>
 
-                        {loading ? (
-                            <div className="grid md:grid-cols-3 gap-8">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="h-96 rounded-2xl bg-secondary/50 animate-pulse" />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {posts.map((post) => (
-                                    <BlogCard key={post.id} post={post} />
-                                ))}
-                                {posts.length === 0 && (
-                                    <div className="col-span-full text-center py-20 text-muted-foreground">
-                                        No articles found. Check back later!
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {posts.map((post) => (
+                                <BlogCard key={post.id} post={post} />
+                            ))}
+                            {posts.length === 0 && (
+                                <div className="col-span-full text-center py-20 text-muted-foreground">
+                                    No articles found. Check back later!
+                                </div>
+                            )}
+                        </div>
                     </section>
 
                     <ContactSection />

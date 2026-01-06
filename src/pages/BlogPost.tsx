@@ -1,51 +1,16 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import { ArrowLeft, Calendar, User, Share2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
-import { BlogPost as BlogPostType } from "@/components/BlogCard";
+import { blogPosts } from "@/data/blogPosts";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
 
 const BlogPost = () => {
     const { slug } = useParams<{ slug: string }>();
-    const [post, setPost] = useState<BlogPostType | null>(null);
-    const [loading, setLoading] = useState(true);
+    const post = blogPosts.find(p => p.slug === slug) || null;
 
-    useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from("posts")
-                    .select("*")
-                    .eq("slug", slug)
-                    .single();
-
-                if (error) throw error;
-                if (data) setPost(data);
-            } catch (error) {
-                console.error("Error fetching blog post:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (slug) fetchPost();
-    }, [slug]);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-background flex flex-col">
-                <Header />
-                <div className="flex-grow flex items-center justify-center">
-                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                </div>
-                <Footer />
-            </div>
-        );
-    }
 
     if (!post) {
         return (
