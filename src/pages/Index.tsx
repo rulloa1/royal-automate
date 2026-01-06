@@ -20,7 +20,7 @@ const Index = () => {
         />
       </Helmet>
 
-      {/* <FluidBackground /> */}
+      <FluidBackground />
       <LandingHeader />
 
       <main>
