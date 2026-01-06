@@ -94,11 +94,6 @@ const HeroSection = () => {
                             <span className="text-xl font-medium text-neutral-400">Airtable</span>
                             <span className="text-xl font-medium text-neutral-400">Google</span>
                         </div>
-
-                        {/* Secondary Scrolling Layer for absolute smoothness (optional, but above single track is usually enough if wide enough) 
-                             Actually, with CSS animation translateX(-100%), we typically need two identical inline-block containers.
-                             Let's stick to the reliable "two container" method.
-                         */}
                     </div>
                 </div>
             </div>
