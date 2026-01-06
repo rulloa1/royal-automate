@@ -19,36 +19,36 @@ const LeadForm = () => {
     setIsSubmitting(true);
 
     try {
-      if (activeTab === "call") {
-        // Voice Caller Webhook
-        const response = await fetch(
-          "https://ulloarory.app.n8n.cloud/webhook/call-lead",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          }
+      const webhookUrl = activeTab === "call"
+        ? "https://ulloarory.app.n8n.cloud/webhook/call-lead"
+        : "https://ulloarory.app.n8n.cloud/webhook/message-lead";
+
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast.success(
+          activeTab === "call"
+            ? "Request received! Expect a call shortly."
+            : "Message sent! We'll get back to you ASAP."
         );
-        if (!response.ok) throw new Error("Connection failed");
-        toast.success("Request received! Expect a call shortly.");
+        setFormData({ name: "", phone: "", email: "", message: "", url: "" });
       } else {
-        // Message Webhook logic
-        try {
-          await fetch("https://ulloarory.app.n8n.cloud/webhook/message-lead", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          });
-        } catch (e) {
-          // Ignore error if hook doesn't exist yet
-        }
-        toast.success("Message sent! We'll get back to you ASAP.");
+        // Handle server-side errors
+        const errorData = await response.json().catch(() => ({})); // Prevent crash if no JSON
+        throw new Error(errorData.message || `Server error: ${response.status}`);
       }
 
-      setFormData({ name: "", phone: "", email: "", message: "", url: "" });
     } catch (error) {
       console.error("Submit error:", error);
-      toast.error("Failed to connect. Please try again.");
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        toast.error("Network connection failed. Please check your internet.");
+      } else {
+        toast.error("Failed to connect. Please try again later.");
+      }
     } finally {
       setIsSubmitting(false);
     }
