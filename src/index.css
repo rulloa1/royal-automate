@@ -93,12 +93,38 @@
     animation: border-spin 3s linear infinite;
   }
 
-  /* ... rest ... */
+  .shiny-cta:hover {
+    transform: scale(1.02);
+  }
+
+  .shiny-cta:active {
+    transform: scale(0.98);
+  }
+
+  @keyframes border-spin {
+    to {
+      --gradient-angle: 360deg;
+    }
+  }
+
+  /* Glass Cards */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    transition: border-color 0.3s ease, background 0.3s ease;
+    @apply rounded-2xl;
+  }
+
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+  }
 
   /* Fade Up Animation */
   .fade-in-up {
     animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    /* opacity: 0; REMOVED FOR SAFETY: Ensure content is visible even if animation fails */
+    opacity: 0;
     transform: translateY(20px);
   }
 
