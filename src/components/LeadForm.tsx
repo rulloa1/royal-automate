@@ -55,7 +55,7 @@ const LeadForm = () => {
   };
 
   return (
-    <div className="glass-card p-6 md:p-10 w-full max-w-xl mx-auto animate-fade-up">
+    <div className="glass-card p-6 md:p-10 w-full max-w-xl mx-auto fade-in-up">
       <div className="mb-8 text-center md:text-left">
         <div className="inline-flex items-center gap-2 mb-3 text-primary bg-primary/10 px-3 py-1 rounded-full">
           <Sparkles className="w-4 h-4" />
