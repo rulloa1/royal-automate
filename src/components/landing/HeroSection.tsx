@@ -1,6 +1,14 @@
 import { ArrowRight, PlayCircle, Phone } from "lucide-react";
 
 const HeroSection = () => {
+    const scrollToContact = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        const element = document.getElementById('contact');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
             {/* Background Glow */}
@@ -29,7 +37,7 @@ const HeroSection = () => {
 
                 {/* CTAs */}
                 <div className="fade-in-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-                    <a href="https://cal.com/rory-ulloa" className="shiny-cta group">
+                    <a href="#contact" onClick={scrollToContact} className="shiny-cta group">
                         <span className="flex items-center gap-2">
                             Book Free Strategy Call
                             <ArrowRight className="group-hover:translate-x-0.5 transition-transform w-4 h-4" />
