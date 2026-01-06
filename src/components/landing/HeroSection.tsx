@@ -30,7 +30,7 @@ const HeroSection = () => {
                 {/* CTAs */}
                 <div className="fade-in-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
                     <a
-                        href="https://cal.com/rory-ulloa"
+                        href="https://cal.com/catalyst-creators-studio-kadfk6/15min"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="shiny-cta group inline-flex items-center no-underline"

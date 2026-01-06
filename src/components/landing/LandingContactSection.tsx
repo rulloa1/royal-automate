@@ -22,9 +22,9 @@ const LandingContactSection = () => {
 
                 <div className="flex flex-col items-center pt-6 border-t border-white/5 mt-12">
                     <p className="text-neutral-500 mb-6 font-medium">Prefer to talk to a human?</p>
-                    {/* TODO: Update this href with your actual calendar link (e.g., https://cal.com/yourname) */}
+                    {/* Verified Cal.com link */}
                     <a
-                        href="https://cal.com/rory-ulloa"
+                        href="https://cal.com/catalyst-creators-studio-kadfk6/15min"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="shiny-cta inline-block no-underline"
