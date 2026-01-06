@@ -8,6 +8,7 @@ import UseCasesSection from "@/components/landing/UseCasesSection";
 import AboutSection from "@/components/landing/AboutSection";
 import LandingContactSection from "@/components/landing/LandingContactSection";
 import LandingFooter from "@/components/landing/LandingFooter";
+import { SalesChatWidget } from "@/components/SalesChatWidget";
 
 const Index = () => {
   return (
@@ -20,6 +21,7 @@ const Index = () => {
         />
       </Helmet>
 
+      <SalesChatWidget />
       <FluidBackground />
       <LandingHeader />
 
