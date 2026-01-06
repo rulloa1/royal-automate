@@ -29,12 +29,17 @@ const HeroSection = () => {
 
                 {/* CTAs */}
                 <div className="fade-in-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-                    <button className="shiny-cta group" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
+                    <a
+                        href="https://cal.com/rory-ulloa"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shiny-cta group inline-flex items-center no-underline"
+                    >
                         <span className="flex items-center gap-2">
                             Book Free Strategy Call
                             <ArrowRight className="group-hover:translate-x-0.5 transition-transform w-4 h-4" />
                         </span>
-                    </button>
+                    </a>
 
                     <a href="#use-cases" className="px-6 py-3 rounded-full border border-white/10 bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 hover:text-white transition-all flex items-center gap-2">
                         <PlayCircle className="w-4 h-4" />
