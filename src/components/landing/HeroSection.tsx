@@ -63,19 +63,42 @@ const HeroSection = () => {
                 </div>
             </div>
 
-            {/* Tech Stack */}
-            <div className="py-12 mt-20 border-y border-white/5 bg-black/40">
-                <div className="max-w-7xl mx-auto px-6 text-center">
-                    <p className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase mb-8">Powering Automation Infrastructure With</p>
-                    <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-                        {/* Note: In a real project, we might want to use specific SVGs or the simple-icons package. 
-                            For now, I'll valid Lucide icons or text where possible or placeholders as per react-icons or lucide limitations */}
-                        <div className="flex items-center gap-2 text-sm font-medium text-white">n8n</div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-white">OpenAI</div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-white">Twilio</div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-white"><Phone className="w-5 h-5" /> Vapi</div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-white">Airtable</div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-white">Google</div>
+            {/* Tech Stack - Infinite Scroll */}
+            <div className="py-12 mt-20 border-y border-white/5 bg-black/40 overflow-hidden">
+                <div className="max-w-[100vw] mx-auto px-0">
+                    <p className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase mb-8 text-center px-6">Powering Automation Infrastructure With</p>
+
+                    <div className="relative flex overflow-x-hidden group">
+                        <div className="animate-marquee whitespace-nowrap flex items-center gap-16 px-8 min-w-full">
+                            {/* Original Set */}
+                            <span className="text-xl font-medium text-neutral-400">n8n</span>
+                            <span className="text-xl font-medium text-neutral-400">OpenAI</span>
+                            <span className="text-xl font-medium text-neutral-400">Twilio</span>
+                            <span className="flex items-center gap-2 text-xl font-medium text-neutral-400"><Phone className="w-5 h-5" /> Vapi</span>
+                            <span className="text-xl font-medium text-neutral-400">Airtable</span>
+                            <span className="text-xl font-medium text-neutral-400">Google</span>
+
+                            {/* Duplicate Set for Seamless Loop */}
+                            <span className="text-xl font-medium text-neutral-400">n8n</span>
+                            <span className="text-xl font-medium text-neutral-400">OpenAI</span>
+                            <span className="text-xl font-medium text-neutral-400">Twilio</span>
+                            <span className="flex items-center gap-2 text-xl font-medium text-neutral-400"><Phone className="w-5 h-5" /> Vapi</span>
+                            <span className="text-xl font-medium text-neutral-400">Airtable</span>
+                            <span className="text-xl font-medium text-neutral-400">Google</span>
+
+                            {/* Triplicate Set for Large Screens */}
+                            <span className="text-xl font-medium text-neutral-400">n8n</span>
+                            <span className="text-xl font-medium text-neutral-400">OpenAI</span>
+                            <span className="text-xl font-medium text-neutral-400">Twilio</span>
+                            <span className="flex items-center gap-2 text-xl font-medium text-neutral-400"><Phone className="w-5 h-5" /> Vapi</span>
+                            <span className="text-xl font-medium text-neutral-400">Airtable</span>
+                            <span className="text-xl font-medium text-neutral-400">Google</span>
+                        </div>
+
+                        {/* Secondary Scrolling Layer for absolute smoothness (optional, but above single track is usually enough if wide enough) 
+                             Actually, with CSS animation translateX(-100%), we typically need two identical inline-block containers.
+                             Let's stick to the reliable "two container" method.
+                         */}
                     </div>
                 </div>
             </div>
