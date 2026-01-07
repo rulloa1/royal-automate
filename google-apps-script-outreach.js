@@ -31,10 +31,10 @@ const CONFIG = {
   yourName: "Roy Ulloa",
   yourCompany: "RoysCompany",
   yourPhone: "(346) 298-5038",
-  yourEmail: "roy@royscompany.com", // Your Gmail address
+  yourEmail: "roryulloa@gmail.com", // Your Gmail address
 
   // THE CHECKOUT LINK for all agents in this sheet
-  checkoutLink: "https://buy.stripe.com/YOUR_STRIPE_LINK_HERE",
+  checkoutLink: "https://buy.stripe.com/4gM8wOeqfec58K5fbS7kc00",
 
   // Column positions (A=1, B=2, etc.) - Adjust if your columns are different
   columns: {
@@ -137,7 +137,7 @@ function sendEmailsToNewLeads() {
       Logger.log("Body: " + template.body);
     } else {
       try {
-        GmailApp.sendEmail(email, template.subject, template.body, {
+        GmailApp.createDraft(email, template.subject, template.body, {
           name: CONFIG.yourName
         });
 
@@ -146,7 +146,8 @@ function sendEmailsToNewLeads() {
         sheet.getRange(i + 1, cols.sentEmail).setValue(timestamp);
 
         emailsSent++;
-        Logger.log("Email sent to: " + email);
+        emailsSent++;
+        Logger.log("Draft created for: " + email);
 
         // Small delay to avoid rate limits
         Utilities.sleep(2000);
@@ -161,7 +162,7 @@ function sendEmailsToNewLeads() {
 
   if (emailsSent > 0) {
     SpreadsheetApp.getActiveSpreadsheet().toast(
-      emailsSent + " email(s) sent successfully!",
+      emailsSent + " draft(s) created successfully! Check your Drafts folder.",
       "Outreach Complete",
       5
     );
@@ -215,14 +216,14 @@ function sendEmailToCurrentRow() {
   const template = getEmailTemplate(webStatus, agentData);
 
   try {
-    GmailApp.sendEmail(email, template.subject, template.body, {
+    GmailApp.createDraft(email, template.subject, template.body, {
       name: CONFIG.yourName
     });
 
     const timestamp = new Date().toLocaleString();
     sheet.getRange(row, cols.sentEmail).setValue(timestamp);
 
-    SpreadsheetApp.getUi().alert("Email sent to " + email + "!");
+    SpreadsheetApp.getUi().alert("Draft created for " + email + "! Check your Drafts folder.");
 
   } catch (error) {
     SpreadsheetApp.getUi().alert("Error: " + error.message);
