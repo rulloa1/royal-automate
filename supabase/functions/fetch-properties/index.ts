@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { JWT } from "https://deno.land/x/google_deno_integration@v0.2/mod.ts";
+import { GoogleSpreadsheet } from "npm:google-spreadsheet@4.1.4";
+import { JWT } from "npm:google-auth-library@9.0.0";
 
 /**
  * FETCH PROPERTIES
@@ -25,10 +26,8 @@ serve(async (req) => {
         const { slug } = await req.json();
 
         // 1. Get Credentials
-        const serviceAccountStr = Deno.env.get("GOOGLE_SERVICE_ACCOUNT");
         const sheetId = Deno.env.get("SHEET_ID");
-
-        // Support for granular env vars (user provided snippet style)
+        const serviceAccountStr = Deno.env.get("GOOGLE_SERVICE_ACCOUNT");
         const clientEmail = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_EMAIL") || Deno.env.get("CLIENT_EMAIL");
         const privateKey = Deno.env.get("GOOGLE_PRIVATE_KEY") || Deno.env.get("PRIVATE_KEY");
 
@@ -36,77 +35,58 @@ serve(async (req) => {
             throw new Error("Missing SHEET_ID environment variable");
         }
 
-        let dbCredentials;
+        let auth;
 
+        // 2. Initialize Auth
         if (serviceAccountStr) {
-            dbCredentials = JSON.parse(serviceAccountStr);
+            const parsed = JSON.parse(serviceAccountStr);
+            auth = new JWT({
+                email: parsed.client_email,
+                key: parsed.private_key,
+                scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+            });
         } else if (clientEmail && privateKey) {
-            dbCredentials = {
-                client_email: clientEmail,
-                private_key: privateKey.replace(/\\n/g, '\n'), // Handle escaped newlines
-            };
+            auth = new JWT({
+                email: clientEmail,
+                key: privateKey.replace(/\\n/g, '\n'),
+                scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+            });
         } else {
             throw new Error("Missing Google configuration. Provide either GOOGLE_SERVICE_ACCOUNT (json) OR GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_PRIVATE_KEY.");
         }
 
-        // 2. Authenticate with Google
-        const client = new JWT({
-            email: dbCredentials.client_email,
-            key: dbCredentials.private_key,
-            scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-        });
+        // 3. Load Doc
+        const doc = new GoogleSpreadsheet(sheetId, auth);
+        await doc.loadInfo();
 
-        await client.authorize();
+        const sheet = doc.sheetsByIndex[0];
+        const rows = await sheet.getRows();
 
-        // 3. Fetch Data using Raw Sheets API
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:Z?majorDimension=ROWS`; // Adjust range as needed
+        // 4. Find Row
+        // Assuming column headers are title-cased or whatever, we convert to simple object properties
+        // google-spreadsheet returns row objects where properties match headers
 
-        // Get token
-        const token = (await client.getAccessToken()).access_token;
-
-        const sheetResponse = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        if (!sheetResponse.ok) {
-            const txt = await sheetResponse.text();
-            throw new Error(`Google Sheets API Error: ${sheetResponse.status} ${txt}`);
-        }
-
-        const data = await sheetResponse.json();
-        const rows = data.values;
-
-        if (!rows || rows.length === 0) {
-            return new Response(JSON.stringify({ error: "No data found in sheet" }), { headers: corsHeaders, status: 404 });
-        }
-
-        // 4. Parse Headers (Row 1)
-        const headers = rows[0].map((h: string) => h.toLowerCase()); // Normalize to lowercase
-
-        // Helper to turn row array into object
-        const parseRow = (row: string[]) => {
-            const obj: any = {};
-            headers.forEach((header: string, index: number) => {
-                obj[header] = row[index];
-            });
-            return obj;
-        };
-
-        // 5. Filter for Slug
-        const allProperties = rows.slice(1).map(parseRow);
-        const property = allProperties.find((p: any) => p.slug === slug);
+        const property = rows.find((row) => row.get('Slug') === slug || row.get('slug') === slug); // Handle Case Sens
 
         if (!property) {
             return new Response(JSON.stringify({ error: "Property not found" }), { headers: corsHeaders, status: 404 });
         }
 
-        return new Response(JSON.stringify(property), {
+        // Convert to plain object and normalize logic
+        const responseData = {
+            title: property.get('Title') || property.get('title'),
+            description: property.get('Description') || property.get('description'),
+            image: property.get('Image') || property.get('image') || property.get('imageUrl') || property.get('ImageUrl'),
+            price: property.get('Price') || property.get('price'),
+            ...property.toObject() // Include everything else just in case
+        };
+
+        return new Response(JSON.stringify(responseData), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
 
     } catch (error) {
+        console.error("Error:", error);
         return new Response(JSON.stringify({ error: error.message }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
             status: 500,
