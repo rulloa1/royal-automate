@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.sales-chat]
 verify_jwt = false
+
+[functions.telegram-forward]
+verify_jwt = false
