@@ -13,7 +13,6 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Activation from "./pages/Activation";
 import { VisualEffects } from "@/components/ui/VisualEffects";
-import { PreviewWatermark } from "@/components/ui/PreviewWatermark";
 
 const queryClient = new QueryClient();
 
@@ -22,7 +21,6 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <VisualEffects />
-        <PreviewWatermark />
         <Toaster />
         <Sonner />
         <BrowserRouter>
