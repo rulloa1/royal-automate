@@ -26,7 +26,7 @@ serve(async (req) => {
         const { slug } = await req.json();
 
         // 1. Get Credentials
-        const sheetId = Deno.env.get("SHEET_ID");
+        const sheetId = Deno.env.get("");
         const serviceAccountStr = Deno.env.get("GOOGLE_SERVICE_ACCOUNT");
         const clientEmail = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_EMAIL") || Deno.env.get("CLIENT_EMAIL");
         const privateKey = Deno.env.get("GOOGLE_PRIVATE_KEY") || Deno.env.get("PRIVATE_KEY");
