@@ -46,6 +46,20 @@ const ContactSection = () => {
 
       if (error) throw error;
 
+      const { error: tgError } = await supabase.functions.invoke("telegram-forward", {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          package: formData.package,
+          message: formData.message,
+        },
+      });
+
+      if (tgError) {
+        console.error("Telegram forward error:", tgError);
+      }
+
       setIsSubmitted(true);
       setFormData({ name: "", email: "", company: "", package: "", message: "" });
       toast({
