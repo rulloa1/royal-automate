@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "lib": [
+            "deno.window"
+        ],
+        "strict": true
+    },
+    "imports": {
+        "google-spreadsheet": "npm:google-spreadsheet@4.1.4",
+        "google-auth-library": "npm:google-auth-library@9.0.0"
+    }
+}
