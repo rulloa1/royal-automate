@@ -51,16 +51,38 @@ const CONFIG = {
   sheetName: "Table1",
 
   // Set to true to test without actually sending emails
-  testMode: false
+  testMode: false,
+
+  // Watermark settings
+  watermarkParam: "ref=royscompany",
+  myWebsite: "royscompany.com"
 };
 
 // ============================================
 // EMAIL TEMPLATES
 // ============================================
 
+/**
+ * Appends watermark parameter to URL unless it matches myWebsite
+ */
+function addWatermark(url) {
+  if (!url) return "";
+
+  // Don't watermark my own website
+  if (url.toLowerCase().includes(CONFIG.myWebsite.toLowerCase())) {
+    return url;
+  }
+
+  // Check if URL already has query parameters
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}${CONFIG.watermarkParam}`;
+}
+
 function getEmailTemplate(status, agentData) {
   const { name, websiteLink } = agentData;
   const firstName = name.split(' ')[0].split('(')[0].trim();
+
+  const watermarkedLink = addWatermark(websiteLink);
 
   // Use the specific template for everyone
   const subject = `I built a website for you (Preview inside)`;
@@ -69,7 +91,7 @@ function getEmailTemplate(status, agentData) {
 I built a modern, high-conversion website specifically for agents who don’t currently have an optimized online presence — and I already created yours.
 
 Here is your private live preview:
-${websiteLink}
+${watermarkedLink}
 
 If you want to secure it immediately, here is instant checkout:
 ${CONFIG.checkoutLink}
