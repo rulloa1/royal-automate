@@ -125,7 +125,7 @@ serve(async (req) => {
       }
     }
 
-    const origin = req.headers.get("origin") || "https://royaisolutions.me";
+    const origin = req.headers.get("origin") || "https://www.royscompany.com";
     const isSubscription = packageType === "growth";
 
     // Build line items
