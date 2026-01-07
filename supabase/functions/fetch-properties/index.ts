@@ -10,6 +10,9 @@ import { JWT } from "https://deno.land/x/google_deno_integration@v0.2/mod.ts";
  * Env Vars Required:
  * - GOOGLE_SERVICE_ACCOUNT: The content of your service-account.json (minified JSON string)
  * - SHEET_ID: The ID of your Google Sheet
+ * OR
+ * - GOOGLE_SERVICE_ACCOUNT_EMAIL: Your service account email
+ * - GOOGLE_PRIVATE_KEY: Your private key (with \n or real newlines)
  */
 
 serve(async (req) => {
@@ -25,37 +28,40 @@ serve(async (req) => {
         const serviceAccountStr = Deno.env.get("GOOGLE_SERVICE_ACCOUNT");
         const sheetId = Deno.env.get("SHEET_ID");
 
-        if (!serviceAccountStr || !sheetId) {
-            throw new Error("Missing configuration (GOOGLE_SERVICE_ACCOUNT or SHEET_ID)");
+        // Support for granular env vars (user provided snippet style)
+        const clientEmail = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_EMAIL") || Deno.env.get("CLIENT_EMAIL");
+        const privateKey = Deno.env.get("GOOGLE_PRIVATE_KEY") || Deno.env.get("PRIVATE_KEY");
+
+        if (!sheetId) {
+            throw new Error("Missing SHEET_ID environment variable");
         }
 
-        const serviceAccount = JSON.parse(serviceAccountStr);
+        let dbCredentials;
+
+        if (serviceAccountStr) {
+            dbCredentials = JSON.parse(serviceAccountStr);
+        } else if (clientEmail && privateKey) {
+            dbCredentials = {
+                client_email: clientEmail,
+                private_key: privateKey.replace(/\\n/g, '\n'), // Handle escaped newlines
+            };
+        } else {
+            throw new Error("Missing Google configuration. Provide either GOOGLE_SERVICE_ACCOUNT (json) OR GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_PRIVATE_KEY.");
+        }
 
         // 2. Authenticate with Google
         const client = new JWT({
-            email: serviceAccount.client_email,
-            key: serviceAccount.private_key,
+            email: dbCredentials.client_email,
+            key: dbCredentials.private_key,
             scopes: ["https://www.googleapis.com/auth/spreadsheets"],
         });
 
         await client.authorize();
 
         // 3. Fetch Data using Raw Sheets API
-        // We fetch the whole sheet data (assuming it's small enough: < 10k rows is usually fine)
-        // If it gets huge, we might want to cache this or use a more specific query if possible (but sheets API logic is limited)
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:Z?majorDimension=ROWS`; // Adjust range as needed
 
-        const response = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${client.key}`, // JWT client handles the token storage internally, but wait...
-                // actually the library usually gives us a token.
-                // Let's use the access token.
-
-            },
-        });
-
-        // Correction: The JWT library for Deno works a bit differently.
-        // Let's use a standard fetch with the token.
+        // Get token
         const token = (await client.getAccessToken()).access_token;
 
         const sheetResponse = await fetch(url, {
