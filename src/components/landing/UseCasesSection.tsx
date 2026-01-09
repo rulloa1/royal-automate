@@ -1,9 +1,22 @@
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+
 const UseCasesSection = () => {
+    const { ref: titleRef, isVisible: titleVisible } = useIntersectionObserver(0.3);
+    const { ref: cardsRef, isVisible: cardsVisible } = useIntersectionObserver(0.1);
+
     return (
         <section id="use-cases" className="py-24 px-6 max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center mb-16">Deployed Solutions</h2>
+            <h2 
+                ref={titleRef as React.RefObject<HTMLHeadingElement>}
+                className={`text-3xl md:text-4xl font-medium tracking-tight text-center mb-16 transition-all duration-700 ${titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            >
+                Deployed Solutions
+            </h2>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div 
+                ref={cardsRef as React.RefObject<HTMLDivElement>}
+                className={`grid md:grid-cols-2 gap-6 transition-all duration-700 delay-150 ${cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            >
                 {/* Case 1 */}
                 <div className="glass-card p-8 rounded-2xl flex flex-col justify-between hover:border-blue-500/20 transition-all">
                     <div>

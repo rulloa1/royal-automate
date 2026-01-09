@@ -1,17 +1,27 @@
 import { Github, Linkedin, Twitter } from "lucide-react";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 const AboutSection = () => {
+    const { ref: imageRef, isVisible: imageVisible } = useIntersectionObserver(0.3);
+    const { ref: textRef, isVisible: textVisible } = useIntersectionObserver(0.2);
+
     return (
         <section id="about" className="py-24 border-t border-white/5 relative">
             <div className="max-w-5xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row items-center gap-12">
-                    <div className="w-full md:w-1/3">
+                    <div 
+                        ref={imageRef as React.RefObject<HTMLDivElement>}
+                        className={`w-full md:w-1/3 transition-all duration-700 ${imageVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+                    >
                         <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 grayscale hover:grayscale-0 transition-all duration-700 bg-neutral-900">
                             {/* Placeholder image tailored for dark theme */}
                             <img src="/rory-ulloa.jpg" alt="Rory Ulloa" className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" />
                         </div>
                     </div>
-                    <div className="w-full md:w-2/3 space-y-6">
+                    <div 
+                        ref={textRef as React.RefObject<HTMLDivElement>}
+                        className={`w-full md:w-2/3 space-y-6 transition-all duration-700 delay-150 ${textVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
+                    >
                         <h2 className="text-3xl font-medium tracking-tight">I'm Rory Ulloa.</h2>
                         <h3 className="text-lg text-neutral-400 font-medium">I build systems, not demos.</h3>
                         <p className="text-neutral-400 leading-relaxed text-sm">

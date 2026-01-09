@@ -1,9 +1,16 @@
 import { Mic, MessageSquare, Workflow, Check, ArrowUpRight } from "lucide-react";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 const ServicesSection = () => {
+    const { ref: headerRef, isVisible: headerVisible } = useIntersectionObserver(0.2);
+    const { ref: cardsRef, isVisible: cardsVisible } = useIntersectionObserver(0.1);
+
     return (
         <section id="services" className="py-24 px-6 max-w-7xl mx-auto">
-            <div className="mb-16 md:flex md:items-end md:justify-between">
+            <div 
+                ref={headerRef as React.RefObject<HTMLDivElement>}
+                className={`mb-16 md:flex md:items-end md:justify-between transition-all duration-700 ${headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            >
                 <div>
                     <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-4">Core Automation Services</h2>
                     <p className="text-neutral-400 max-w-xl text-sm leading-relaxed">I don't just "wrap API calls". I architect robust, error-tolerant infrastructure that handles real-world business communication.</p>
@@ -13,7 +20,10 @@ const ServicesSection = () => {
                 </a>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div 
+                ref={cardsRef as React.RefObject<HTMLDivElement>}
+                className={`grid md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700 delay-150 ${cardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            >
                 {/* Service 1 */}
                 <div className="glass-card p-8 group">
                     <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/10 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform duration-300">

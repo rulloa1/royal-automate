@@ -1,10 +1,18 @@
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+
 const ProcessSection = () => {
+    const { ref: leftRef, isVisible: leftVisible } = useIntersectionObserver(0.2);
+    const { ref: stepsRef, isVisible: stepsVisible } = useIntersectionObserver(0.1);
+
     return (
         <section id="process" className="py-24 border-y border-white/5 bg-neutral-900/20">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex flex-col lg:flex-row gap-20">
                     {/* Left Sticky */}
-                    <div className="lg:w-1/3">
+                    <div 
+                        ref={leftRef as React.RefObject<HTMLDivElement>}
+                        className={`lg:w-1/3 transition-all duration-700 ${leftVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}
+                    >
                         <div className="sticky top-32">
                             <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-6">Engineering, <br /> <span className="text-neutral-500">Not Magic.</span></h2>
                             <p className="text-neutral-400 text-sm leading-relaxed mb-8">
@@ -17,7 +25,10 @@ const ProcessSection = () => {
                     </div>
 
                     {/* Right Steps */}
-                    <div className="lg:w-2/3 space-y-12">
+                    <div 
+                        ref={stepsRef as React.RefObject<HTMLDivElement>}
+                        className={`lg:w-2/3 space-y-12 transition-all duration-700 delay-200 ${stepsVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
+                    >
                         {/* Step 1 */}
                         <div className="flex gap-6 group">
                             <div className="flex flex-col items-center">
