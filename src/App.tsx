@@ -14,7 +14,6 @@ import BlogPost from "./pages/BlogPost";
 import Activation from "./pages/Activation";
 import PropertyPage from "./pages/PropertyPage";
 import { VisualEffects } from "@/components/ui/VisualEffects";
-import { PreviewWatermark } from "@/components/ui/PreviewWatermark";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +25,6 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <PreviewWatermark />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/blog" element={<Blog />} />
