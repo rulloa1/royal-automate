@@ -1,12 +1,19 @@
 import { Github, Linkedin, Twitter } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useParallax } from "@/hooks/useParallax";
 
 const AboutSection = () => {
     const { ref: imageRef, isVisible: imageVisible } = useIntersectionObserver(0.3);
     const { ref: textRef, isVisible: textVisible } = useIntersectionObserver(0.2);
+    const parallaxOffset = useParallax(0.08);
 
     return (
-        <section id="about" className="py-24 border-t border-white/5 relative">
+        <section id="about" className="py-24 border-t border-white/5 relative overflow-hidden">
+            {/* Parallax accent */}
+            <div 
+                className="absolute top-0 right-0 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[80px] -z-10"
+                style={{ transform: `translateY(${parallaxOffset}px)` }}
+            />
             <div className="max-w-5xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row items-center gap-12">
                     <div 

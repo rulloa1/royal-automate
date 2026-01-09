@@ -1,12 +1,19 @@
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useParallax } from "@/hooks/useParallax";
 
 const UseCasesSection = () => {
     const { ref: titleRef, isVisible: titleVisible } = useIntersectionObserver(0.3);
     const { ref: cardsRef, isVisible: cardsVisible } = useIntersectionObserver(0.1);
+    const parallaxOffset = useParallax(0.1);
 
     return (
-        <section id="use-cases" className="py-24 px-6 max-w-7xl mx-auto">
-            <h2 
+        <section id="use-cases" className="py-24 px-6 max-w-7xl mx-auto relative overflow-hidden">
+            {/* Parallax background orb */}
+            <div 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] -z-10"
+                style={{ transform: `translate(-50%, calc(-50% + ${parallaxOffset}px))` }}
+            />
+            <h2
                 ref={titleRef as React.RefObject<HTMLHeadingElement>}
                 className={`text-3xl md:text-4xl font-medium tracking-tight text-center mb-16 transition-all duration-700 ${titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
             >

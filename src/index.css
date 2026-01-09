@@ -235,4 +235,33 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+
+  /* Gradient Buttons */
+  .gradient-button {
+    @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium text-white;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    transition: all 0.3s ease;
+  }
+
+  .gradient-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.5);
+  }
+
+  .gradient-button:active {
+    transform: translateY(0);
+  }
+
+  .gradient-button-secondary {
+    @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .gradient-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
