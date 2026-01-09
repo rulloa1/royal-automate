@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+
 import { VisualEffects } from "@/components/ui/VisualEffects";
 
 // Lazy load pages that use Supabase to prevent initialization errors
@@ -17,6 +18,7 @@ const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Activation = lazy(() => import("./pages/Activation"));
 const PropertyPage = lazy(() => import("./pages/PropertyPage"));
+const IndustryTemplate = lazy(() => import("./pages/IndustryTemplate"));
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -42,6 +44,7 @@ const App = () => (
               <Route path="/services/chatbot-development" element={<ChatbotDevelopment />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/leads" element={<Leads />} />
+              <Route path="/template" element={<IndustryTemplate />} />
               <Route path="/activation" element={<Activation />} />
               <Route path="/property/:slug" element={<PropertyPage />} />
               <Route path="*" element={<NotFound />} />

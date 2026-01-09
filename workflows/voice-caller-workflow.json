@@ -5,7 +5,7 @@
             "parameters": {
                 "httpMethod": "POST",
                 "path": "call-lead",
-                "responseMode": "lastNode",
+                "responseMode": "responseNode",
                 "options": {}
             },
             "type": "n8n-nodes-base.webhook",
@@ -16,6 +16,21 @@
             ],
             "id": "webhook-trigger",
             "name": "Webhook (Receive Lead)"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Call initiated for \" + $json.name\n}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                470,
+                100
+            ],
+            "id": "respond-to-webhook",
+            "name": "Respond to Webhook"
         },
         {
             "parameters": {
@@ -51,7 +66,12 @@
                 },
                 "options": {}
             },
-            "type": "n8n-nodes-base.httpRequest",
+            "type": "n8n-nodes-baRespond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "se.httpRequest",
             "typeVersion": 3,
             "position": [
                 470,

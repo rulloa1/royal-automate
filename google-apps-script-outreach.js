@@ -34,17 +34,19 @@ const CONFIG = {
   yourEmail: "roy@royscompany.com", // Your Gmail address
 
   // THE CHECKOUT LINK for all agents in this sheet
-  checkoutLink: "https://buy.stripe.com/YOUR_STRIPE_LINK_HERE",
-
+  checkoutLink: "", // PASTE YOUR STRIPE LINK HERE,
   // Column positions (A=1, B=2, etc.) - Adjust if your columns are different
+  // IMPORTANT: For n8n compatibility, Column E header must be "status" and Column F header must be "demo_url"
   columns: {
     name: 1,           // A - Business / Agent Name
     address: 2,        // B - Address / Location
     phone: 3,          // C - Phone
     email: 4,          // D - Email (Direct)
-    webStatus: 5,      // E - Web Status
-    websiteLink: 6,    // F - Website Link (The "Preview Link")
-    sentEmail: 7       // G - Sent Email
+    webStatus: 5,      // E - Header: "status" (Updated by n8n)
+    websiteLink: 6,    // F - Header: "demo_url" (Updated by n8n)
+    sentEmail: 7,      // G - Sent Email
+    emailSubject: 8,   // H - Header: "email_subject" (Updated by n8n)
+    emailBody: 9       // I - Header: "email_body" (Updated by n8n)
   },
 
   // Sheet name
@@ -55,8 +57,21 @@ const CONFIG = {
 
   // Watermark settings
   watermarkParam: "ref=royscompany",
-  myWebsite: "royscompany.com"
+  myWebsite: "www.royscompany.com",
+
+  // Base URL for generated templates (Change this to your actual deployed domain)
+  // For local testing: "http://localhost:8080/template"
+  // For production: "https://www.royscompany.com/template"
+  templateBaseUrl: "https://royal-ascend-site.lovable.app/template"
 };
+
+// ============================================
+// REMINDER: STRIPE SETUP
+// 1. Create a Payment Link in Stripe.
+// 2. Set the "After payment" behavior to "Redirect to your website".
+// 3. Set the redirect URL to: https://www.royscompany.com/activation
+// 4. Paste the Payment Link URL in the CONFIG.checkoutLink above.
+// ============================================
 
 // ============================================
 // EMAIL TEMPLATES
@@ -78,11 +93,12 @@ function addWatermark(url) {
   return `${url}${separator}${CONFIG.watermarkParam}`;
 }
 
-function getEmailTemplate(status, agentData) {
+function getEmailTemplate(status, agentData, passedCheckoutLink) {
   const { name, websiteLink } = agentData;
   const firstName = name.split(' ')[0].split('(')[0].trim();
 
   const watermarkedLink = addWatermark(websiteLink);
+  const finalCheckoutLink = passedCheckoutLink || CONFIG.checkoutLink;
 
   // Use the specific template for everyone
   const subject = `I built a website for you (Preview inside)`;
@@ -94,7 +110,7 @@ Here is your private live preview:
 ${watermarkedLink}
 
 If you want to secure it immediately, here is instant checkout:
-${CONFIG.checkoutLink}
+${finalCheckoutLink}
 
 Once checkout is completed, your site enters a **60-minute provisioning window** — during that time your branding, contact info, domain routing, and analytics are fully configured. You receive a ready-to-use live site shortly after.
 
@@ -137,10 +153,19 @@ function sendEmailsToNewLeads() {
       continue;
     }
 
+    // Skip if n8n hasn't deployed the site yet (websiteLink is empty)
+    // This ensures we only send the email AFTER the website is ready
+    if (!row[cols.websiteLink - 1]) {
+      continue;
+    }
+
     // Skip if email doesn't look valid
     if (!email.includes('@')) {
       continue;
     }
+
+    // Append prefilled email to Stripe link for better tracking
+    const personalizedCheckoutLink = `${CONFIG.checkoutLink}?prefilled_email=${encodeURIComponent(email)}`;
 
     const agentData = {
       name: row[cols.name - 1],
@@ -151,15 +176,31 @@ function sendEmailsToNewLeads() {
       websiteLink: row[cols.websiteLink - 1]
     };
 
-    const template = getEmailTemplate(webStatus, agentData);
+    let subject, body;
+    const emailSubject = row[cols.emailSubject - 1];
+    const emailBody = row[cols.emailBody - 1];
+
+    if (emailSubject && emailBody) {
+      subject = emailSubject;
+      // Append the links to the AI-generated body
+      const watermarkedLink = addWatermark(agentData.websiteLink);
+      body = emailBody + "\n\n" + 
+             "Here is your private live preview:\n" + watermarkedLink + "\n\n" +
+             "Secure it immediately:\n" + personalizedCheckoutLink + "\n\n" +
+             "– " + CONFIG.yourName + "\n" + CONFIG.yourCompany;
+    } else {
+      const template = getEmailTemplate(webStatus, agentData, personalizedCheckoutLink);
+      subject = template.subject;
+      body = template.body;
+    }
 
     if (CONFIG.testMode) {
       Logger.log("TEST MODE - Would send to: " + email);
-      Logger.log("Subject: " + template.subject);
-      Logger.log("Body: " + template.body);
+      Logger.log("Subject: " + subject);
+      Logger.log("Body: " + body);
     } else {
       try {
-        GmailApp.sendEmail(email, template.subject, template.body, {
+        GmailApp.sendEmail(email, subject, body, {
           name: CONFIG.yourName
         });
 
@@ -289,12 +330,74 @@ ${template.body}`;
 }
 
 /**
+ * Generates preview links for rows that don't have one
+ */
+function generatePreviewLinks() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+  const data = sheet.getDataRange().getValues();
+  const cols = CONFIG.columns;
+  let linksGenerated = 0;
+
+  // Skip header
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const name = row[cols.name - 1];
+    const existingLink = row[cols.websiteLink - 1];
+
+    if (name && !existingLink) {
+      const phone = row[cols.phone - 1] || "";
+      const address = row[cols.address - 1] || "";
+      const email = row[cols.email - 1] || "";
+      
+      // Simple industry detection
+      let industry = "dentist"; // Default
+      const nameLower = name.toLowerCase();
+      if (nameLower.includes("plumb")) industry = "plumber";
+      else if (nameLower.includes("realty") || nameLower.includes("estate") || nameLower.includes("properties")) industry = "real-estate-agent";
+      else if (nameLower.includes("roof")) industry = "roofer";
+      else if (nameLower.includes("clean")) industry = "cleaning";
+      else if (nameLower.includes("hvac") || nameLower.includes("air")) industry = "hvac";
+      else if (nameLower.includes("landscape") || nameLower.includes("lawn")) industry = "landscaper";
+
+      const params = [
+        `industry=${encodeURIComponent(industry)}`,
+        `business_name=${encodeURIComponent(name)}`,
+        `phone=${encodeURIComponent(phone)}`,
+        `address=${encodeURIComponent(address)}`,
+        `email=${encodeURIComponent(email)}`,
+        `checkout_link=${encodeURIComponent(CONFIG.checkoutLink || "")}`,
+        `ref=royscompany`
+      ].join('&');
+
+      const link = `${CONFIG.templateBaseUrl}?${params}`;
+      
+      // Update the cell
+      sheet.getRange(i + 1, cols.websiteLink).setValue(link);
+      
+      // Also set status to "Ready" if empty
+      if (!row[cols.webStatus - 1]) {
+        sheet.getRange(i + 1, cols.webStatus).setValue("Ready");
+      }
+
+      linksGenerated++;
+    }
+  }
+
+  if (linksGenerated > 0) {
+    SpreadsheetApp.getUi().alert(`Generated ${linksGenerated} preview links!`);
+  } else {
+    SpreadsheetApp.getUi().alert("No new links needed generation.");
+  }
+}
+
+/**
  * Creates custom menu when spreadsheet opens
  */
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('🚀 Outreach')
     .addItem('📧 Send Emails to All New Leads', 'sendEmailsToNewLeads')
+    .addItem('🔗 Generate Preview Links', 'generatePreviewLinks')
     .addItem('📤 Send Email to Current Row', 'sendEmailToCurrentRow')
     .addItem('👁️ Preview Email for Current Row', 'previewEmailForCurrentRow')
     .addSeparator()

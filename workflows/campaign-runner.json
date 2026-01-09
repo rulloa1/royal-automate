@@ -1,0 +1,269 @@
+{
+    "name": "Campaign Runner (Auto-Build & Outreach)",
+    "nodes": [
+        {
+            "parameters": {
+                "pollTimes": {
+                    "item": [
+                        {
+                            "mode": "everyMinute"
+                        }
+                    ]
+                },
+                "documentId": {
+                    "__rl": true,
+                    "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA",
+                    "mode": "id"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "Sheet1",
+                    "mode": "name"
+                },
+                "options": {}
+            },
+            "id": "trigger-new-leads",
+            "name": "Google Sheets Trigger",
+            "type": "n8n-nodes-base.googleSheetsTrigger",
+            "typeVersion": 1,
+            "position": [
+                -1856,
+                -80
+            ],
+            "credentials": {
+                "googleSheetsTriggerOAuth2Api": {
+                    "id": "DMCPZX0C2DRgszu4",
+                    "name": "Google Sheets Trigger account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": false,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 1
+                    },
+                    "conditions": [
+                        {
+                            "id": "filter-new",
+                            "leftValue": "={{ $json.status }}",
+                            "rightValue": "New Lead",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "filter-status",
+            "name": "Filter New Leads",
+            "type": "n8n-nodes-base.filter",
+            "typeVersion": 2,
+            "position": [
+                -1632,
+                -80
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "documentId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "mode": "name",
+                    "value": "Sheet1"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "status": "processing"
+                    }
+                },
+                "options": {}
+            },
+            "id": "set-processing",
+            "name": "Set Processing Status",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.4,
+            "position": [
+                -1408,
+                -80
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "KtDaFIOItvL4H7UDe",
+                    "name": "Google Sheets Account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "batchSize": 1,
+                "options": {}
+            },
+            "id": "split-in-batches",
+            "name": "Split In Batches",
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 1,
+            "position": [
+                -1200,
+                -80
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const data = $input.first().json;\n// Handle various key casing from Sheets\nconst name = data.Name || data.name || data.title || \"Business\";\nconst phone = data.Phone || data.phone || \"\";\nconst address = data.Address || data.address || \"\";\nconst email = data.Email || data.email || \"\";\n\n// Detect Industry\nlet industry = \"generic\";\nconst nameLower = name.toLowerCase();\nif (nameLower.includes(\"plumb\")) industry = \"plumber\";\nelse if (nameLower.includes(\"dent\")) industry = \"dentist\";\nelse if (nameLower.includes(\"realty\") || nameLower.includes(\"estate\") || nameLower.includes(\"properties\")) industry = \"real-estate-agent\";\nelse if (nameLower.includes(\"roof\")) industry = \"roofer\";\nelse if (nameLower.includes(\"clean\")) industry = \"cleaning\";\nelse if (nameLower.includes(\"hvac\") || nameLower.includes(\"air\")) industry = \"hvac\";\nelse if (nameLower.includes(\"landscape\") || nameLower.includes(\"lawn\")) industry = \"landscaper\";\nelse if (nameLower.includes(\"electric\")) industry = \"electrician\";\n\n// Generate URL\n// Note: URLSearchParams might not be available in all n8n environments, so we build the query manually\nconst paramsObj = {\n  industry,\n  business_name: name,\n  phone,\n  address,\n  email,\n  price: \"297\",\n  checkout_link: \"#\"\n};\n\nconst queryString = Object.keys(paramsObj)\n  .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key])}`)\n  .join('&');\n\nconst demoUrl = `https://royal-ascend-site.lovable.app/template?${queryString}`;\n\n// Generate Email Content\nconst emailSubject = `I built a website for you (Preview inside)`;\nconst emailBody = `Hi ${name.split(' ')[0]},\n\nI built a modern, high-conversion website specifically for agents who don’t currently have an optimized online presence — and I already created yours.\n\nIt includes online booking, service listings, and is fully SEO optimized for ${address}.\n\nCheck it out here: [LINK]`;\n\nreturn [{\n  json: {\n    ...data,\n    demoUrl,\n    emailSubject,\n    emailBody\n  }\n}];"
+            },
+            "id": "generate-link",
+            "name": "Generate Template Link",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -950,
+                -80
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "documentId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "mode": "name",
+                    "value": "Sheet1"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "status": "site_deployed",
+                        "website_link": "={{ $json.demoUrl }}",
+                        "email_subject": "={{ $json.emailSubject }}",
+                        "email_body": "={{ $json.emailBody }}"
+                    }
+                },
+                "options": {}
+            },
+            "id": "update-sheet",
+            "name": "Update Sheet - Deployed",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.4,
+            "position": [
+                -750,
+                -80
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "KtDaFIOItvL4H7UDe",
+                    "name": "Google Sheets Account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "amount": 2,
+                "unit": "seconds"
+            },
+            "id": "wait-node",
+            "name": "Wait 2s",
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1,
+            "position": [
+                -550,
+                -80
+            ]
+        }
+    ],
+    "connections": {
+        "Google Sheets Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Filter New Leads",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filter New Leads": {
+            "main": [
+                [
+                    {
+                        "node": "Set Processing Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Set Processing Status": {
+            "main": [
+                [
+                    {
+                        "node": "Split In Batches",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Split In Batches": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Template Link",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Template Link": {
+            "main": [
+                [
+                    {
+                        "node": "Update Sheet - Deployed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Sheet - Deployed": {
+            "main": [
+                [
+                    {
+                        "node": "Wait 2s",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait 2s": {
+            "main": [
+                [
+                    {
+                        "node": "Split In Batches",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

@@ -29,6 +29,8 @@ import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Upload, CheckCircle2 } from "lucide-react";
 
+import ContractAgreement from "./ContractAgreement";
+
 // Zod Schema
 const formSchema = z.object({
     // Section 1 - Identity
@@ -49,6 +51,7 @@ const formSchema = z.object({
 
     // Section 4 - Branding
     logo: z.any().optional(), // File handling is manual
+    profilePicture: z.any().optional(), // File handling is manual
     brandColors: z.string().optional(),
     preferredFont: z.string().optional(),
 
@@ -65,19 +68,41 @@ const formSchema = z.object({
 
     // Section 7 - Lead Routing
     leadRouting: z.enum(["email", "phone", "both"]),
-    leadEmail: z.string().email().optional(),
+    leadEmail: z.string().optional(),
     leadPhone: z.string().optional(),
 
-    // Section 8 - Final Confirmation
+    // Section 8 - Contract
+    isContractSigned: z.boolean().refine((val) => val === true, {
+        message: "You must sign the agreement to proceed.",
+    }),
+
+    // Section 9 - Final Confirmation
     specialRequests: z.string().optional(),
     acknowledgeTimeline: z.boolean().refine((val) => val === true, {
         message: "You must acknowledge the timeline to proceed.",
     }),
+}).superRefine((data, ctx) => {
+    if ((data.leadRouting === "email" || data.leadRouting === "both") && (!data.leadEmail || !data.leadEmail.includes("@"))) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Valid lead email is required",
+            path: ["leadEmail"],
+        });
+    }
+    if ((data.leadRouting === "phone" || data.leadRouting === "both") && (!data.leadPhone || data.leadPhone.length < 10)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Valid lead phone is required",
+            path: ["leadPhone"],
+        });
+    }
 });
 
 export function ActivationForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [profileFile, setProfileFile] = useState<File | null>(null);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -104,14 +129,16 @@ export function ActivationForm() {
             leadRouting: "email",
             leadEmail: "",
             leadPhone: "",
+            isContractSigned: false,
             specialRequests: "",
             acknowledgeTimeline: false,
         },
     });
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'profile') => {
         if (e.target.files && e.target.files[0]) {
-            setLogoFile(e.target.files[0]);
+            if (type === 'logo') setLogoFile(e.target.files[0]);
+            else setProfileFile(e.target.files[0]);
         }
     };
 
@@ -128,18 +155,23 @@ export function ActivationForm() {
         setIsSubmitting(true);
         try {
             let logoBase64 = "";
+            let profileBase64 = "";
+            
             if (logoFile) {
                 logoBase64 = await convertToBase64(logoFile);
+            }
+            if (profileFile) {
+                profileBase64 = await convertToBase64(profileFile);
             }
 
             const payload = {
                 ...values,
                 logo: logoBase64,
+                profilePicture: profileBase64,
                 source: "Activation Form"
             };
 
             // Send to n8n webhook
-            // Replace with your actual n8n webhook URL
             const response = await fetch("https://ulloarory.app.n8n.cloud/webhook/activate-site", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -149,7 +181,8 @@ export function ActivationForm() {
             if (!response.ok) throw new Error("Submission failed");
 
             toast.success("Activation submitted! Provisioning started.");
-            // Optional: Redirect or show success state
+            setIsSuccess(true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
         } catch (error) {
             console.error("Error submitting form", error);
@@ -157,6 +190,29 @@ export function ActivationForm() {
         } finally {
             setIsSubmitting(false);
         }
+    }
+
+    if (isSuccess) {
+        return (
+            <div className="max-w-3xl mx-auto py-20 px-4 text-center">
+                <div className="bg-green-500/10 text-green-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle2 className="w-10 h-10" />
+                </div>
+                <h2 className="text-3xl font-bold mb-4">Activation Submitted Successfully!</h2>
+                <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-8">
+                    Our systems have started provisioning your website. You will receive an email confirmation shortly with your login details and next steps.
+                </p>
+                <div className="p-4 bg-muted/50 rounded-lg max-w-md mx-auto text-sm text-left">
+                    <p className="font-medium mb-2">What happens next?</p>
+                    <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                        <li>AI generates your site content (approx. 5 mins)</li>
+                        <li>Domain DNS is configured (approx. 15-30 mins)</li>
+                        <li>Final QA check is performed</li>
+                        <li>Launch email sent to {form.getValues().businessEmail}</li>
+                    </ul>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -350,12 +406,27 @@ export function ActivationForm() {
                                         <Input
                                             type="file"
                                             accept="image/png, image/jpeg, image/svg+xml"
-                                            onChange={handleFileChange}
+                                            onChange={(e) => handleFileChange(e, 'logo')}
                                             className="cursor-pointer"
                                         />
                                     </div>
                                 </FormControl>
                                 <FormDescription>PNG, JPG, or SVG preferred.</FormDescription>
+                            </FormItem>
+
+                            <FormItem>
+                                <FormLabel>Upload your profile picture / headshot</FormLabel>
+                                <FormControl>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            type="file"
+                                            accept="image/png, image/jpeg"
+                                            onChange={(e) => handleFileChange(e, 'profile')}
+                                            className="cursor-pointer"
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormDescription>High quality headshot preferred.</FormDescription>
                             </FormItem>
 
                             <FormField
@@ -536,9 +607,31 @@ export function ActivationForm() {
                         </CardContent>
                     </Card>
 
-                    {/* Section 8: Confirmation */}
+                    {/* Section 8: Contract */}
                     <Card>
-                        <CardHeader><CardTitle>8. Final Confirmation</CardTitle></CardHeader>
+                        <CardHeader><CardTitle>8. Service Agreement</CardTitle></CardHeader>
+                        <CardContent>
+                            <FormField
+                                control={form.control}
+                                name="isContractSigned"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <ContractAgreement 
+                                                clientName={form.watch("fullName") || form.watch("businessName")}
+                                                onSigned={() => field.onChange(true)}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    {/* Section 9: Confirmation */}
+                    <Card>
+                        <CardHeader><CardTitle>9. Final Confirmation</CardTitle></CardHeader>
                         <CardContent className="grid gap-4">
                             <FormField
                                 control={form.control}

@@ -38,8 +38,9 @@ const LeadForm = () => {
         setFormData({ name: "", phone: "", email: "", message: "", url: "" });
       } else {
         // Handle server-side errors
-        const errorData = await response.json().catch(() => ({})); // Prevent crash if no JSON
-        throw new Error(errorData.message || `Server error: ${response.status}`);
+        const errorData = await response.json().catch(() => ({})); 
+        console.error("Server error data:", errorData);
+        throw new Error(errorData.message || `Server error: ${response.status} ${response.statusText}`);
       }
 
     } catch (error) {
@@ -47,7 +48,8 @@ const LeadForm = () => {
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
         toast.error("Network connection failed. Please check your internet.");
       } else {
-        toast.error("Failed to connect. Please try again later.");
+        // Show the actual error message if available
+        toast.error(error instanceof Error ? error.message : "Failed to connect. Please try again later.");
       }
     } finally {
       setIsSubmitting(false);
