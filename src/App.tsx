@@ -23,10 +23,10 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <VisualEffects />
-        <PreviewWatermark />
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <PreviewWatermark />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/blog" element={<Blog />} />
