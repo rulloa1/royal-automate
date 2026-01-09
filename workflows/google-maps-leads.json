@@ -86,7 +86,7 @@
                         {
                             "name": "Authorization",
                             "value": "Bearer {{APIFY_API_TOKEN}}"
-                        },}
+                        }
                     ]
                 },
                 "options": {}
