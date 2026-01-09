@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,14 +7,22 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import Leads from "./pages/Leads";
-import ChatbotDevelopment from "./pages/services/ChatbotDevelopment";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import Activation from "./pages/Activation";
-import PropertyPage from "./pages/PropertyPage";
 import { VisualEffects } from "@/components/ui/VisualEffects";
+
+// Lazy load pages that use Supabase to prevent initialization errors
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const Leads = lazy(() => import("./pages/Leads"));
+const ChatbotDevelopment = lazy(() => import("./pages/services/ChatbotDevelopment"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Activation = lazy(() => import("./pages/Activation"));
+const PropertyPage = lazy(() => import("./pages/PropertyPage"));
+
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="animate-pulse text-muted-foreground">Loading...</div>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -25,17 +34,19 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/services/chatbot-development" element={<ChatbotDevelopment />} />
-            <Route path="/payment-success" element={<PaymentSuccess />} />
-            <Route path="/leads" element={<Leads />} />
-            <Route path="/activation" element={<Activation />} />
-            <Route path="/property/:slug" element={<PropertyPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/services/chatbot-development" element={<ChatbotDevelopment />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/leads" element={<Leads />} />
+              <Route path="/activation" element={<Activation />} />
+              <Route path="/property/:slug" element={<PropertyPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

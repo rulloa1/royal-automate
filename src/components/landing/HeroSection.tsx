@@ -1,6 +1,15 @@
 import { ArrowRight, PlayCircle, Phone } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const HeroSection = () => {
+    const [scrollY, setScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => setScrollY(window.scrollY);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const scrollToContact = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         const element = document.getElementById('contact');
@@ -11,8 +20,19 @@ const HeroSection = () => {
 
     return (
         <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
-            {/* Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -z-10"></div>
+            {/* Parallax Background Elements */}
+            <div 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10"
+                style={{ transform: `translate(-50%, calc(-50% + ${scrollY * 0.3}px))` }}
+            />
+            <div 
+                className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[80px] -z-10"
+                style={{ transform: `translate(${scrollY * 0.1}px, ${scrollY * 0.2}px)` }}
+            />
+            <div 
+                className="absolute bottom-1/4 left-1/4 w-[250px] h-[250px] bg-emerald-500/5 rounded-full blur-[60px] -z-10"
+                style={{ transform: `translate(-${scrollY * 0.15}px, -${scrollY * 0.1}px)` }}
+            />
 
             <div className="max-w-4xl mx-auto text-center space-y-8">
                 {/* Status Badge */}

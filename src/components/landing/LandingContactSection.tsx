@@ -1,13 +1,27 @@
 import LeadForm from "@/components/LeadForm";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useParallax } from "@/hooks/useParallax";
 
 const LandingContactSection = () => {
     const { ref: contentRef, isVisible: contentVisible } = useIntersectionObserver(0.2);
+    const parallaxOffset = useParallax(0.15);
 
     return (
         <section id="contact" className="py-32 px-6 text-center relative overflow-hidden">
-            {/* Radial Gradient Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black -z-10"></div>
+            {/* Parallax Radial Gradient Background */}
+            <div 
+                className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black -z-10"
+                style={{ transform: `translateY(${parallaxOffset}px)` }}
+            />
+            {/* Floating orbs with parallax */}
+            <div 
+                className="absolute top-20 left-1/4 w-[200px] h-[200px] bg-blue-500/10 rounded-full blur-[80px] -z-10"
+                style={{ transform: `translateY(${parallaxOffset * 2}px)` }}
+            />
+            <div 
+                className="absolute bottom-20 right-1/4 w-[150px] h-[150px] bg-purple-500/10 rounded-full blur-[60px] -z-10"
+                style={{ transform: `translateY(-${parallaxOffset * 1.5}px)` }}
+            />
 
             <div 
                 ref={contentRef as React.RefObject<HTMLDivElement>}
