@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const sheetId = Deno.env.get("GOOGLE_SHEET_ID");
+    const sheetId = Deno.env.get("GOOGLE_SHEET_ID") || "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA";
     if (!sheetId) throw new Error("GOOGLE_SHEET_ID is required");
 
     const sheetService = new SheetService(sheetId);

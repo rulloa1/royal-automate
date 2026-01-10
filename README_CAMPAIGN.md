@@ -17,11 +17,12 @@ npx supabase db push
 ```
 
 ### 2. Environment Variables
-Set the following secrets in your Supabase project (Dashboard > Settings > Edge Functions):
+Set the following secrets in your Supabase project (Dashboard > Settings > Edge Functions).
+For the Google Sheet ID, use: `163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA`
 
 | Variable | Description |
 |----------|-------------|
-| `GOOGLE_SHEET_ID` | The ID of your Google Sheet (from URL) |
+| `GOOGLE_SHEET_ID` | `163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA` |
 | `GOOGLE_SERVICE_ACCOUNT` | The full JSON content of your Google Service Account key |
 | `FIRECRAWL_API_KEY` | (Optional) API key for Firecrawl scraping |
 | `WEBFLOW_API_TOKEN` | (Optional) Webflow API Token |
