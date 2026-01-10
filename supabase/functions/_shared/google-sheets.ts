@@ -60,6 +60,7 @@ export class SheetService {
       linkedin_url: row.get('LinkedIn') || row.get('Website URL') || row.get('website'),
       brokerage: row.get('Brokerage') || row.get('brokerage'),
       city: row.get('City') || row.get('city'),
+      preferred_template: row.get('Template') || row.get('template'),
       row_object: row
     }));
   }

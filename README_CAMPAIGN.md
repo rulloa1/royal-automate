@@ -71,3 +71,32 @@ schedule = "0 * * * *" # Every hour
 
 - **Check Logs**: View logs in Supabase Dashboard > Edge Functions.
 - **Missing Data**: If scraping fails, the system uses mock data or flags the lead. Check the `error_message` column in the `leads` table.
+
+## Monitoring & Control
+
+### How to Watch It Run
+1.  **Google Sheet**: Watch the `status` and `website_link` columns update in real-time.
+2.  **Supabase Logs**: Go to [Supabase Dashboard > Edge Functions > campaign-orchestrator > Logs](https://supabase.com/dashboard/project/pshjpksmzvwyzugrbmiu/functions/campaign-orchestrator/logs) to see detailed action logs.
+
+### How to Manually Trigger
+To run the automation immediately (instead of waiting for the hourly schedule):
+```bash
+curl -L -X POST 'https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/campaign-orchestrator' \
+  -H 'Authorization: Bearer [YOUR_ANON_KEY]'
+```
+*(You can find your ANON_KEY in Supabase Dashboard > Settings > API)*
+
+### Template Selection
+You can control which website template is generated for each agent by adding a `Template` column to your Google Sheet.
+
+**Supported Values:**
+*   `luxury` (Dark, elegant theme)
+*   `modern` (Clean, white/blue theme)
+*   `minimal` (Simple, photo-focused)
+*   *(Empty)* -> Defaults to standard template
+
+Example:
+| Name | Email | Template |
+|------|-------|----------|
+| Roy  | ...   | luxury   |
+| Jane | ...   | modern   |

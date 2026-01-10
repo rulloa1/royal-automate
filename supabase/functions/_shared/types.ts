@@ -48,6 +48,7 @@ export interface Lead {
   linkedin_url: string | null;
   brokerage: string | null;
   city: string | null;
+  preferred_template?: string | null;
   
   status: LeadStatus;
   error_message: string | null;

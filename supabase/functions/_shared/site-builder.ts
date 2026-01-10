@@ -69,10 +69,23 @@ export class SiteBuilderService {
   }
 
   private generateDynamicUrl(lead: Lead, data: EnrichedData): { url: string } {
+    // Map of template names to their IDs/URLs
+    const templates: Record<string, string> = {
+      'luxury': 'luxury-template-id', // You can replace these with actual Lovable/Webflow IDs later
+      'modern': 'modern-template-id',
+      'minimal': 'minimal-template-id',
+      'default': 'default-template'
+    };
+
+    const templateKey = (lead.preferred_template?.toLowerCase() || 'default');
+    // Currently we append it as a query param, or use it to select base URL if different
+    
     const baseUrl = "https://royal-ascend-site.lovable.app/template";
     
     const params = new URLSearchParams();
     params.set("business_name", lead.agent_name);
+    params.set("template_mode", templateKey); // Pass the template choice to the frontend
+
     if (lead.phone) params.set("phone", lead.phone);
     if (lead.email) params.set("email", lead.email);
     if (lead.city) params.set("address", lead.city); // Mapping city to address for now

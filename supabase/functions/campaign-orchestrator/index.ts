@@ -56,6 +56,7 @@ Deno.serve(async (req) => {
           linkedin_url: row.linkedin_url,
           brokerage: row.brokerage,
           city: row.city,
+          preferred_template: row.preferred_template,
           google_sheet_row_index: row.rowIndex,
           status: 'new'
         });
