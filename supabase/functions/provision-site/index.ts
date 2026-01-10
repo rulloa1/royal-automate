@@ -741,14 +741,21 @@ function generateHtml(template: string, data: any): string {
     return html;
 }
 
-Deno.serve(async (req) => {
+import { createClient } from "@supabase/supabase-js";
+
+// ... existing code ...
+
+// Declare Deno for TypeScript if not in a Deno-aware environment
+declare const Deno: any;
+
+Deno.serve(async (req: Request) => {
     // Handle CORS preflight requests
     if (req.method === "OPTIONS") {
         return new Response("ok", { headers: corsHeaders });
     }
 
     try {
-        const { agent_data } = await req.json();
+        const { agent_data, save_to_storage } = await req.json();
 
         if (!agent_data) {
             throw new Error("Missing agent_data in request body");
@@ -758,22 +765,47 @@ Deno.serve(async (req) => {
 
         // Generate the HTML
         const generatedHtml = generateHtml(WEBSITE_TEMPLATE, agent_data);
+        let storageUrl = "";
 
-        // In a real scenario, you might upload this HTML to Supabase Storage, 
-        // Cloudflare Workers KV, or return it directly to be rendered.
-        // For now, we will return the HTML content directly in the JSON response
-        // relative to the "website_url" (which might be a blob object URL in the frontend or similar).
+        // Save to Storage if requested
+        if (save_to_storage) {
+            console.log("Saving to Supabase Storage...");
+            const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+            const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+            const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // Ideally, we would deploy this. For the purpose of this task, we return the content.
+            // Create a slug for the filename
+            const slug = agent_data.agent_name.toLowerCase().replace(/[^a-z0-9]/g, "-") + "-" + Date.now();
+            const filename = `${slug}.html`;
+
+            const { data: uploadData, error: uploadError } = await supabase
+                .storage
+                .from("sites")
+                .upload(filename, generatedHtml, {
+                    contentType: "text/html",
+                    upsert: true
+                });
+
+            if (uploadError) {
+                console.error("Storage upload failed:", uploadError);
+                // Don't fail the whole request, just log it
+            } else {
+                const { data: { publicUrl } } = supabase.storage.from("sites").getPublicUrl(filename);
+                storageUrl = publicUrl;
+                console.log(`Saved to: ${storageUrl}`);
+            }
+        }
+
         console.log("HTML generated successfully.");
 
         return new Response(
             JSON.stringify({
                 status: "created",
-                website_url: "generated_content_returned", // Frontend can treat this as special
-                html_content: generatedHtml, // The actual HTML to display/download
+                website_url: storageUrl || "generated_content_returned",
+                html_content: generatedHtml,
                 details: {
-                    method: "static_template_replacement"
+                    method: "static_template_replacement",
+                    storage_enabled: !!save_to_storage
                 }
             }),
             {
@@ -781,10 +813,10 @@ Deno.serve(async (req) => {
                 status: 200,
             }
         );
-    } catch (error) {
+    } catch (error: any) {
         console.error("Provisioning error:", error);
         return new Response(
-            JSON.stringify({ error: error.message }),
+            JSON.stringify({ error: error.message || "Unknown error" }),
             {
                 headers: { ...corsHeaders, "Content-Type": "application/json" },
                 status: 400,

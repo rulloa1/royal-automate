@@ -180,7 +180,7 @@ export function ActivationForm() {
 
             // 1. Send to n8n webhook (Logging & Data)
             try {
-                await fetch("https://ulloarory.app.n8n.cloud/webhook/activate-site", {
+                await fetch("http://localhost:5678/webhook-test/activate-site", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload),

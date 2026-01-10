@@ -8,6 +8,7 @@
     },
     "imports": {
         "google-spreadsheet": "npm:google-spreadsheet@4.1.4",
-        "google-auth-library": "npm:google-auth-library@9.0.0"
+        "google-auth-library": "npm:google-auth-library@9.0.0",
+        "@supabase/supabase-js": "npm:@supabase/supabase-js@2.39.0"
     }
 }
