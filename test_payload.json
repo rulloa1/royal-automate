@@ -1,7 +1,0 @@
-{
-    "agent_data": {
-        "agent_name": "Test Agent",
-        "brokerage": "Test Brokerage"
-    },
-    "save_to_storage": true
-}

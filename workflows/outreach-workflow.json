@@ -1,5 +1,5 @@
 {
-    "name": "Batch Website Generator",
+    "name": "Outreach Automation",
     "nodes": [
         {
             "parameters": {},
@@ -11,22 +11,6 @@
                 250,
                 300
             ]
-        },
-        {
-            "parameters": {
-                "httpMethod": "GET",
-                "path": "run-batch",
-                "responseMode": "responseNode",
-                "options": {}
-            },
-            "type": "n8n-nodes-base.webhook",
-            "typeVersion": 1,
-            "position": [
-                250,
-                100
-            ],
-            "id": "webhook-trigger",
-            "name": "Webhook (Run Batch)"
         },
         {
             "parameters": {
@@ -43,7 +27,7 @@
                 "options": {}
             },
             "id": "read-leads",
-            "name": "Read Leads from Sheet",
+            "name": "Read Leads",
             "type": "n8n-nodes-base.googleSheets",
             "typeVersion": 4.5,
             "position": [
@@ -59,10 +43,10 @@
         },
         {
             "parameters": {
-                "jsCode": "return $input.all().filter(item => !item.json[\"Website URL\"] || item.json[\"Website URL\"] === \"\");"
+                "jsCode": "// Filter for leads that HAVE a Website URL but have NOT been sent an email yet\nreturn $input.all().filter(item => \n  item.json[\"Website URL\"] && \n  item.json[\"Website URL\"] !== \"\" && \n  (!item.json[\"Email Sent\"] || item.json[\"Email Sent\"] === \"\")\n);"
             },
-            "id": "filter-processed",
-            "name": "Filter: Processed Leads",
+            "id": "filter-unsent",
+            "name": "Filter: Ready to Send",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
             "position": [
@@ -72,34 +56,26 @@
         },
         {
             "parameters": {
-                "jsCode": "return $input.all().map(item => {\n  return {\n    json: {\n      agent_data: {\n        agent_name: item.json[\"Name\"] || item.json[\"Business Name\"] || \"Agent\",\n        brokerage: \"Real Estate\",\n        bio: \"Specializing in luxury properties for discerning clients.\",\n        city_area: item.json[\"Address\"] || \"City\"\n      },\n      save_to_storage: true,\n      original_name: item.json[\"Name\"] || item.json[\"Business Name\"]\n    }\n  }\n});"
+                "sendTo": "={{ $json.Email }}",
+                "subject": "Your Real Estate Website for {{ $json.Name }}",
+                "emailType": "text",
+                "message": "={{ \"Hi \" + ($json.Name.split(' ')[0] || \"Agent\") + \",\\n\\nI built a modern, high-conversion website specifically for you.\\n\\nHere is your private live preview:\\n\" + $json[\"Website URL\"] + \"\\n\\nLet me know what you think!\\n\\nBest,\\nRoy Ulloa\\nRoysCompany\" }}",
+                "options": {}
             },
-            "id": "format-payload",
-            "name": "Format Payload",
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
+            "id": "send-email",
+            "name": "Gmail - Send Outreach",
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.1,
             "position": [
                 850,
                 300
-            ]
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/provision-site",
-                "sendBody": true,
-                "contentType": "json",
-                "body": "={{ { agent_data: $json.agent_data, save_to_storage: $json.save_to_storage } }}",
-                "options": {}
-            },
-            "id": "provision-site",
-            "name": "Generate Website",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                1050,
-                300
-            ]
+            ],
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "gmail_creds",
+                    "name": "Gmail Account"
+                }
+            }
         },
         {
             "parameters": {
@@ -115,20 +91,20 @@
                     "value": "Sheet1"
                 },
                 "columnToMatchOn": "Name",
-                "valueToMatchOn": "={{ $json.original_name }}",
+                "valueToMatchOn": "={{ $json.Name }}",
                 "fieldsToUpdate": {
                     "mappingMode": "defineBelow",
                     "value": {
-                        "Website URL": "={{ $json.website_url }}"
+                        "Email Sent": "={{ $now.toISO() }}"
                     }
                 }
             },
-            "id": "update-sheet",
-            "name": "Update URL in Sheet",
+            "id": "update-sent-status",
+            "name": "Update: Email Sent",
             "type": "n8n-nodes-base.googleSheets",
             "typeVersion": 4.5,
             "position": [
-                1250,
+                1050,
                 300
             ],
             "credentials": {
@@ -144,62 +120,40 @@
             "main": [
                 [
                     {
-                        "node": "Read Leads from Sheet",
+                        "node": "Read Leads",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Webhook (Run Batch)": {
+        "Read Leads": {
             "main": [
                 [
                     {
-                        "node": "Read Leads from Sheet",
+                        "node": "Filter: Ready to Send",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Read Leads from Sheet": {
+        "Filter: Ready to Send": {
             "main": [
                 [
                     {
-                        "node": "Filter: Processed Leads",
+                        "node": "Gmail - Send Outreach",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Filter: Processed Leads": {
+        "Gmail - Send Outreach": {
             "main": [
                 [
                     {
-                        "node": "Format Payload",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Format Payload": {
-            "main": [
-                [
-                    {
-                        "node": "Generate Website",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Generate Website": {
-            "main": [
-                [
-                    {
-                        "node": "Update URL in Sheet",
+                        "node": "Update: Email Sent",
                         "type": "main",
                         "index": 0
                     }
