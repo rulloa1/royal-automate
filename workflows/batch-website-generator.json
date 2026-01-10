@@ -72,11 +72,24 @@
         },
         {
             "parameters": {
+                "jsCode": "return $input.all().map(item => {\n  return {\n    json: {\n      agent_data: {\n        agent_name: item.json[\"Name\"] || item.json[\"Business Name\"] || \"Agent\",\n        brokerage: \"Real Estate\",\n        bio: \"Specializing in luxury properties for discerning clients.\",\n        city_area: item.json[\"Address\"] || \"City\"\n      },\n      save_to_storage: true,\n      original_name: item.json[\"Name\"] || item.json[\"Business Name\"]\n    }\n  }\n});"
+            },
+            "id": "format-payload",
+            "name": "Format Payload",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
                 "method": "POST",
                 "url": "https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/provision-site",
                 "sendBody": true,
                 "contentType": "json",
-                "body": "={{ { agent_data: { agent_name: $json.name || $json[\"Business Name\"], brokerage: \"Real Estate\", bio: \"Specializing in luxury properties.\", city_area: $json.address || \"City\" }, save_to_storage: true } }}",
+                "body": "={{ { agent_data: $json.agent_data, save_to_storage: $json.save_to_storage } }}",
                 "options": {}
             },
             "id": "provision-site",
@@ -84,7 +97,7 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 4.2,
             "position": [
-                850,
+                1050,
                 300
             ]
         },
@@ -101,8 +114,8 @@
                     "mode": "name",
                     "value": "Sheet1"
                 },
-                "columnToMatchOn": "name",
-                "valueToMatchOn": "={{ $json.name }}",
+                "columnToMatchOn": "Name",
+                "valueToMatchOn": "={{ $json.original_name }}",
                 "fieldsToUpdate": {
                     "mappingMode": "defineBelow",
                     "value": {
@@ -115,7 +128,7 @@
             "type": "n8n-nodes-base.googleSheets",
             "typeVersion": 4.5,
             "position": [
-                1050,
+                1250,
                 300
             ],
             "credentials": {
@@ -161,6 +174,17 @@
             ]
         },
         "Filter: Processed Leads": {
+            "main": [
+                [
+                    {
+                        "node": "Format Payload",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Payload": {
             "main": [
                 [
                     {
