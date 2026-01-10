@@ -13,7 +13,7 @@ This system automates the process of finding real estate agent leads, enriching 
 ### 1. Database Migration
 Run the migration file `supabase/migrations/20260109000000_create_leads_table.sql` to create the required tables.
 ```bash
-supabase db push
+npx supabase db push
 ```
 
 ### 2. Environment Variables
@@ -43,7 +43,7 @@ Ensure your Google Sheet has the following headers:
 ### 4. Deploy Function
 Deploy the orchestrator function:
 ```bash
-supabase functions deploy campaign-orchestrator
+npx supabase functions deploy campaign-orchestrator
 ```
 
 ### 5. Schedule Automation (Cron)
