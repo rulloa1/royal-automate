@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
 import { VisualEffects } from "@/components/ui/VisualEffects";
+import { Watermark } from "@/components/Watermark";
+
 
 // Lazy load pages that use Supabase to prevent initialization errors
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
@@ -49,6 +51,7 @@ const App = () => (
               <Route path="/property/:slug" element={<PropertyPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <Watermark />
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>

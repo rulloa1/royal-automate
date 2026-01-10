@@ -34,17 +34,57 @@
         },
         {
             "parameters": {
-                "operation": "toJson",
-                "options": {}
+                "authentication": "oAuth2",
+                "operation": "append",
+                "sheetId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": ""
+                },
+                "range": "A:Z",
+                "options": {
+                    "valueInputOption": "USER_ENTERED"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Business Name": "={{ $json.businessName }}",
+                        "Contact Name": "={{ $json.fullName }}",
+                        "Role": "={{ $json.role }}",
+                        "Email": "={{ $json.businessEmail }}",
+                        "Phone": "={{ $json.phone }}",
+                        "Address": "={{ $json.officeAddress }}",
+                        "Date": "={{ $now.toISO() }}",
+                        "Services": "={{ $json.services }}",
+                        "Bio": "={{ $json.bio }}",
+                        "Domain Status": "={{ $json.hasDomain }}"
+                    }
+                }
             },
-            "type": "n8n-nodes-base.itemLists",
-            "typeVersion": 1,
+            "name": "Save to Google Sheets",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
             "position": [
                 750,
-                300
+                200
             ],
-            "id": "parse-data",
-            "name": "(Optional) Save to Sheets/Email"
+            "id": "save-to-sheets"
+        },
+        {
+            "parameters": {
+                "sendTo": "support@royscompany.com",
+                "subject": "={{ \"🚀 New Activation: \" + $json.businessName }}",
+                "message": "={{ \"New website activation received!\\n\\nClient: \" + $json.fullName + \"\\nBusiness: \" + $json.businessName + \"\\nEmail: \" + $json.businessEmail + \"\\nPhone: \" + $json.phone + \"\\n\\nCheck Google Sheets for full details.\" }}",
+                "options": {}
+            },
+            "name": "Gmail - Notify Admin",
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.1,
+            "position": [
+                750,
+                400
+            ],
+            "id": "notify-admin"
         }
     ],
     "connections": {
@@ -57,7 +97,12 @@
                         "index": 0
                     },
                     {
-                        "node": "(Optional) Save to Sheets/Email",
+                        "node": "Save to Google Sheets",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Gmail - Notify Admin",
                         "type": "main",
                         "index": 0
                     }

@@ -11,3 +11,7 @@ verify_jwt = false
 
 [functions.telegram-forward]
 verify_jwt = false
+
+[functions.provision-site]
+verify_jwt = false
+

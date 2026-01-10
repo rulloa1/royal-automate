@@ -101,6 +101,7 @@ const formSchema = z.object({
 export function ActivationForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [profileFile, setProfileFile] = useState<File | null>(null);
 
@@ -156,7 +157,7 @@ export function ActivationForm() {
         try {
             let logoBase64 = "";
             let profileBase64 = "";
-            
+
             if (logoFile) {
                 logoBase64 = await convertToBase64(logoFile);
             }
@@ -164,23 +165,49 @@ export function ActivationForm() {
                 profileBase64 = await convertToBase64(profileFile);
             }
 
+            // Map form values to agent_data structure expected by backend
             const payload = {
                 ...values,
                 logo: logoBase64,
                 profilePicture: profileBase64,
-                source: "Activation Form"
+                source: "Activation Form",
+                // Explicit mapping for template
+                agent_name: values.fullName,
+                brokerage: values.businessName,
+                city_area: values.areasServed.split(',')[0], // Take first area
+                bio: values.bio
             };
 
-            // Send to n8n webhook
-            const response = await fetch("https://ulloarory.app.n8n.cloud/webhook/activate-site", {
+            // 1. Send to n8n webhook (Logging & Data)
+            try {
+                await fetch("https://ulloarory.app.n8n.cloud/webhook/activate-site", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+            } catch (err) {
+                console.error("n8n webhook failed (non-blocking)", err);
+            }
+
+            // 2. Send to Supabase Edge Function (Provisioning)
+            const provisionResponse = await fetch("https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/provision-site", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({ agent_data: payload }),
             });
 
-            if (!response.ok) throw new Error("Submission failed");
+            if (!provisionResponse.ok) throw new Error("Provisioning failed");
 
-            toast.success("Activation submitted! Provisioning started.");
+            const provisionData = await provisionResponse.json();
+
+            // Create a Blob URL for preview if HTML content is returned
+            if (provisionData.html_content) {
+                const blob = new Blob([provisionData.html_content], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                setGeneratedUrl(url);
+            }
+
+            toast.success("Activation submitted! Website generated.");
             setIsSuccess(true);
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -198,15 +225,27 @@ export function ActivationForm() {
                 <div className="bg-green-500/10 text-green-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle2 className="w-10 h-10" />
                 </div>
-                <h2 className="text-3xl font-bold mb-4">Activation Submitted Successfully!</h2>
+                <h2 className="text-3xl font-bold mb-4">Website Generated Successfully!</h2>
                 <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-8">
-                    Our systems have started provisioning your website. You will receive an email confirmation shortly with your login details and next steps.
+                    Your website has been provisioned. You can preview it immediately below.
                 </p>
+
+                {generatedUrl && (
+                    <div className="mb-8">
+                        <Button
+                            size="lg"
+                            className="bg-[#00FF9D] text-black hover:bg-[#00FF9D]/90 font-bold text-lg px-8 py-6 h-auto shadow-[0_0_20px_rgba(0,255,157,0.3)]"
+                            onClick={() => window.open(generatedUrl, '_blank')}
+                        >
+                            PREVIEW MY WEBSITE
+                        </Button>
+                    </div>
+                )}
+
                 <div className="p-4 bg-muted/50 rounded-lg max-w-md mx-auto text-sm text-left">
                     <p className="font-medium mb-2">What happens next?</p>
                     <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                        <li>AI generates your site content (approx. 5 mins)</li>
-                        <li>Domain DNS is configured (approx. 15-30 mins)</li>
+                        <li>We are configuring your custom domain DNS (approx. 30 mins)</li>
                         <li>Final QA check is performed</li>
                         <li>Launch email sent to {form.getValues().businessEmail}</li>
                     </ul>
@@ -617,7 +656,7 @@ export function ActivationForm() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <ContractAgreement 
+                                            <ContractAgreement
                                                 clientName={form.watch("fullName") || form.watch("businessName")}
                                                 onSigned={() => field.onChange(true)}
                                             />

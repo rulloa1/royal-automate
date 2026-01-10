@@ -31,10 +31,10 @@ const CONFIG = {
   yourName: "Roy Ulloa",
   yourCompany: "RoysCompany",
   yourPhone: "(346) 298-5038",
-  yourEmail: "roy@royscompany.com", // Your Gmail address
+  yourEmail: "support@royscompany.com", // Your Gmail address
 
   // THE CHECKOUT LINK for all agents in this sheet
-  checkoutLink: "", // PASTE YOUR STRIPE LINK HERE,
+  checkoutLink: "https://buy.stripe.com/cNi5kC2Hx0lf5xT9Ry7kc01", // PASTE YOUR STRIPE LINK HERE,
   // Column positions (A=1, B=2, etc.) - Adjust if your columns are different
   // IMPORTANT: For n8n compatibility, Column E header must be "status" and Column F header must be "demo_url"
   columns: {
@@ -184,10 +184,10 @@ function sendEmailsToNewLeads() {
       subject = emailSubject;
       // Append the links to the AI-generated body
       const watermarkedLink = addWatermark(agentData.websiteLink);
-      body = emailBody + "\n\n" + 
-             "Here is your private live preview:\n" + watermarkedLink + "\n\n" +
-             "Secure it immediately:\n" + personalizedCheckoutLink + "\n\n" +
-             "– " + CONFIG.yourName + "\n" + CONFIG.yourCompany;
+      body = emailBody + "\n\n" +
+        "Here is your private live preview:\n" + watermarkedLink + "\n\n" +
+        "Secure it immediately:\n" + personalizedCheckoutLink + "\n\n" +
+        "– " + CONFIG.yourName + "\n" + CONFIG.yourCompany;
     } else {
       const template = getEmailTemplate(webStatus, agentData, personalizedCheckoutLink);
       subject = template.subject;
@@ -348,7 +348,7 @@ function generatePreviewLinks() {
       const phone = row[cols.phone - 1] || "";
       const address = row[cols.address - 1] || "";
       const email = row[cols.email - 1] || "";
-      
+
       // Simple industry detection
       let industry = "dentist"; // Default
       const nameLower = name.toLowerCase();
@@ -370,10 +370,10 @@ function generatePreviewLinks() {
       ].join('&');
 
       const link = `${CONFIG.templateBaseUrl}?${params}`;
-      
+
       // Update the cell
       sheet.getRange(i + 1, cols.websiteLink).setValue(link);
-      
+
       // Also set status to "Ready" if empty
       if (!row[cols.webStatus - 1]) {
         sheet.getRange(i + 1, cols.webStatus).setValue("Ready");
