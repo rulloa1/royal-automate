@@ -11,12 +11,10 @@
                     ]
                 },
                 "documentId": {
-                    "__rl": true,
                     "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA",
                     "mode": "id"
                 },
                 "sheetName": {
-                    "__rl": true,
                     "value": "Sheet1",
                     "mode": "name"
                 },
@@ -74,12 +72,10 @@
             "parameters": {
                 "operation": "update",
                 "documentId": {
-                    "__rl": true,
                     "mode": "id",
                     "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
                 },
                 "sheetName": {
-                    "__rl": true,
                     "mode": "name",
                     "value": "Sheet1"
                 },
@@ -137,12 +133,10 @@
             "parameters": {
                 "operation": "update",
                 "documentId": {
-                    "__rl": true,
                     "mode": "id",
                     "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
                 },
                 "sheetName": {
-                    "__rl": true,
                     "mode": "name",
                     "value": "Sheet1"
                 },
