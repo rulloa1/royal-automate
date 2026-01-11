@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Send, Phone, Check, Sparkles, Loader2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 const LeadForm = () => {
@@ -19,29 +20,22 @@ const LeadForm = () => {
     setIsSubmitting(true);
 
     try {
-      const webhookUrl = activeTab === "call"
-        ? "https://ulloarory.app.n8n.cloud/webhook/call-lead"
-        : "https://ulloarory.app.n8n.cloud/webhook/message-lead";
+      const action = activeTab === "call" ? "call-lead" : "message-lead";
 
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const { data, error } = await supabase.functions.invoke("n8n-proxy", {
+        body: { action, ...formData },
       });
 
-      if (response.ok) {
-        toast.success(
-          activeTab === "call"
-            ? "Request received! Expect a call shortly."
-            : "Message sent! We'll get back to you ASAP."
-        );
-        setFormData({ name: "", phone: "", email: "", message: "", url: "" });
-      } else {
-        // Handle server-side errors
-        const errorData = await response.json().catch(() => ({})); 
-        console.error("Server error data:", errorData);
-        throw new Error(errorData.message || `Server error: ${response.status} ${response.statusText}`);
+      if (error) {
+        throw new Error(error.message);
       }
+
+      toast.success(
+        activeTab === "call"
+          ? "Request received! Expect a call shortly."
+          : "Message sent! We'll get back to you ASAP."
+      );
+      setFormData({ name: "", phone: "", email: "", message: "", url: "" });
 
     } catch (error) {
       console.error("Submit error:", error);
