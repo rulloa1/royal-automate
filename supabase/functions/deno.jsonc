@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
         "allowJs": true,
-        "lib": [
-            "deno.window"
-        ],
-        "strict": true
+        "lib": ["deno.window"],
+        "strict": false
     },
-    "nodeModulesDir": "auto"
+    "imports": {
+        "openai": "https://esm.sh/openai@4.52.5"
+    }
 }

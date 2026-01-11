@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Send, Phone, Check, Sparkles, Loader2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 const LeadForm = () => {
@@ -22,6 +21,9 @@ const LeadForm = () => {
     try {
       const action = activeTab === "call" ? "call-lead" : "message-lead";
 
+      // Dynamically import Supabase to avoid initialization errors
+      const { supabase } = await import("@/integrations/supabase/client");
+      
       const { data, error } = await supabase.functions.invoke("n8n-proxy", {
         body: { action, ...formData },
       });

@@ -1,90 +1,197 @@
-import { GoogleSpreadsheet } from "google-spreadsheet";
-import { JWT } from "google-auth-library";
+// Google Sheets Service
+// Uses Google Sheets REST API directly (npm packages have compatibility issues with Deno)
+
+export interface SheetRow {
+  rowIndex: number;
+  agent_name?: string;
+  email?: string;
+  phone?: string;
+  linkedin_url?: string;
+  brokerage?: string;
+  city?: string;
+  preferred_template?: string;
+}
 
 export class SheetService {
-  private doc: GoogleSpreadsheet;
   private sheetId: string;
-  private initialized: boolean = false;
+  private accessToken: string | null = null;
 
   constructor(sheetId: string) {
     this.sheetId = sheetId;
-    
-    // Get credentials from Env
-    const serviceAccountJson = Deno.env.get("GOOGLE_SERVICE_ACCOUNT");
-    if (!serviceAccountJson) {
-      throw new Error("Missing GOOGLE_SERVICE_ACCOUNT environment variable");
+  }
+
+  private async getAccessToken(): Promise<string> {
+    if (this.accessToken) return this.accessToken;
+
+    const serviceAccountStr = Deno.env.get("GOOGLE_SERVICE_ACCOUNT");
+    const clientEmail = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_EMAIL") || Deno.env.get("CLIENT_EMAIL");
+    const privateKey = Deno.env.get("GOOGLE_PRIVATE_KEY") || Deno.env.get("PRIVATE_KEY");
+
+    let email = clientEmail;
+    let key = privateKey;
+
+    if (serviceAccountStr) {
+      try {
+        const parsed = JSON.parse(serviceAccountStr);
+        email = parsed.client_email;
+        key = parsed.private_key;
+      } catch {
+        throw new Error("Invalid GOOGLE_SERVICE_ACCOUNT JSON");
+      }
     }
 
-    const creds = JSON.parse(serviceAccountJson);
-    
-    const serviceAccountAuth = new JWT({
-      email: creds.client_email,
-      key: creds.private_key,
-      scopes: [
-        'https://www.googleapis.com/auth/spreadsheets',
-      ],
+    if (!email || !key) {
+      throw new Error("Missing Google credentials");
+    }
+
+    const formattedKey = key.replace(/\\n/g, '\n');
+
+    // Create JWT
+    const now = Math.floor(Date.now() / 1000);
+    const header = { alg: "RS256", typ: "JWT" };
+    const payload = {
+      iss: email,
+      scope: "https://www.googleapis.com/auth/spreadsheets",
+      aud: "https://oauth2.googleapis.com/token",
+      iat: now,
+      exp: now + 3600,
+    };
+
+    const pemHeader = "-----BEGIN PRIVATE KEY-----";
+    const pemFooter = "-----END PRIVATE KEY-----";
+    const pemContents = formattedKey.replace(pemHeader, "").replace(pemFooter, "").replace(/\s/g, "");
+    const binaryKey = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+
+    const cryptoKey = await crypto.subtle.importKey(
+      "pkcs8",
+      binaryKey,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+
+    const base64url = (data: string) => btoa(data).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const encoder = new TextEncoder();
+
+    const headerB64 = base64url(JSON.stringify(header));
+    const payloadB64 = base64url(JSON.stringify(payload));
+    const signatureInput = encoder.encode(`${headerB64}.${payloadB64}`);
+
+    const signature = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, signatureInput);
+    const signatureB64 = base64url(String.fromCharCode(...new Uint8Array(signature)));
+
+    const jwt = `${headerB64}.${payloadB64}.${signatureB64}`;
+
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        assertion: jwt,
+      }),
     });
 
-    this.doc = new GoogleSpreadsheet(sheetId, serviceAccountAuth);
-  }
-
-  async init() {
-    if (!this.initialized) {
-      await this.doc.loadInfo();
-      this.initialized = true;
+    const tokenData = await tokenResponse.json();
+    if (!tokenData.access_token) {
+      throw new Error("Failed to get access token");
     }
+
+    this.accessToken = tokenData.access_token;
+    return this.accessToken as string;
   }
 
-  async getNewLeads(sheetName: string = "Sheet1") {
-    await this.init();
-    const sheet = this.doc.sheetsByTitle[sheetName];
-    if (!sheet) throw new Error(`Sheet ${sheetName} not found`);
+  async getNewLeads(sheetName: string = "Sheet1"): Promise<SheetRow[]> {
+    const token = await this.getAccessToken();
+    
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${this.sheetId}/values/${encodeURIComponent(sheetName)}!A1:Z1000`;
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-    const rows = await sheet.getRows();
-    
-    // Assuming 'Status' column exists. If not, we might need to rely on column index or other headers.
-    // Based on user prompt: "Monitor Google Sheet for new rows"
-    // We filter for rows where Status is empty or 'New Lead'
-    
-    // IMPORTANT: The user mentioned n8n checks for "New Lead".
-    // We will look for rows where 'status' column is 'New Lead' OR empty.
-    
-    return rows.filter(row => {
-      const status = row.get('status') || row.get('Status');
-      return status === 'New Lead' || !status;
-    }).map(row => ({
-      rowIndex: row.rowNumber,
-      agent_name: row.get('Agent Name') || row.get('Name') || row.get('name'),
-      email: row.get('Email') || row.get('email'),
-      phone: row.get('Phone') || row.get('phone'),
-      linkedin_url: row.get('LinkedIn') || row.get('Website URL') || row.get('website'),
-      brokerage: row.get('Brokerage') || row.get('brokerage'),
-      city: row.get('City') || row.get('city'),
-      preferred_template: row.get('Template') || row.get('template'),
-      row_object: row
-    }));
+    const data = await response.json();
+    if (!data.values || data.values.length < 2) {
+      return [];
+    }
+
+    const [headers, ...rows] = data.values;
+    const getIndex = (name: string) => headers.findIndex((h: string) => h.toLowerCase() === name.toLowerCase());
+
+    const statusIdx = getIndex('status');
+    const nameIdx = getIndex('agent name') !== -1 ? getIndex('agent name') : getIndex('name');
+    const emailIdx = getIndex('email');
+    const phoneIdx = getIndex('phone');
+    const linkedinIdx = getIndex('linkedin') !== -1 ? getIndex('linkedin') : getIndex('website url');
+    const brokerageIdx = getIndex('brokerage');
+    const cityIdx = getIndex('city');
+    const templateIdx = getIndex('template');
+
+    return rows
+      .map((row: string[], index: number) => ({
+        rowIndex: index + 2, // +2 for header row and 0-indexing
+        status: statusIdx >= 0 ? row[statusIdx] : undefined,
+        agent_name: nameIdx >= 0 ? row[nameIdx] : undefined,
+        email: emailIdx >= 0 ? row[emailIdx] : undefined,
+        phone: phoneIdx >= 0 ? row[phoneIdx] : undefined,
+        linkedin_url: linkedinIdx >= 0 ? row[linkedinIdx] : undefined,
+        brokerage: brokerageIdx >= 0 ? row[brokerageIdx] : undefined,
+        city: cityIdx >= 0 ? row[cityIdx] : undefined,
+        preferred_template: templateIdx >= 0 ? row[templateIdx] : undefined,
+      }))
+      .filter((row: SheetRow & { status?: string }) => !row.status || row.status === 'New Lead');
   }
 
-  async updateRowStatus(rowIndex: number, status: string, sheetName: string = "Sheet1", extraData?: Record<string, string>) {
-    await this.init();
-    const sheet = this.doc.sheetsByTitle[sheetName];
-    // getRows returns a subset. We need to be careful.
-    // GoogleSpreadsheet doesn't have a "getRowByIndex" easily without fetching.
-    // Efficient way: load cells for that row? Or just fetch all rows (easiest for small sheets).
+  async updateRowStatus(rowIndex: number, status: string, sheetName: string = "Sheet1", extraData?: Record<string, string>): Promise<void> {
+    const token = await this.getAccessToken();
     
-    // Actually, if we pass the row object from getNewLeads, we can call save() on it.
-    // But since we are likely calling this in a separate execution step (async), we might need to refetch.
-    // For now, let's fetch the specific row range.
+    // First get headers to find status column
+    const headersUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.sheetId}/values/${encodeURIComponent(sheetName)}!1:1`;
+    const headersResponse = await fetch(headersUrl, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const headersData = await headersResponse.json();
+    const headers = headersData.values?.[0] || [];
     
-    // 0-indexed in API, 1-indexed in rowNumber property.
-    const row = (await sheet.getRows({ offset: rowIndex - 2, limit: 1 }))[0]; // -2 because: header is row 1, API offset 0 is data row 1.
-    // Wait, getRows offset is data rows.
-    // If rowNumber is 2 (first data row), offset should be 0.
-    // So offset = rowIndex - 2.
+    const statusIdx = headers.findIndex((h: string) => h.toLowerCase() === 'status');
+    if (statusIdx === -1) {
+      console.warn("No status column found");
+      return;
+    }
+
+    const statusCol = String.fromCharCode(65 + statusIdx); // A=65
+    const range = `${sheetName}!${statusCol}${rowIndex}`;
     
-    if (row) {
-      row.assign({ status: status, ...extraData });
-      await row.save();
+    const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.sheetId}/values/${encodeURIComponent(range)}?valueInputOption=RAW`;
+    await fetch(updateUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        values: [[status]],
+      }),
+    });
+
+    // Handle extra data if provided
+    if (extraData) {
+      for (const [key, value] of Object.entries(extraData)) {
+        const colIdx = headers.findIndex((h: string) => h.toLowerCase() === key.toLowerCase());
+        if (colIdx !== -1) {
+          const col = String.fromCharCode(65 + colIdx);
+          const extraRange = `${sheetName}!${col}${rowIndex}`;
+          const extraUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.sheetId}/values/${encodeURIComponent(extraRange)}?valueInputOption=RAW`;
+          await fetch(extraUrl, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              values: [[value]],
+            }),
+          });
+        }
+      }
     }
   }
 }
