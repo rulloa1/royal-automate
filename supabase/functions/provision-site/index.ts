@@ -724,22 +724,80 @@ const corsHeaders = {
 function generateHtml(template: string, data: any): string {
     let html = template;
 
-    // Define replacements
-    const replacements: Record<string, string> = {
-        "{{agent_name}}": data.agent_name || "Agent",
-        "{{brokerage}}": data.brokerage || "Real Estate",
-        "{{city_area}}": data.city_area || "City",
-        "{{bio}}": data.bio || "Experience the future of living.",
-        // Add more mappings as needed based on the template possibilities
+    // Construct the agent configuration object
+    const agentConfig = {
+        name: data.agent_name || "Agent Name",
+        title: "Luxury Real Estate",
+        brokerage: data.brokerage || "Real Estate Brokerage",
+        location: (data.city_area || "City") + ", TX",
+        brokerPageNote: "Broker Page Only",
+
+        email: "contact@example.com", // You might want to pass this in agent_data if available
+        phone: "(555) 123-4567",
+        phoneClean: "5551234567",
+
+        social: {
+            instagram: "#",
+            linkedin: "#",
+            zillow: "#",
+            website: "#"
+        },
+
+        hero: {
+            headline: `ELEVATED LIVING<br><span class='italic text-monarch-gold font-light'>IN ${(data.city_area || "YOUR CITY").toUpperCase()}</span>`,
+            backgroundImage: "https://images.unsplash.com/photo-1600596542815-2495db9dc2c3?q=80&w=2070&auto=format&fit=crop"
+        },
+
+        philosophy: {
+            headline: "Market expertise,<br><span class='italic text-monarch-dark/80'>unwavering</span><br>dedication.",
+            text: data.bio || "Representing the finest properties. My philosophy blends data-driven market insight with the art of luxury service.",
+            stats: {
+                years: "10+",
+                yearsLabel: "Years Experience",
+                producer: "Top 1%",
+                producerLabel: "Producer",
+                availability: "24/7",
+                availabilityLabel: "Availability"
+            },
+            image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2053&auto=format&fit=crop"
+        },
+
+        portfolio: {
+            active: {
+                title: "The Woodlands Estate",
+                price: "$2,850,000",
+                specs: "5 Bed | 5.5 Bath",
+                image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop",
+                hotspots: [
+                    { title: "Carlton Woods", desc: "Premier gated community featuring world-class golf and amenities." },
+                    { title: "Grand Facade", desc: "Classic architecture with modern sensibilities and expansive grounds." }
+                ]
+            },
+            sold: {
+                title: "Benders Landing",
+                status: "Sold Above Asking",
+                image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop"
+            }
+        },
+
+        locationData: [
+            { time: 10, text: "TO THE WOODLANDS<br>WATERWAY" },
+            { time: 25, text: "TO AIRPORT" },
+            { time: 5, text: "TO EXXONMOBIL<br>CAMPUS" },
+            { time: 35, text: "TO DOWNTOWN" }
+        ],
+
+        services: [
+            { title: "Market Analysis", desc: "Deep analytical insight into real estate trends.", icon: "fa-chart-line" },
+            { title: "Luxury Staging", desc: "Curating environments that resonate.", icon: "fa-couch" },
+            { title: "Global Reach", desc: "Connecting with buyers from relocation hotspots.", icon: "fa-globe" }
+        ]
     };
 
-    // Perform replacements
-    for (const [key, value] of Object.entries(replacements)) {
-        // Replace all occurrences
-        html = html.replaceAll(key, value);
-    }
+    // Inject the config as a script tag
+    const configScript = `<script>const agentConfig = ${JSON.stringify(agentConfig, null, 4)};</script>`;
 
-    return html;
+    return html.replace("{{AGENT_CONFIG_SCRIPT}}", configScript);
 }
 
 import { createClient } from "@supabase/supabase-js";

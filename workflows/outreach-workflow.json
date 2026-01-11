@@ -56,26 +56,41 @@
         },
         {
             "parameters": {
-                "sendTo": "={{ $json.Email }}",
-                "subject": "Your Real Estate Website for {{ $json.Name }}",
-                "emailType": "text",
-                "message": "={{ \"Hi \" + ($json.Name.split(' ')[0] || \"Agent\") + \",\\n\\nI built a modern, high-conversion website specifically for you.\\n\\nHere is your private live preview:\\n\" + $json[\"Website URL\"] + \"\\n\\nLet me know what you think!\\n\\nBest,\\nRoy Ulloa\\nRoysCompany\" }}",
+                "method": "POST",
+                "url": "https://api.leadgenpro.app/webhook/incoming/abc123xyz",
+                "authentication": "none",
+                "sendBody": true,
+                "contentType": "json",
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "agent_name",
+                            "value": "={{ $json.Name }}"
+                        },
+                        {
+                            "name": "email",
+                            "value": "={{ $json.Email }}"
+                        },
+                        {
+                            "name": "website_url",
+                            "value": "={{ $json[\"Website URL\"] }}"
+                        },
+                        {
+                            "name": "source",
+                            "value": "royal-automate"
+                        }
+                    ]
+                },
                 "options": {}
             },
-            "id": "send-email",
-            "name": "Gmail - Send Outreach",
-            "type": "n8n-nodes-base.gmail",
-            "typeVersion": 2.1,
+            "id": "send-webhook",
+            "name": "Webhook - LeadGenPro",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
             "position": [
                 850,
                 300
-            ],
-            "credentials": {
-                "gmailOAuth2": {
-                    "id": "gmail_creds",
-                    "name": "Gmail Account"
-                }
-            }
+            ]
         },
         {
             "parameters": {
@@ -142,14 +157,14 @@
             "main": [
                 [
                     {
-                        "node": "Gmail - Send Outreach",
+                        "node": "Webhook - LeadGenPro",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Gmail - Send Outreach": {
+        "Webhook - LeadGenPro": {
             "main": [
                 [
                     {
