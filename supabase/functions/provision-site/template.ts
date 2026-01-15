@@ -1,4 +1,4 @@
-export const WEBSITE_TEMPLATE = \`
+export const WEBSITE_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -246,7 +246,7 @@ export const WEBSITE_TEMPLATE = \`
             }
 
             // General
-            document.title = \`\${agentConfig.name} | \${agentConfig.title}\`;
+            document.title = agentConfig.name + " | " + agentConfig.title;
             document.getElementById('nav-agent-name').innerText = agentConfig.name;
             document.getElementById('nav-brokerage').innerText = agentConfig.brokerage;
             document.getElementById('copyright-name').innerText = agentConfig.name;
@@ -254,7 +254,7 @@ export const WEBSITE_TEMPLATE = \`
 
             // Hero
             document.getElementById('hero-headline').innerHTML = agentConfig.hero.headline;
-            document.getElementById('hero-bg').style.backgroundImage = \`url('\${agentConfig.hero.backgroundImage}')\`;
+            document.getElementById('hero-bg').style.backgroundImage = "url('" + agentConfig.hero.backgroundImage + "')";
 
             // Philosophy
             document.getElementById('phil-headline').innerHTML = agentConfig.philosophy.headline;
@@ -268,7 +268,7 @@ export const WEBSITE_TEMPLATE = \`
             
             // Active Listing
             document.getElementById('active-title').innerText = agentConfig.portfolio.active.title;
-            document.getElementById('active-specs').innerText = \`\${agentConfig.portfolio.active.price} | \${agentConfig.portfolio.active.specs}\`;
+            document.getElementById('active-specs').innerText = agentConfig.portfolio.active.price + " | " + agentConfig.portfolio.active.specs;
             document.getElementById('active-img').src = agentConfig.portfolio.active.image;
             document.getElementById('hotspot-1-title').innerText = agentConfig.portfolio.active.hotspots[0].title;
             document.getElementById('hotspot-1-desc').innerText = agentConfig.portfolio.active.hotspots[0].desc;
@@ -284,12 +284,11 @@ export const WEBSITE_TEMPLATE = \`
             const servicesContainer = document.getElementById('services-grid');
             agentConfig.services.forEach((service, index) => {
                 const isMiddle = index === 1 ? 'md:-mt-12 bg-white/5' : '';
-                const html = \`
-                 <div class="p-8 border border-white/5 hover:border-monarch-gold/30 transition-colors duration-500 \${isMiddle}">
-                    <span class="text-monarch-gold text-2xl mb-4 block"><i class="fas \${service.icon}"></i></span>
-                    <h4 class="font-serif text-2xl mb-2">\${service.title}</h4>
-                    <p class="text-xs opacity-60 leading-relaxed">\${service.desc}</p>
-                 </div>\`;
+                const html = '<div class="p-8 border border-white/5 hover:border-monarch-gold/30 transition-colors duration-500 ' + isMiddle + '">' +
+                    '<span class="text-monarch-gold text-2xl mb-4 block"><i class="fas ' + service.icon + '"></i></span>' +
+                    '<h4 class="font-serif text-2xl mb-2">' + service.title + '</h4>' +
+                    '<p class="text-xs opacity-60 leading-relaxed">' + service.desc + '</p>' +
+                 '</div>';
                  servicesContainer.innerHTML += html;
             });
 
@@ -297,10 +296,10 @@ export const WEBSITE_TEMPLATE = \`
             document.getElementById('footer-name').innerText = agentConfig.name;
             document.getElementById('footer-brokerage').innerText = agentConfig.brokerage;
             document.getElementById('footer-email').innerText = agentConfig.email;
-            document.getElementById('footer-email').href = \`mailto:\${agentConfig.email}\`;
+            document.getElementById('footer-email').href = "mailto:" + agentConfig.email;
             document.getElementById('footer-phone').innerText = agentConfig.phone;
-            document.getElementById('footer-phone').href = \`tel:\${agentConfig.phoneClean}\`;
-            document.getElementById('footer-note').innerHTML = \`\${agentConfig.location}<br>\${agentConfig.brokerPageNote}\`;
+            document.getElementById('footer-phone').href = "tel:" + agentConfig.phoneClean;
+            document.getElementById('footer-note').innerHTML = agentConfig.location + "<br>" + agentConfig.brokerPageNote;
             
             document.getElementById('link-insta').href = agentConfig.social.instagram;
             document.getElementById('link-linkedin').href = agentConfig.social.linkedin;
@@ -395,4 +394,4 @@ export const WEBSITE_TEMPLATE = \`
     </script>
 </body>
 </html>
-\`;
+`;
