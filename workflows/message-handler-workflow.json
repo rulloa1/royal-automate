@@ -1,0 +1,95 @@
+{
+    "name": "Message Lead Handler",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "message-lead",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ],
+            "id": "webhook-message",
+            "name": "Webhook (Message Lead)"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Message received from \" + $json.name\n}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                470,
+                100
+            ],
+            "id": "respond-to-webhook",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA",
+                    "mode": "id"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "Sheet1",
+                    "mode": "name"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Name": "={{ $json.name }}",
+                        "Email": "={{ $json.email }}",
+                        "Phone": "={{ $json.phone }}",
+                        "Message": "={{ $json.message }}",
+                        "Website URL": "={{ $json.url }}",
+                        "Timestamp": "={{ $now.toISO() }}"
+                    }
+                },
+                "options": {}
+            },
+            "id": "append-to-sheet",
+            "name": "Append to Leads Request",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                470,
+                300
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "KtDaFIOItvL4H7UDe",
+                    "name": "Google Sheets Account"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Webhook (Message Lead)": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Append to Leads Request",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

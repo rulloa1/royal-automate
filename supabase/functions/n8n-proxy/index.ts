@@ -5,9 +5,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const N8N_HOST = Deno.env.get('N8N_HOST') || 'https://ulloarory.app.n8n.cloud';
+
 const N8N_WEBHOOKS = {
-  'call-lead': 'https://ulloarory.app.n8n.cloud/webhook/call-lead',
-  'message-lead': 'https://ulloarory.app.n8n.cloud/webhook/message-lead',
+  'call-lead': `${N8N_HOST}/webhook/call-lead`,
+  'message-lead': `${N8N_HOST}/webhook/message-lead`,
 };
 
 serve(async (req) => {
