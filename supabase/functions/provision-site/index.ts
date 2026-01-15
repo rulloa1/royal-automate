@@ -797,10 +797,20 @@ function generateHtml(template: string, data: any): string {
     // Inject the config as a script tag
     const configScript = `<script>const agentConfig = ${JSON.stringify(agentConfig, null, 4)};</script>`;
 
+    // Replace simple handlebars-style placeholders
+    const simplePlaceholders = [
+        'agent_name', 'brokerage', 'bio', 'city_area', 'phone', 'email'
+    ];
+    
+    simplePlaceholders.forEach(key => {
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        html = html.replace(regex, data[key] || '');
+    });
+
     return html.replace("{{AGENT_CONFIG_SCRIPT}}", configScript);
 }
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // ... existing code ...
 
@@ -825,6 +835,7 @@ Deno.serve(async (req: Request) => {
         // Generate the HTML
         const generatedHtml = generateHtml(WEBSITE_TEMPLATE, agent_data);
         let storageUrl = "";
+        let uploadErrorDetail = null;
 
         // Save to Storage if requested
         if (save_to_storage) {
@@ -832,6 +843,22 @@ Deno.serve(async (req: Request) => {
             const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
             const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
             const supabase = createClient(supabaseUrl, supabaseKey);
+
+            // Ensure bucket exists
+            const { data: bucketData, error: bucketError } = await supabase.storage.getBucket("sites");
+            if (bucketError) {
+                console.log("Bucket 'sites' not found, creating...");
+                const { error: createError } = await supabase.storage.createBucket("sites", {
+                    public: true,
+                    fileSizeLimit: 10485760, // 10MB
+                    allowedMimeTypes: ["text/html"]
+                });
+                if (createError) {
+                    console.error("Failed to create bucket:", createError);
+                    // Fallback: Try to upload anyway, maybe getBucket failed but it exists? 
+                    // Or just let the upload fail and catch it there.
+                }
+            }
 
             // Create a slug for the filename
             const slug = agent_data.agent_name.toLowerCase().replace(/[^a-z0-9]/g, "-") + "-" + Date.now();
@@ -847,7 +874,7 @@ Deno.serve(async (req: Request) => {
 
             if (uploadError) {
                 console.error("Storage upload failed:", uploadError);
-                // Don't fail the whole request, just log it
+                uploadErrorDetail = uploadError;
             } else {
                 const { data: { publicUrl } } = supabase.storage.from("sites").getPublicUrl(filename);
                 storageUrl = publicUrl;
@@ -864,7 +891,8 @@ Deno.serve(async (req: Request) => {
                 html_content: generatedHtml,
                 details: {
                     method: "static_template_replacement",
-                    storage_enabled: !!save_to_storage
+                    storage_enabled: !!save_to_storage,
+                    upload_error: uploadErrorDetail
                 }
             }),
             {

@@ -11,8 +11,8 @@ export class OutreachService {
 
   async sendEmail(lead: Lead, templateName: 'initial' | 'follow_up_1' | 'follow_up_2' | 'final'): Promise<string> {
     if (!this.resendApiKey) {
-      console.log(`[MOCK EMAIL] To: ${lead.email} | Template: ${templateName}`);
-      return "mock-message-id";
+      console.warn(`[WARNING] RESEND_API_KEY missing. Cannot send email to ${lead.email}.`);
+      throw new Error("Missing RESEND_API_KEY");
     }
 
     const { subject, html } = this.getTemplate(templateName, lead);

@@ -44,6 +44,7 @@ ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS next_follow_up_at TIMESTAMP WI
 ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS email_thread_id TEXT;
 ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS outreach_logs JSONB[] DEFAULT ARRAY[]::JSONB[];
 ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS google_sheet_row_index INTEGER;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS preferred_template TEXT;
 
 -- 4. Add Indexes (Idempotent)
 CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads(status);

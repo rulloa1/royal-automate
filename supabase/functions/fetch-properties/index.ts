@@ -32,7 +32,7 @@ serve(async (req) => {
         const { slug } = await req.json();
 
         // Get Credentials
-        const sheetId = Deno.env.get("SHEET_ID");
+        const sheetId = Deno.env.get("SHEET_ID") || "1WJZdVXF14QkbVWUwYV1xwtBWjRis3ag-";
         const clientEmail = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_EMAIL") || Deno.env.get("CLIENT_EMAIL");
         const privateKey = Deno.env.get("GOOGLE_PRIVATE_KEY") || Deno.env.get("PRIVATE_KEY");
         const serviceAccountStr = Deno.env.get("GOOGLE_SERVICE_ACCOUNT");

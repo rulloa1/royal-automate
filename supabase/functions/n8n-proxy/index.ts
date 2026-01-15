@@ -5,11 +5,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const N8N_HOST = Deno.env.get('N8N_HOST') || 'https://ulloarory.app.n8n.cloud';
-
-const N8N_WEBHOOKS = {
-  'call-lead': `${N8N_HOST}/webhook/call-lead`,
-  'message-lead': `${N8N_HOST}/webhook/message-lead`,
+const WEBHOOK_URLS = {
+  'call-lead': Deno.env.get('N8N_WEBHOOK_CALL_LEAD'),
+  'message-lead': Deno.env.get('N8N_WEBHOOK_MESSAGE_LEAD'),
+  'activate-site': Deno.env.get('N8N_WEBHOOK_ACTIVATE_SITE'),
+  'run-batch': 'http://localhost:5680/webhook/run-batch',
 };
 
 serve(async (req) => {
@@ -20,24 +20,31 @@ serve(async (req) => {
 
   try {
     const { action, ...data } = await req.json();
-    
+
     console.log(`Proxying request to n8n: action=${action}`, data);
 
-    const webhookUrl = N8N_WEBHOOKS[action as keyof typeof N8N_WEBHOOKS];
-    
+    const webhookUrl = WEBHOOK_URLS[action as keyof typeof WEBHOOK_URLS];
+
     if (!webhookUrl) {
-      console.error(`Invalid action: ${action}`);
+      console.error(`Invalid action or missing webhook URL for: ${action}`);
       return new Response(
-        JSON.stringify({ error: 'Invalid action', validActions: Object.keys(N8N_WEBHOOKS) }),
+        JSON.stringify({ error: 'Invalid or unconfigured action', validActions: Object.keys(WEBHOOK_URLS) }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    const N8N_TOKEN = Deno.env.get('N8N_TOKEN');
+
     console.log(`Calling n8n webhook: ${webhookUrl}`);
-    
+
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (N8N_TOKEN) {
+      headers['Authorization'] = `Bearer ${N8N_TOKEN}`; // or 'X-N8N-API-KEY' depending on setup, usually Bearer for JWT
+    }
+
     const response = await fetch(webhookUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(data),
     });
 
@@ -54,14 +61,14 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify(responseData),
-      { 
-        status: response.status, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: response.status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
 
   } catch (error) {
-    console.error('Error proxying to n8n:', error);
+    console.error('Error proxying to Make.com:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Failed to process request' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

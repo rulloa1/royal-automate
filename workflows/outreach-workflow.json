@@ -57,7 +57,7 @@
         {
             "parameters": {
                 "method": "POST",
-                "url": "https://api.leadgenpro.app/webhook/incoming/abc123xyz",
+                "url": "https://api.leadgenpro.app/webhook/incoming/royal-automate",
                 "authentication": "none",
                 "sendBody": true,
                 "contentType": "json",
