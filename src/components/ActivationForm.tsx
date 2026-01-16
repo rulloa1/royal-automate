@@ -102,6 +102,7 @@ export function ActivationForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
+    const [generatedHtml, setGeneratedHtml] = useState<string | null>(null);
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [profileFile, setProfileFile] = useState<File | null>(null);
 
@@ -204,6 +205,7 @@ export function ActivationForm() {
 
             // Create a Blob URL for preview if HTML content is returned
             if (provisionData.html_content) {
+                setGeneratedHtml(provisionData.html_content);
                 const blob = new Blob([provisionData.html_content], { type: 'text/html' });
                 const url = URL.createObjectURL(blob);
                 setGeneratedUrl(url);
@@ -232,12 +234,18 @@ export function ActivationForm() {
                     Your website has been provisioned. You can preview it immediately below.
                 </p>
 
-                {generatedUrl && (
+                {generatedHtml && (
                     <div className="mb-8">
                         <Button
                             size="lg"
                             className="bg-[#00FF9D] text-black hover:bg-[#00FF9D]/90 font-bold text-lg px-8 py-6 h-auto shadow-[0_0_20px_rgba(0,255,157,0.3)]"
-                            onClick={() => window.open(generatedUrl, '_blank')}
+                            onClick={() => {
+                                const newWindow = window.open();
+                                if (newWindow) {
+                                    newWindow.document.write(generatedHtml);
+                                    newWindow.document.close();
+                                }
+                            }}
                         >
                             PREVIEW MY WEBSITE
                         </Button>

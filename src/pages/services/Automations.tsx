@@ -120,6 +120,65 @@ const Automations = () => {
                         </div>
                     </section>
 
+                    {/* Featured Workflow: Lead Gen Machine */}
+                    <section className="py-24 bg-background relative overflow-hidden">
+                         {/* Background Elements */}
+                         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2" />
+
+                        <div className="container mx-auto px-4">
+                            <div className="text-center mb-16">
+                                <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
+                                    Real-World Example
+                                </div>
+                                <h2 className="text-3xl md:text-4xl font-bold mb-4">Quick Sale Lead Gen Machine</h2>
+                                <p className="text-muted-foreground max-w-2xl mx-auto">
+                                    See how we automate the entire sales prospecting process, from finding leads to personalized outreach.
+                                </p>
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto relative">
+                                {/* Connecting Line (Desktop) */}
+                                <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary/20 to-transparent -translate-y-full" />
+
+                                <InteractiveCard className="relative bg-card z-10">
+                                    <div className="p-6 flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-2xl">
+                                            🔍
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-3">1. Smart Scraping</h3>
+                                        <p className="text-muted-foreground text-sm">
+                                            Automated Google Maps scraper finds businesses in your niche (e.g., "Dentists in Houston") with contact info.
+                                        </p>
+                                    </div>
+                                </InteractiveCard>
+
+                                <InteractiveCard className="relative bg-card z-10">
+                                    <div className="p-6 flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-2xl">
+                                            ⚡
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-3">2. Lead Filtering</h3>
+                                        <p className="text-muted-foreground text-sm">
+                                            We automatically qualify leads based on rating (4.0+), review count (10+), and available contact methods.
+                                        </p>
+                                    </div>
+                                </InteractiveCard>
+
+                                <InteractiveCard className="relative bg-card z-10">
+                                    <div className="p-6 flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-2xl">
+                                            🤖
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-3">3. AI Personalization</h3>
+                                        <p className="text-muted-foreground text-sm">
+                                            GPT-4o analyzes their website and reviews to generate a unique, punchy email opener for every single prospect.
+                                        </p>
+                                    </div>
+                                </InteractiveCard>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* CTA Section */}
                     <section className="py-24">
                         <div className="container mx-auto px-4">

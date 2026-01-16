@@ -72,6 +72,34 @@
                     "name": "Google Sheets Account"
                 }
             }
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        { "name": "email", "value": "={{ $json.email }}" },
+                        { "name": "phone", "value": "={{ $json.phone }}" },
+                        { "name": "firstName", "value": "={{ $json.name.split(' ')[0] }}" },
+                        { "name": "lastName", "value": "={{ $json.name.split(' ').slice(1).join(' ') }}" },
+                        { "name": "name", "value": "={{ $json.name }}" },
+                        { "name": "message", "value": "={{ $json.message }}" },
+                        { "name": "tags", "value": "inbound-message" },
+                        { "name": "source", "value": "royal-automate" }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Sync to GoHighLevel",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                470,
+                500
+            ],
+            "id": "ghl-sync"
         }
     ],
     "connections": {
@@ -85,6 +113,11 @@
                     },
                     {
                         "node": "Append to Leads Request",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Sync to GoHighLevel",
                         "type": "main",
                         "index": 0
                     }

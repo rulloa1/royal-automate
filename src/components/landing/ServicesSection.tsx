@@ -1,5 +1,6 @@
 import { Mic, MessageSquare, Workflow, Check, ArrowUpRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { Link } from "react-router-dom";
 
 const ServicesSection = () => {
     const { ref: headerRef, isVisible: headerVisible } = useIntersectionObserver(0.2);
@@ -44,42 +45,46 @@ const ServicesSection = () => {
                 </div>
 
                 {/* Service 2 */}
-                <div className="glass-card p-8 group">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <MessageSquare className="w-5 h-5" />
+                <Link to="/services/chatbot-development" className="block h-full">
+                    <div className="glass-card p-8 group h-full transition-colors hover:bg-white/5">
+                        <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <MessageSquare className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-lg font-medium mb-3 text-white">WhatsApp & SMS Bots</h3>
+                        <p className="text-neutral-400 text-sm leading-relaxed mb-6">
+                            Direct integration with WhatsApp Business API. Auto-reply to leads instantly, nurture prospects through sequences, and sync all chats to CRM.
+                        </p>
+                        <ul className="space-y-3">
+                            <li className="flex items-center gap-3 text-xs text-neutral-500">
+                                <Check className="w-3 h-3 text-emerald-500/60" /> Instant Lead Response
+                            </li>
+                            <li className="flex items-center gap-3 text-xs text-neutral-500">
+                                <Check className="w-3 h-3 text-emerald-500/60" /> Multi-step Flows
+                            </li>
+                        </ul>
                     </div>
-                    <h3 className="text-lg font-medium mb-3 text-white">WhatsApp & SMS Bots</h3>
-                    <p className="text-neutral-400 text-sm leading-relaxed mb-6">
-                        Direct integration with WhatsApp Business API. Auto-reply to leads instantly, nurture prospects through sequences, and sync all chats to CRM.
-                    </p>
-                    <ul className="space-y-3">
-                        <li className="flex items-center gap-3 text-xs text-neutral-500">
-                            <Check className="w-3 h-3 text-emerald-500/60" /> Instant Lead Response
-                        </li>
-                        <li className="flex items-center gap-3 text-xs text-neutral-500">
-                            <Check className="w-3 h-3 text-emerald-500/60" /> Multi-step Flows
-                        </li>
-                    </ul>
-                </div>
+                </Link>
 
                 {/* Service 3 */}
-                <div className="glass-card p-8 group">
-                    <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/10 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <Workflow className="w-5 h-5" />
+                <Link to="/services/automations" className="block h-full">
+                    <div className="glass-card p-8 group h-full transition-colors hover:bg-white/5">
+                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/10 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <Workflow className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-lg font-medium mb-3 text-white">CRM & n8n Workflows</h3>
+                        <p className="text-neutral-400 text-sm leading-relaxed mb-6">
+                            The central nervous system of your business. I build complex n8n workflows that connect forms, spreadsheets, and agents into one seamless loop.
+                        </p>
+                        <ul className="space-y-3">
+                            <li className="flex items-center gap-3 text-xs text-neutral-500">
+                                <Check className="w-3 h-3 text-purple-500/60" /> Error-free Data Entry
+                            </li>
+                            <li className="flex items-center gap-3 text-xs text-neutral-500">
+                                <Check className="w-3 h-3 text-purple-500/60" /> Automated Reporting
+                            </li>
+                        </ul>
                     </div>
-                    <h3 className="text-lg font-medium mb-3 text-white">CRM & n8n Workflows</h3>
-                    <p className="text-neutral-400 text-sm leading-relaxed mb-6">
-                        The central nervous system of your business. I build complex n8n workflows that connect forms, spreadsheets, and agents into one seamless loop.
-                    </p>
-                    <ul className="space-y-3">
-                        <li className="flex items-center gap-3 text-xs text-neutral-500">
-                            <Check className="w-3 h-3 text-purple-500/60" /> Error-free Data Entry
-                        </li>
-                        <li className="flex items-center gap-3 text-xs text-neutral-500">
-                            <Check className="w-3 h-3 text-purple-500/60" /> Automated Reporting
-                        </li>
-                    </ul>
-                </div>
+                </Link>
             </div>
         </section>
     );

@@ -74,6 +74,33 @@
             ],
             "id": "vapi-api-call",
             "name": "Trigger Vapi Call"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        { "name": "phone", "value": "={{ $json.phone }}" },
+                        { "name": "firstName", "value": "={{ $json.name.split(' ')[0] }}" },
+                        { "name": "lastName", "value": "={{ $json.name.split(' ').slice(1).join(' ') }}" },
+                        { "name": "name", "value": "={{ $json.name }}" },
+                        { "name": "tags", "value": "inbound-call-request" },
+                        { "name": "source", "value": "royal-automate" },
+                        { "name": "locationId", "value": "NInHwTLqrvG8hQm8B2hR" }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Sync to GoHighLevel",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                470,
+                500
+            ],
+            "id": "ghl-sync"
         }
     ],
     "connections": {
@@ -87,6 +114,11 @@
                     },
                     {
                         "node": "Trigger Vapi Call",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Sync to GoHighLevel",
                         "type": "main",
                         "index": 0
                     }
