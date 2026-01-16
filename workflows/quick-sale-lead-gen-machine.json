@@ -404,22 +404,8 @@
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "phoneNumberId",
-              "value": "YOUR_VAPI_PHONE_ID"
-            },
-            {
-              "name": "assistantId",
-              "value": "YOUR_VAPI_ASSISTANT_ID"
-            },
-            {
-              "name": "customer",
-              "value": "={{ {\"number\": $json.Phone, \"name\": $json['Business Name']} }}"
-            }
-          ]
-        },
+        "contentType": "json",
+        "body": "={\n   \"assistantId\": \"YOUR_VAPI_ASSISTANT_ID\",\n   \"customer\": {\n     \"number\": \"{{ $json.Phone }}\"\n   },\n   \"phoneNumberId\": \"YOUR_VAPI_PHONE_ID\",\n   \"assistantOverrides\": {\n     \"variableValues\": {\n       \"business_name\": \"{{ $json['Business Name'] }}\",\n       \"industry\": \"{{ $json.Category }}\",\n       \"city\": \"{{ $json.City }}\",\n       \"state\": \"{{ $json.State }}\",\n       \"rating\": \"{{ $json.Rating }}\",\n       \"reviews\": \"{{ $json.Reviews }}\",\n       \"website\": \"{{ $json.Website }}\",\n       \"email\": \"{{ $json.Email }}\",\n       \"phone\": \"{{ $json.Phone }}\",\n       \"audit_summary\": \"{{ $json['Audit Results'].substring(0, 300) }}\",\n       \"biggest_issue\": \"Missing online booking system\",\n       \"biggest_issue_cost\": \"$2,500\",\n       \"estimated_loss\": \"$5,000\",\n       \"number_of_issues\": \"5\",\n       \"calendly_link\": \"https://calendly.com/royscompany/website-strategy\",\n       \"your_phone\": \"(281) 555-0100\",\n       \"average_customer_value\": \"$300\",\n       \"monthly_revenue_increase\": \"$6,000\",\n       \"number_of_lost_customers\": \"16\"\n     }\n   }\n }",
         "options": {}
       },
       "id": "vapi_call",
@@ -541,8 +527,117 @@
         }
       }
     }
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "vapi_webhook",
+      "name": "Vapi Webhook Receiver",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        600
+      ],
+      "webhookId": "YOUR_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "baseId": {
+          "__rl": true,
+          "value": "appYOURBASEID",
+          "mode": "string"
+        },
+        "table": {
+          "__rl": true,
+          "value": "Prospects",
+          "mode": "string"
+        },
+        "id": "={{ $json.body.call.customer.number }}",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Call Attempted": true,
+            "Call Status": "={{ $json.body.call.endedReason }}",
+            "Call Duration": "={{ $json.body.call.duration }}",
+            "Appointment Booked": "={{ $json.body.analysis.structuredData.appointment_booked }}",
+            "Call Recording URL": "={{ $json.body.artifact.recordingUrl }}",
+            "Call Transcript": "={{ $json.body.artifact.transcript }}",
+            "Interest Level": "={{ $json.body.analysis.structuredData.interest_level }}",
+            "Callback Requested": "={{ $json.body.analysis.structuredData.callback_requested }}",
+            "Best Time to Call Back": "={{ $json.body.analysis.structuredData.best_time_to_call }}",
+            "Vapi Call ID": "={{ $json.body.call.id }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "update_airtable_call_results",
+      "name": "Update Airtable with Call Results",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [
+        650,
+        600
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "airtable_cred",
+          "name": "Airtable Personal Access Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "sms",
+        "operation": "send",
+        "to": "={{ $json.body.call.customer.number }}",
+        "from": "YOUR_TWILIO_NUMBER",
+        "message": "=Hi {{ $json.body.assistantOverrides.variableValues.business_name }}! This is Roy from RoysCompany. Here's your free website audit: {{ $json.body.assistantOverrides.variableValues.landing_page_url }}\n\nBook a time to chat: https://calendly.com/royscompany/website-strategy\n\nQuestions? Text me back or call (281) 555-0100.",
+        "options": {}
+      },
+      "id": "send_sms_followup",
+      "name": "Send SMS Follow-Up",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        850,
+        700
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "twilio_cred",
+          "name": "Twilio Account"
+        }
+      }
+    }
   ],
   "connections": {
+    "Vapi Webhook Receiver": {
+      "main": [
+        [
+          {
+            "node": "Update Airtable with Call Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Airtable with Call Results": {
+      "main": [
+        [
+          {
+            "node": "Send SMS Follow-Up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Ampfyi Google Maps Scraper": {
       "main": [
         [
