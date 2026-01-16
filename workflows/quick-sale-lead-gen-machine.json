@@ -3,14 +3,19 @@
   "nodes": [
     {
       "parameters": {
-        "query": "dentist in houston tx",
-        "limit": 100,
-        "enrichment": true
+        "method": "POST",
+        "url": "https://api.ampfyi.com/v1/maps/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={\n   \"query\": \"{{ $json.query || 'dentist in houston tx' }}\",\n   \"limit\": 100,\n   \"language\": \"en\",\n   \"region\": \"us\",\n   \"enrichment\": {\n     \"email\": true,\n     \"phone\": true,\n     \"social\": true,\n     \"website_analysis\": true\n   }\n }",
+        "options": {}
       },
       "id": "ampfyi_scraper",
       "name": "Ampfyi Google Maps Scraper",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
+      "typeVersion": 4.1,
       "position": [
         250,
         300
@@ -21,7 +26,6 @@
           "name": "Ampfyi API"
         }
       },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
