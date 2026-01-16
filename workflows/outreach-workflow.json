@@ -57,7 +57,7 @@
         {
             "parameters": {
                 "method": "POST",
-                "url": "https://api.leadgenpro.app/webhook/incoming/royal-automate",
+                "url": "https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/send-manual-email",
                 "authentication": "none",
                 "sendBody": true,
                 "contentType": "json",
