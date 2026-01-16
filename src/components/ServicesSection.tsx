@@ -1,6 +1,7 @@
 import { Workflow, Cpu, Zap, ChevronRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { InteractiveCard } from "@/components/ui/InteractiveCard";
+import { Link } from "react-router-dom";
 
 const ServicesSection = () => {
   const { ref, isVisible } = useIntersectionObserver();
@@ -45,6 +46,7 @@ const ServicesSection = () => {
         "Document processing (OCR)",
         "Automated reporting",
       ],
+      link: "/services/automations",
     },
     {
       icon: Cpu,
@@ -55,6 +57,7 @@ const ServicesSection = () => {
         "Sentiment Analysis",
         "Proprietary Data RAG",
       ],
+      link: "/services/chatbot-development",
     },
     {
       icon: Zap,
@@ -87,25 +90,49 @@ const ServicesSection = () => {
               className={`${isVisible ? `animate-fade-in-up animation-delay-${(index + 2) * 200}` : "opacity-0"
                 }`}
             >
-              <InteractiveCard>
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors">
-                  <service.icon className="w-6 h-6 text-foreground" />
-                </div>
+              {service.link ? (
+                <Link to={service.link} className="block h-full">
+                  <InteractiveCard>
+                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors">
+                      <service.icon className="w-6 h-6 text-foreground" />
+                    </div>
 
-                <h3 className="text-xl font-medium mb-4">{service.title}</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
-                  {service.description}
-                </p>
+                    <h3 className="text-xl font-medium mb-4">{service.title}</h3>
+                    <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
+                      {service.description}
+                    </p>
 
-                <ul className="space-y-3">
-                  {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-3 text-sm">
-                      <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </InteractiveCard>
+                    <ul className="space-y-3">
+                      {service.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-center gap-3 text-sm">
+                          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="text-muted-foreground">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </InteractiveCard>
+                </Link>
+              ) : (
+                <InteractiveCard>
+                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors">
+                    <service.icon className="w-6 h-6 text-foreground" />
+                  </div>
+
+                  <h3 className="text-xl font-medium mb-4">{service.title}</h3>
+                  <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
+                    {service.description}
+                  </p>
+
+                  <ul className="space-y-3">
+                    {service.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center gap-3 text-sm">
+                        <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-muted-foreground">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </InteractiveCard>
+              )}
             </div>
           ))}
         </div>

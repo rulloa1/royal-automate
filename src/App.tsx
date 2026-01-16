@@ -16,6 +16,7 @@ import { Watermark } from "@/components/Watermark";
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const Leads = lazy(() => import("./pages/Leads"));
 const ChatbotDevelopment = lazy(() => import("./pages/services/ChatbotDevelopment"));
+const Automations = lazy(() => import("./pages/services/Automations"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Activation = lazy(() => import("./pages/Activation"));
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/services/chatbot-development" element={<ChatbotDevelopment />} />
+              <Route path="/services/automations" element={<Automations />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/leads" element={<Leads />} />
               <Route path="/template" element={<IndustryTemplate />} />

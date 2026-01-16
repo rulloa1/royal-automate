@@ -18,6 +18,7 @@ const Header = () => {
   const navLinks = [
     { href: "#services", label: "Services" },
     { href: "/services/chatbot-development", label: "Chatbot Dev" },
+    { href: "/services/automations", label: "Automations" },
     { href: "/blog", label: "Blog" },
     { href: "#pricing", label: "Pricing" },
     { href: "#contact", label: "Contact" },

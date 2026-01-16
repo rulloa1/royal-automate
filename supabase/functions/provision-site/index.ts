@@ -13,19 +13,24 @@ const corsHeaders = {
 function generateHtml(template: string, data: any): string {
     let html = template;
 
+    // Strict validation - fail if core data is missing
+    if (!data.agent_name) throw new Error("Missing 'agent_name' for site generation");
+    if (!data.email) throw new Error("Missing 'email' for site generation");
+    // Phone is optional but recommended; others like city_area can be inferred or left generic
+
     const agentConfig = {
-        name: data.agent_name || "Agent Name",
+        name: data.agent_name,
         title: "Luxury Real Estate",
         brokerage: data.brokerage || "Real Estate Brokerage",
-        location: (data.city_area || "City") + ", TX",
+        location: (data.city_area || "Your City") + ", TX",
         brokerPageNote: "Broker Page Only",
-        email: data.email || "contact@example.com",
-        phone: data.phone || "(555) 123-4567",
-        phoneClean: (data.phone || "5551234567").replace(/\D/g, ""),
+        email: data.email,
+        phone: data.phone || "",
+        phoneClean: (data.phone || "").replace(/\D/g, ""),
         social: {
-            instagram: "#",
-            linkedin: "#",
-            zillow: "#",
+            instagram: data.social?.instagram || "#",
+            linkedin: data.social?.linkedin || "#",
+            zillow: data.social?.zillow || "#",
             website: "#"
         },
         hero: {
@@ -36,14 +41,14 @@ function generateHtml(template: string, data: any): string {
             headline: "Market expertise,<br><span class='italic text-monarch-dark/80'>unwavering</span><br>dedication.",
             text: data.bio || "Representing the finest properties. My philosophy blends data-driven market insight with the art of luxury service.",
             stats: {
-                years: "10+",
+                years: data.years_experience ? `${data.years_experience}+` : "10+",
                 yearsLabel: "Years Experience",
                 producer: "Top 1%",
                 producerLabel: "Producer",
                 availability: "24/7",
                 availabilityLabel: "Availability"
             },
-            image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2053&auto=format&fit=crop"
+            image: data.headshot_url || "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2053&auto=format&fit=crop"
         },
         portfolio: {
             active: {
