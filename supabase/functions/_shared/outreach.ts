@@ -42,6 +42,8 @@ export class OutreachService {
   private getTemplate(name: string, lead: Lead) {
     const firstName = lead.agent_name.split(" ")[0];
     const siteUrl = lead.website_url || "#";
+    // Hardcoded Stripe link for now - replace with dynamic one if needed
+    const checkoutLink = "https://buy.stripe.com/5kA8y8c0g2q4dUY5kk"; 
 
     switch (name) {
       case 'initial':
@@ -57,7 +59,8 @@ export class OutreachService {
               <li>Lead capture forms</li>
               <li>Your branding colors</li>
             </ul>
-            <p>I'm offering this for just $500 setup + $99/mo (normally $2,000+). Reply to claim it!</p>
+            <p>I'm offering this for just $500 setup + $99/mo (normally $2,000+). Reply to claim it or secure it instantly below:</p>
+            <p><a href="${checkoutLink}" style="background-color: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Get This Website Now</a></p>
             <br>
             <p>Best,<br>Roy</p>
           `
@@ -69,6 +72,7 @@ export class OutreachService {
             <p>Hi ${firstName},</p>
             <p>Just wanted to float this to the top of your inbox. Did you get a chance to see the site I built?</p>
             <p><a href="${siteUrl}">View Your Site</a></p>
+            <p>If you love it, you can secure it here: <a href="${checkoutLink}">Secure My Site</a></p>
             <p>Let me know what you think!</p>
             <br>
             <p>Best,<br>Roy</p>
@@ -81,6 +85,7 @@ export class OutreachService {
             <p>Hi ${firstName},</p>
             <p>I haven't heard back, so I assume you're busy. I can only hold this design for another 48 hours before I archive it.</p>
             <p>Link: <a href="${siteUrl}">${siteUrl}</a></p>
+            <p><a href="${checkoutLink}">Purchase Now</a></p>
             <br>
             <p>Best,<br>Roy</p>
           `

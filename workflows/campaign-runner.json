@@ -118,7 +118,20 @@
         },
         {
             "parameters": {
-                "jsCode": "const data = $input.first().json;\n// Handle various key casing from Sheets, prioritizing Company Name\nconst name = data[\"Company Name\"] || data.Name || data.name || data.title || \"Business\";\nconst phone = data.Phone || data.phone || \"\";\nconst address = data.Address || data.address || \"\";\nconst email = data.Email || data.email || \"\";\n\n// Detect Industry\nlet industry = \"generic\";\nconst nameLower = name.toLowerCase();\nif (nameLower.includes(\"plumb\")) industry = \"plumber\";\nelse if (nameLower.includes(\"dent\")) industry = \"dentist\";\nelse if (nameLower.includes(\"realty\") || nameLower.includes(\"estate\") || nameLower.includes(\"properties\")) industry = \"real-estate-agent\";\nelse if (nameLower.includes(\"roof\")) industry = \"roofer\";\nelse if (nameLower.includes(\"clean\")) industry = \"cleaning\";\nelse if (nameLower.includes(\"hvac\") || nameLower.includes(\"air\")) industry = \"hvac\";\nelse if (nameLower.includes(\"landscape\") || nameLower.includes(\"lawn\")) industry = \"landscaper\";\nelse if (nameLower.includes(\"electric\")) industry = \"electrician\";\n\n// Generate URL\n// Note: URLSearchParams might not be available in all n8n environments, so we build the query manually\nconst paramsObj = {\n  industry,\n  business_name: name,\n  phone,\n  address,\n  email,\n  price: \"297\",\n  checkout_link: \"#\"\n};\n\nconst queryString = Object.keys(paramsObj)\n  .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key])}`)\n  .join('&');\n\nconst demoUrl = `https://royal-ascend-site.lovable.app/template?${queryString}`;\n\n// Generate Email Content\nconst emailSubject = `I built a website for you (Preview inside)`;\nconst emailBody = `Hi ${name.split(' ')[0]},\n\nI built a modern, high-conversion website specifically for agents who don’t currently have an optimized online presence — and I already created yours.\n\nIt includes online booking, service listings, and is fully SEO optimized for ${address}.\n\nCheck it out here: [LINK]`;\n\nreturn [{\n  json: {\n    ...data,\n    demoUrl,\n    emailSubject,\n    emailBody\n  }\n}];"
+                "jsCode": "const data = $input.first().json;\n// Prioritize Company Name from the batch node if available, otherwise fallback to current item\nconst company = data[\"Company Name\"] || data.Name || data.name || \"Business\";\nconst encodedCompany = encodeURIComponent(company);\n\n// Generate URL matching the user's requested format\nconst demoUrl = `https://royal-ascend-site.lovable.app/template?business_name=${encodedCompany}`;\n\n// Generate Email Content
+const emailSubject = `I built a website for you (Preview inside)`;
+const emailBody = `Hi ${company.split(' ')[0]},
+
+I built a modern, high-conversion website specifically for agents who don’t currently have an optimized online presence — and I already created yours.
+
+It includes online booking, service listings, and is fully SEO optimized.
+
+Check it out here: ${demoUrl}
+
+If you want to keep it, you can secure it here: https://buy.stripe.com/5kA8y8c0g2q4dUY5kk`;
+
+return [{
+  json: {\n    demoUrl,\n    emailSubject,\n    emailBody,\n    ...data\n  }\n}];"
             },
             "id": "generate-link",
             "name": "Generate Template Link",
