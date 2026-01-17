@@ -25,7 +25,7 @@
           "id": "1",
           "name": "Ampfyi API"
         }
-      },
+      }
     },
     {
       "parameters": {
@@ -109,7 +109,7 @@
         "operation": "append",
         "baseId": {
           "__rl": true,
-          "value": "appYOURBASEID",
+          "value": "appZDjq2Q2gDw33dO",
           "mode": "string"
         },
         "table": {
@@ -181,7 +181,7 @@
         "operation": "update",
         "baseId": {
           "__rl": true,
-          "value": "appYOURBASEID",
+          "value": "appZDjq2Q2gDw33dO",
           "mode": "string"
         },
         "table": {
@@ -216,7 +216,7 @@
     },
     {
       "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "8454587692",
         "text": "=🚀 New Lead Contacted!\n\nBusiness: {{ $json['Business Name'] }}\nEmail: {{ $json.Email }}\nLanding Page: {{ $json['Landing Page URL'] }}",
         "additionalFields": {}
       },
@@ -254,7 +254,7 @@
         "operation": "get",
         "baseId": {
           "__rl": true,
-          "value": "appYOURBASEID",
+          "value": "appZDjq2Q2gDw33dO",
           "mode": "string"
         },
         "table": {
@@ -347,7 +347,7 @@
         "operation": "get",
         "baseId": {
           "__rl": true,
-          "value": "appYOURBASEID",
+          "value": "appZDjq2Q2gDw33dO",
           "mode": "string"
         },
         "table": {
@@ -405,7 +405,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "contentType": "json",
-        "body": "={\n   \"assistantId\": \"YOUR_VAPI_ASSISTANT_ID\",\n   \"customer\": {\n     \"number\": \"{{ $json.Phone }}\"\n   },\n   \"phoneNumberId\": \"YOUR_VAPI_PHONE_ID\",\n   \"assistantOverrides\": {\n     \"variableValues\": {\n       \"business_name\": \"{{ $json['Business Name'] }}\",\n       \"industry\": \"{{ $json.Category }}\",\n       \"city\": \"{{ $json.City }}\",\n       \"state\": \"{{ $json.State }}\",\n       \"rating\": \"{{ $json.Rating }}\",\n       \"reviews\": \"{{ $json.Reviews }}\",\n       \"website\": \"{{ $json.Website }}\",\n       \"email\": \"{{ $json.Email }}\",\n       \"phone\": \"{{ $json.Phone }}\",\n       \"audit_summary\": \"{{ $json['Audit Results'].substring(0, 300) }}\",\n       \"biggest_issue\": \"Missing online booking system\",\n       \"biggest_issue_cost\": \"$2,500\",\n       \"estimated_loss\": \"$5,000\",\n       \"number_of_issues\": \"5\",\n       \"calendly_link\": \"https://calendly.com/royscompany/website-strategy\",\n       \"your_phone\": \"(281) 555-0100\",\n       \"average_customer_value\": \"$300\",\n       \"monthly_revenue_increase\": \"$6,000\",\n       \"number_of_lost_customers\": \"16\"\n     }\n   }\n }",
+        "body": "={\n   \"assistantId\": \"44965d6c-9f89-47cb-8308-116f471ad08c\",\n   \"customer\": {\n     \"number\": \"{{ $json.Phone }}\"\n   },\n   \"phoneNumberId\": \"6a789161-3269-44a4-b637-06a1afbaf833\",\n   \"assistantOverrides\": {\n     \"variableValues\": {\n       \"business_name\": \"{{ $json['Business Name'] }}\",\n       \"industry\": \"{{ $json.Category }}\",\n       \"city\": \"{{ $json.City }}\",\n       \"state\": \"{{ $json.State }}\",\n       \"rating\": \"{{ $json.Rating }}\",\n       \"reviews\": \"{{ $json.Reviews }}\",\n       \"website\": \"{{ $json.Website }}\",\n       \"email\": \"{{ $json.Email }}\",\n       \"phone\": \"{{ $json.Phone }}\",\n       \"audit_summary\": \"{{ $json['Audit Results'].substring(0, 300) }}\",\n       \"biggest_issue\": \"Missing online booking system\",\n       \"biggest_issue_cost\": \"$2,500\",\n       \"estimated_loss\": \"$5,000\",\n       \"number_of_issues\": \"5\",\n       \"calendly_link\": \"https://calendly.com/royscompany/website-strategy\",\n       \"your_phone\": \"(281) 555-0100\",\n       \"average_customer_value\": \"$300\",\n       \"monthly_revenue_increase\": \"$6,000\",\n       \"number_of_lost_customers\": \"16\"\n     },\n     \"transferPlan\": {\n       \"destinations\": [\n         {\n           \"type\": \"number\",\n           \"number\": \"+12815550100\",\n           \"message\": \"Let me transfer you to our main office.\"\n         }\n       ]\n     }\n   }\n }",
         "options": {}
       },
       "id": "vapi_call",
@@ -442,7 +442,7 @@
         "operation": "get",
         "baseId": {
           "__rl": true,
-          "value": "appYOURBASEID",
+          "value": "appZDjq2Q2gDw33dO",
           "mode": "string"
         },
         "table": {
@@ -526,7 +526,7 @@
           "name": "Gmail Account"
         }
       }
-    }
+    },
     {
       "parameters": {
         "httpMethod": "POST",
@@ -542,14 +542,14 @@
         250,
         600
       ],
-      "webhookId": "YOUR_WEBHOOK_ID"
+      "webhookId": "wflS4IpoH2i1nS3nD/wtrKIwCbyojqAgy2Q"
     },
     {
       "parameters": {
         "operation": "update",
         "baseId": {
           "__rl": true,
-          "value": "appYOURBASEID",
+          "value": "appZDjq2Q2gDw33dO",
           "mode": "string"
         },
         "table": {
@@ -595,7 +595,7 @@
         "resource": "sms",
         "operation": "send",
         "to": "={{ $json.body.call.customer.number }}",
-        "from": "YOUR_TWILIO_NUMBER",
+        "from": "+18449840433",
         "message": "=Hi {{ $json.body.assistantOverrides.variableValues.business_name }}! This is Roy from RoysCompany. Here's your free website audit: {{ $json.body.assistantOverrides.variableValues.landing_page_url }}\n\nBook a time to chat: https://calendly.com/royscompany/website-strategy\n\nQuestions? Text me back or call (281) 555-0100.",
         "options": {}
       },

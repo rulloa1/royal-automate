@@ -118,20 +118,7 @@
         },
         {
             "parameters": {
-                "jsCode": "const data = $input.first().json;\n// Prioritize Company Name from the batch node if available, otherwise fallback to current item\nconst company = data[\"Company Name\"] || data.Name || data.name || \"Business\";\nconst encodedCompany = encodeURIComponent(company);\n\n// Generate URL matching the user's requested format\nconst demoUrl = `https://royal-ascend-site.lovable.app/template?business_name=${encodedCompany}`;\n\n// Generate Email Content
-const emailSubject = `I built a website for you (Preview inside)`;
-const emailBody = `Hi ${company.split(' ')[0]},
-
-I built a modern, high-conversion website specifically for agents who don’t currently have an optimized online presence — and I already created yours.
-
-It includes online booking, service listings, and is fully SEO optimized.
-
-Check it out here: ${demoUrl}
-
-If you want to keep it, you can secure it here: https://buy.stripe.com/5kA8y8c0g2q4dUY5kk`;
-
-return [{
-  json: {\n    demoUrl,\n    emailSubject,\n    emailBody,\n    ...data\n  }\n}];"
+                "jsCode": "const data = $input.first().json;\n// Prioritize Company Name from the batch node if available, otherwise fallback to current item\nconst company = data[\"Company Name\"] || data.Name || data.name || \"Business\";\nconst encodedCompany = encodeURIComponent(company);\n\n// Generate URL matching the user's requested format\nconst demoUrl = `https://royal-ascend-site.lovable.app/template?business_name=${encodedCompany}`;\n\n// Generate Email Content\nconst emailSubject = `I built a website for you (Preview inside)`;\nconst emailBody = `Hi ${company.split(' ')[0]},\n\nI built a modern, high-conversion website specifically for agents who don’t currently have an optimized online presence — and I already created yours.\n\nIt includes online booking, service listings, and is fully SEO optimized.\n\nCheck it out here: ${demoUrl}\n\nIf you want to keep it, you can secure it here: https://buy.stripe.com/5kA8y8c0g2q4dUY5kk`;\n\nreturn [{\n  json: {\n    demoUrl,\n    emailSubject,\n    emailBody,\n    ...data\n  }\n}];"
             },
             "id": "generate-link",
             "name": "Generate Template Link",

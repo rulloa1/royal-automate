@@ -42,7 +42,7 @@
                     "parameters": [
                         {
                             "name": "Authorization",
-                            "value": "Bearer {{APIFY_API_TOKEN}}"
+                            "value": "Bearer apify_api_oYKnMH4NNTjekIk1CxwSeWC7dHiyE50FXcE8"
                         },
                         {
                             "name": "Content-Type",
@@ -85,7 +85,7 @@
                     "parameters": [
                         {
                             "name": "Authorization",
-                            "value": "Bearer {{APIFY_API_TOKEN}}"
+                            "value": "Bearer apify_api_oYKnMH4NNTjekIk1CxwSeWC7dHiyE50FXcE8"
                         }
                     ]
                 },
