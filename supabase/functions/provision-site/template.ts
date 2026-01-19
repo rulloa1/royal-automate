@@ -4,257 +4,392 @@ export const WEBSITE_TEMPLATE = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">Luxury Real Estate Template</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title id="page-title">Luxury Real Estate</title>
+    <meta name="description" content="Exclusive luxury properties and personalized real estate services.">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        monarch: {
-                            dark: '#1a2e28',     
-                            darker: '#0f1c18',   
-                            gold: '#c5a880',     
-                            cream: '#f3f0e9',    
-                            gray: '#8a8a8a',
+                        luxury: {
+                            black: '#0a0a0a',
+                            charcoal: '#1a1a1a',
+                            gold: '#d4af37',
+                            cream: '#f5f5f0',
+                            white: '#ffffff',
+                            gray: '#8a8a8a'
                         }
                     },
                     fontFamily: {
                         serif: ['"Cormorant Garamond"', 'serif'],
                         sans: ['"Montserrat"', 'sans-serif'],
                     },
+                    animation: {
+                        'fade-in': 'fadeIn 1.2s ease-out forwards',
+                        'slide-up': 'slideUp 1s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(30px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    }
                 }
             }
         }
     </script>
     <style>
-        .reveal-text { animation: reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards; opacity: 0; transform: translateY(50px); }
-        @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
-        .hotspot-pulse::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.6); animation: pulse-ring 2s infinite; }
-        @keyframes pulse-ring { 0% { width: 100%; height: 100%; opacity: 1; } 100% { width: 250%; height: 250%; opacity: 0; } }
-        .timer-circle-svg circle { transition: stroke-dashoffset 0.5s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1a2e28; }
-        ::-webkit-scrollbar-thumb { background: #c5a880; border-radius: 4px; }
-        .tab-content { display: none; opacity: 0; transition: opacity 0.5s ease; }
-        .tab-content.active { display: block; opacity: 1; }
-        .nav-link { position: relative; }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -4px; left: 0; background-color: #c5a880; transition: width 0.3s ease; }
-        .nav-link:hover::after { width: 100%; }
+        .reveal-on-scroll { opacity: 0; transition: all 1s ease-out; transform: translateY(30px); }
+        .reveal-on-scroll.visible { opacity: 1; transform: translateY(0); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+        
+        .hero-gradient { background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%); }
+        
+        /* Scroll Donut Chart */
+        .donut-ring {
+            transition: stroke-dashoffset 0.1s linear;
+        }
+        
+        /* Typewriter Effect */
+        .typewriter-cursor::after {
+            content: '|';
+            animation: cursor-blink 1s step-start infinite;
+        }
+        @keyframes cursor-blink {
+            50% { opacity: 0; }
+        }
     </style>
 </head>
-<body class="bg-monarch-cream text-monarch-dark font-sans overflow-x-hidden">
+<body class="bg-luxury-cream text-luxury-charcoal font-sans antialiased overflow-x-hidden selection:bg-luxury-gold selection:text-white">
 
-    <nav class="fixed w-full z-50 px-6 py-6 flex justify-between items-center transition-all duration-300" id="navbar">
-        <div class="flex flex-col text-white mix-blend-difference z-50">
-            <div id="nav-agent-name" class="text-2xl font-serif font-bold tracking-widest leading-none">AGENT NAME</div>
-            <div id="nav-brokerage" class="text-[10px] tracking-[0.3em] uppercase opacity-80 mt-1">BROKERAGE</div>
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 px-6 py-6 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex flex-col text-white mix-blend-difference z-50">
+                <div id="nav-agent-name" class="text-2xl font-serif font-bold tracking-widest uppercase">AGENT</div>
+                <div id="nav-brokerage" class="text-[10px] tracking-[0.3em] uppercase opacity-80">BROKERAGE</div>
+            </div>
+            
+            <div class="hidden md:flex space-x-12 text-xs font-medium tracking-[0.2em] text-white mix-blend-difference z-50">
+                <a href="#hero" class="hover:text-luxury-gold transition-colors duration-300">HOME</a>
+                <a href="#philosophy" class="hover:text-luxury-gold transition-colors duration-300">PHILOSOPHY</a>
+                <a href="#portfolio" class="hover:text-luxury-gold transition-colors duration-300">PORTFOLIO</a>
+                <a href="#contact" class="hover:text-luxury-gold transition-colors duration-300">CONTACT</a>
+            </div>
+            
+            <button class="md:hidden text-white mix-blend-difference text-xl z-50" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
         
-        <div class="hidden md:flex space-x-12 text-xs font-medium tracking-[0.2em] text-white mix-blend-difference z-50">
-            <a href="#hero" class="nav-link hover:text-monarch-gold transition-colors">HOME</a>
-            <a href="#philosophy" class="nav-link hover:text-monarch-gold transition-colors">PHILOSOPHY</a>
-            <a href="#portfolio" class="nav-link hover:text-monarch-gold transition-colors">PORTFOLIO</a>
-            <a href="#location" class="nav-link hover:text-monarch-gold transition-colors">LOCATION</a>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden absolute top-0 left-0 w-full h-screen bg-luxury-black text-white flex flex-col items-center justify-center space-y-8 z-40">
+            <a href="#hero" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Home</a>
+            <a href="#philosophy" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Philosophy</a>
+            <a href="#portfolio" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Portfolio</a>
+            <a href="#contact" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Contact</a>
+            <button class="absolute top-6 right-6 text-2xl" onclick="document.getElementById('mobile-menu').classList.add('hidden')"><i class="fas fa-times"></i></button>
         </div>
-
-        <button class="md:hidden text-white mix-blend-difference text-xl z-50">
-            <i class="fas fa-bars"></i>
-        </button>
     </nav>
 
-    <header id="hero" class="relative h-screen w-full bg-monarch-darker flex items-center justify-center overflow-hidden">
-        <div id="hero-bg" class="absolute inset-0 opacity-60 bg-cover bg-center parallax-bg"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-monarch-darker"></div>
+    <!-- Hero Section -->
+    <header id="hero" class="relative h-screen w-full flex items-center justify-center overflow-hidden">
+        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] ease-linear hover:scale-105" style="background-image: url('https://images.unsplash.com/photo-1600596542815-2495db9dc2c3?q=80&w=2070&auto=format&fit=crop');"></div>
+        <div class="absolute inset-0 hero-gradient"></div>
         
-        <div class="relative z-10 text-center px-4 max-w-6xl">
-            <h1 id="hero-headline" class="font-serif text-5xl md:text-7xl lg:text-8xl text-monarch-cream leading-[1.1] mb-8 reveal-text" style="animation-delay: 0.2s;">
-                LOADING...
+        <div class="relative z-10 text-center px-4 max-w-5xl animate-slide-up">
+            <div class="w-[1px] h-20 bg-luxury-gold mx-auto mb-8"></div>
+            <h1 id="hero-headline" class="font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-tight mb-6">
+                Redefining<br><span class="italic text-luxury-gold">Luxury Living</span>
             </h1>
-            
-            <div class="reveal-text flex flex-col items-center mt-16" style="animation-delay: 0.8s;">
-                <div class="h-20 w-[1px] bg-monarch-gold mb-6"></div>
-                <span class="text-[10px] tracking-[0.3em] text-monarch-cream uppercase">Scroll to Discover</span>
-            </div>
+            <p class="text-white/80 text-sm md:text-base tracking-[0.2em] uppercase mb-12 max-w-2xl mx-auto">
+                Exclusive Representation for Discerning Clients
+            </p>
+            <a href="#portfolio" class="inline-block border border-white/30 text-white px-8 py-4 text-xs tracking-[0.2em] uppercase hover:bg-white hover:text-luxury-black transition-all duration-300">
+                View Collection
+            </a>
         </div>
     </header>
 
-    <section id="philosophy" class="py-32 bg-monarch-cream relative">
-        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            
-            <div class="order-2 md:order-1 relative">
-                <div class="absolute -top-12 -left-12 w-full h-full border border-monarch-gold/30 z-0"></div>
-                <img id="phil-image" src="" alt="Philosophy" class="relative z-10 w-full shadow-2xl grayscale hover:grayscale-0 transition-all duration-1000">
+    <!-- Philosophy Section -->
+    <section id="philosophy" class="py-32 bg-luxury-cream relative">
+        <div class="container mx-auto px-6 max-w-7xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative reveal-on-scroll">
+                    <div class="absolute -top-4 -left-4 w-full h-full border border-luxury-gold/30 z-0"></div>
+                    <img id="phil-image" src="" alt="Agent" class="relative z-10 w-full h-[600px] object-cover shadow-2xl grayscale hover:grayscale-0 transition-all duration-700">
+                    
+                    <div class="absolute -bottom-8 -right-8 bg-luxury-black p-8 text-white z-20 shadow-xl hidden md:block">
+                        <span id="phil-stat-producer" class="text-4xl font-serif text-luxury-gold block mb-1">Top 1%</span>
+                        <span id="phil-label-producer" class="text-[10px] tracking-[0.2em] uppercase opacity-70">Producer</span>
+                    </div>
+                </div>
                 
-                <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-monarch-dark p-8 text-monarch-cream z-20 shadow-2xl hidden lg:flex flex-col justify-center items-center text-center">
-                    <span id="phil-stat-producer" class="text-4xl font-serif font-bold block mb-2"></span>
-                    <span id="phil-label-producer" class="text-[10px] tracking-[0.2em] uppercase opacity-80"></span>
+                <div class="reveal-on-scroll space-y-8">
+                    <span class="text-luxury-gold tracking-[0.25em] text-xs font-bold uppercase block">The Philosophy</span>
+                    <h2 id="phil-headline" class="font-serif text-5xl text-luxury-charcoal leading-tight">
+                        Beyond the Transaction
+                    </h2>
+                    <p id="phil-text" class="text-luxury-charcoal/70 leading-relaxed font-light text-lg">
+                        Real estate is not just about property; it's about lifestyle, legacy, and investment.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-8 pt-8 border-t border-luxury-charcoal/10">
+                        <div>
+                            <span class="block text-3xl font-serif text-luxury-charcoal mb-2" id="stat-1-val">10+</span>
+                            <span class="text-[10px] tracking-widest uppercase text-luxury-gray">Years Experience</span>
+                        </div>
+                        <div>
+                            <span class="block text-3xl font-serif text-luxury-charcoal mb-2">24/7</span>
+                            <span class="text-[10px] tracking-widest uppercase text-luxury-gray">Client Access</span>
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="inline-block mt-4 text-luxury-charcoal border-b border-luxury-charcoal pb-1 text-xs tracking-[0.2em] uppercase hover:text-luxury-gold hover:border-luxury-gold transition-colors">
+                        Connect With Me
+                    </a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="bg-luxury-charcoal text-white py-32 relative">
+        <div class="container mx-auto px-6 max-w-7xl">
+            <!-- Market Trends / Scroll Chart -->
+            <div id="market-trends" class="mb-32 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div class="sticky top-32">
+                    <div class="relative w-64 h-64 mx-auto">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#333" stroke-width="2" />
+                            <circle id="scroll-ring" cx="50" cy="50" r="45" fill="none" stroke="#d4af37" stroke-width="4" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" class="donut-ring" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                            <span id="chart-percentage" class="text-4xl font-serif text-white">0%</span>
+                            <span class="text-[10px] tracking-widest uppercase text-white/50 mt-2">Market<br>Growth</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-12">
+                    <div class="reveal-on-scroll">
+                        <h3 class="text-3xl font-serif mb-4 text-luxury-gold">Consistent Growth</h3>
+                        <p class="text-white/70 leading-relaxed">
+                            Our portfolio has consistently outperformed the market average, delivering exceptional returns for our investors year over year. The luxury sector remains resilient.
+                        </p>
+                    </div>
+                    <div class="reveal-on-scroll">
+                        <h3 class="text-3xl font-serif mb-4 text-luxury-gold">Global Reach</h3>
+                        <p class="text-white/70 leading-relaxed">
+                            With a network spanning 40+ countries, we connect sellers with qualified international buyers, ensuring maximum exposure for every listing.
+                        </p>
+                    </div>
+                    <div class="reveal-on-scroll">
+                        <h3 class="text-3xl font-serif mb-4 text-luxury-gold">Record Breaking</h3>
+                        <p class="text-white/70 leading-relaxed">
+                            We hold the record for the highest price per square foot in the district, setting new benchmarks for luxury real estate values.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-20 reveal-on-scroll">
+                <h2 class="font-serif text-5xl md:text-6xl mb-4">Curated <span class="text-luxury-gold italic">Portfolio</span></h2>
+                <p id="portfolio-location" class="text-white/50 text-xs tracking-widest uppercase">Exclusive Listings</p>
+            </div>
+
+            <!-- Featured Active Listing -->
+            <div class="relative group cursor-pointer reveal-on-scroll mb-24">
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500 z-10"></div>
+                <img id="active-img" src="" class="w-full h-[80vh] object-cover" alt="Featured Property">
+                
+                <div class="absolute bottom-0 left-0 w-full p-8 md:p-16 z-20 bg-gradient-to-t from-black/90 to-transparent">
+                    <div class="flex flex-col md:flex-row justify-between items-end">
+                        <div>
+                            <span class="bg-luxury-gold text-luxury-black px-3 py-1 text-[10px] font-bold tracking-widest uppercase mb-4 inline-block">Featured</span>
+                            <h3 id="active-title" class="text-4xl md:text-6xl font-serif mb-2"></h3>
+                            <p id="active-specs" class="text-lg font-light opacity-90"></p>
+                        </div>
+                        <div class="mt-8 md:mt-0">
+                             <button class="bg-white/10 backdrop-blur border border-white/30 px-8 py-3 text-xs tracking-widest uppercase hover:bg-luxury-gold hover:text-luxury-black hover:border-luxury-gold transition-all">
+                                View Details
+                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sold Gallery (Grid) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 reveal-on-scroll">
+                <div class="relative group overflow-hidden h-[400px]">
+                    <img id="sold-img" src="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Sold Property">
+                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="text-center">
+                            <h4 id="sold-title" class="text-3xl font-serif mb-2"></h4>
+                            <span id="sold-status" class="text-luxury-gold text-xs tracking-widest uppercase">Sold</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Placeholder for second sold item if needed, or services promo -->
+                <div class="bg-luxury-black p-12 flex flex-col justify-center items-center text-center border border-white/5">
+                    <i class="fas fa-key text-4xl text-luxury-gold mb-6"></i>
+                    <h4 class="text-3xl font-serif mb-4">Unlock Value</h4>
+                    <p class="text-white/60 text-sm leading-relaxed mb-8 max-w-xs">
+                        Let us help you find your next investment or dream home in the city's most coveted neighborhoods.
+                    </p>
+                    <a href="#contact" class="text-xs tracking-widest uppercase border-b border-white/30 pb-1 hover:text-luxury-gold hover:border-luxury-gold transition-colors">
+                        Start Your Search
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services / Advantage -->
+    <section class="py-32 bg-white text-luxury-charcoal">
+        <div class="container mx-auto px-6 max-w-7xl">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-gray-200 pb-8">
+                <h2 class="text-5xl font-serif">The <span class="italic text-luxury-gold">Advantage</span></h2>
+                <p class="max-w-md text-sm text-gray-500 mt-4 md:mt-0 leading-relaxed">
+                    Combining traditional brokerage with modern digital marketing strategies.
+                </p>
             </div>
             
-            <div class="order-1 md:order-2">
-                <span class="text-monarch-gold tracking-[0.25em] text-xs font-bold uppercase mb-6 block">The Approach</span>
-                <h2 id="phil-headline" class="font-serif text-5xl md:text-6xl text-monarch-dark mb-10 leading-tight"></h2>
-                <p id="phil-text" class="text-monarch-dark/70 leading-relaxed mb-10 font-light max-w-md text-sm md:text-base"></p>
-                <a href="#contact" class="inline-block border-b border-monarch-dark pb-1 text-xs tracking-[0.2em] uppercase hover:text-monarch-gold hover:border-monarch-gold transition-colors">
-                    Contact Me
-                </a>
+            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Services injected via JS -->
             </div>
         </div>
     </section>
 
-    <section id="portfolio" class="bg-monarch-dark text-monarch-cream py-24 relative overflow-hidden">
-        <div class="flex justify-center mb-16">
-            <div class="inline-flex border border-white/10 rounded-full p-1 bg-white/5 backdrop-blur-sm">
-                <button onclick="switchTab('sold')" id="btn-sold" class="px-10 py-4 rounded-full text-[10px] font-bold tracking-[0.2em] transition-all duration-300 hover:bg-white/5 opacity-60">SOLD</button>
-                <button onclick="switchTab('active')" id="btn-active" class="px-10 py-4 rounded-full bg-monarch-gold text-monarch-dark text-[10px] font-bold tracking-[0.2em] shadow-lg">ACTIVE</button>
-            </div>
-        </div>
-
-        <div class="container mx-auto px-4 relative">
-            <div class="text-center mb-12">
-                <h2 class="font-serif text-5xl md:text-7xl mb-4"><span class="italic text-monarch-gold">Featured</span> PROPERTIES</h2>
-                <p id="portfolio-location" class="text-white/60 text-xs tracking-widest uppercase"></p>
-            </div>
-
-            <div id="active-content" class="tab-content active relative w-full max-w-7xl mx-auto h-[70vh] bg-black rounded-sm overflow-hidden shadow-2xl group">
-                <img id="active-img" src="" class="w-full h-full object-cover transition-transform duration-[30s] ease-linear group-hover:scale-110 opacity-80" alt="Active Listing">
-                
-                <div class="absolute top-[65%] left-[25%] group/spot">
-                    <button class="relative w-8 h-8 bg-monarch-gold rounded-full flex items-center justify-center text-monarch-dark font-bold text-xs hotspot-pulse z-20 cursor-pointer shadow-lg hover:scale-110 transition-transform">1</button>
-                    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur text-monarch-dark p-6 shadow-xl opacity-0 group-hover/spot:opacity-100 transition-all duration-500 translate-y-4 group-hover/spot:translate-y-0 pointer-events-none z-30">
-                        <h4 id="hotspot-1-title" class="font-serif font-bold text-xl mb-2"></h4>
-                        <p id="hotspot-1-desc" class="text-xs leading-relaxed text-gray-600"></p>
-                    </div>
-                </div>
-
-                <div class="absolute top-[35%] left-[60%] group/spot">
-                    <button class="relative w-8 h-8 bg-monarch-dark border border-white/30 text-white rounded-full flex items-center justify-center font-bold text-xs hotspot-pulse z-20 cursor-pointer shadow-lg hover:scale-110 transition-transform">2</button>
-                    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur text-monarch-dark p-6 shadow-xl opacity-0 group-hover/spot:opacity-100 transition-all duration-500 translate-y-4 group-hover/spot:translate-y-0 pointer-events-none z-30">
-                        <h4 id="hotspot-2-title" class="font-serif font-bold text-xl mb-2"></h4>
-                        <p id="hotspot-2-desc" class="text-xs leading-relaxed text-gray-600"></p>
-                    </div>
-                </div>
-
-                <div class="absolute bottom-10 left-10 text-white z-20">
-                    <div class="h-[1px] w-12 bg-monarch-gold mb-4"></div>
-                    <h3 id="active-title" class="text-4xl font-serif mb-2"></h3>
-                    <p id="active-specs" class="text-xs tracking-widest uppercase opacity-80"></p>
-                </div>
-            </div>
-
-            <div id="sold-content" class="tab-content hidden w-full max-w-7xl mx-auto h-[70vh] bg-gray-800 rounded-sm relative overflow-hidden group">
-                <img id="sold-img" src="" class="w-full h-full object-cover transition-transform duration-[30s] ease-linear group-hover:scale-110 opacity-70" alt="Sold Property">
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="text-center p-12 border border-white/20 backdrop-blur-md bg-monarch-darker/60">
-                        <h3 id="sold-title" class="text-5xl font-serif text-white mb-4"></h3>
-                        <p id="sold-status" class="text-monarch-gold text-xs tracking-[0.3em] uppercase"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="location" class="bg-monarch-cream py-32 flex flex-col items-center justify-center min-h-[80vh]">
-        <div class="relative w-80 h-80 md:w-[400px] md:h-[400px] flex items-center justify-center">
-            <svg class="absolute inset-0 w-full h-full timer-circle-svg transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e5e5" stroke-width="1" />
-                <circle id="timer-progress" cx="50" cy="50" r="45" fill="none" stroke="#c5a880" stroke-width="2" stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round" />
-            </svg>
-            <div class="text-center z-10 flex flex-col items-center animate-fade">
-                <div id="location-time" class="text-9xl md:text-[10rem] font-serif text-monarch-dark font-normal leading-none mb-4 transition-all duration-500"></div>
-                <div class="text-[10px] md:text-xs tracking-[0.25em] uppercase font-bold text-monarch-gray max-w-[180px] leading-relaxed">
-                    Minutes to<br>Destination
-                </div>
-            </div>
-        </div>
-        <div class="mt-16 text-center px-4 h-40">
-            <p class="text-monarch-gold text-xs tracking-[0.3em] uppercase mb-6 font-bold">CONNECTIVITY</p>
-            <h3 id="location-dest" class="text-4xl md:text-6xl font-serif text-monarch-dark max-w-4xl mx-auto leading-tight transition-opacity duration-500"></h3>
-            <div class="mt-12">
-                <a href="#contact" class="bg-monarch-dark text-white px-10 py-4 text-[10px] tracking-[0.2em] font-bold uppercase hover:bg-monarch-gold transition-colors">
-                    Explore Area
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-32 bg-monarch-darker text-monarch-cream overflow-hidden">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row items-end justify-between border-b border-white/10 pb-12 mb-12">
-                <h2 class="text-6xl md:text-9xl font-serif leading-none">THE<br><span class="text-monarch-gold italic">ADVANTAGE</span></h2>
-                <div class="max-w-xs mt-8 md:mt-0">
-                    <p class="text-xs font-light opacity-70 leading-relaxed tracking-wide">
-                        Leveraging extensive networks to showcase your property to qualified buyers around the world.
+    <!-- Footer -->
+    <footer id="contact" class="bg-luxury-black text-white pt-24 pb-8 border-t border-white/10">
+        <div class="container mx-auto px-6 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+                <div class="lg:col-span-2">
+                    <h2 id="footer-name" class="text-4xl font-serif mb-2"></h2>
+                    <p id="footer-brokerage" class="text-luxury-gold text-sm tracking-widest uppercase mb-8"></p>
+                    <p class="text-white/50 text-sm leading-relaxed max-w-md mb-8">
+                        Elevating the real estate experience through integrity, innovation, and exclusive market access.
                     </p>
                 </div>
-            </div>
-            
-            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-                 </div>
-        </div>
-    </section>
-
-    <footer id="contact" class="bg-black text-white pt-32 pb-12">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-start mb-24">
-                <div class="mb-12 md:mb-0">
-                    <h2 id="footer-name" class="text-5xl md:text-7xl font-serif mb-4 text-white"></h2>
-                    <p id="footer-brokerage" class="text-xl font-serif text-monarch-gold mb-8 italic"></p>
-                    
-                    <div class="flex flex-col space-y-2">
-                        <a id="footer-email" href="" class="text-2xl md:text-3xl font-serif hover:text-monarch-gold transition-colors"></a>
-                        <a id="footer-phone" href="" class="text-xl md:text-2xl font-serif hover:text-monarch-gold transition-colors"></a>
-                    </div>
-                    
-                    <div id="footer-note" class="mt-10 text-[10px] tracking-[0.2em] uppercase opacity-50 border-l border-white/30 pl-4"></div>
+                
+                <div>
+                    <h4 class="text-xs font-bold tracking-widest uppercase mb-6 text-white/40">Contact</h4>
+                    <ul class="space-y-4 font-light">
+                        <li><a id="footer-email" href="" class="hover:text-luxury-gold transition-colors"></a></li>
+                        <li><a id="footer-phone" href="" class="hover:text-luxury-gold transition-colors"></a></li>
+                        <li id="footer-note" class="text-white/50 text-sm pt-2"></li>
+                    </ul>
                 </div>
                 
-                <div class="flex space-x-16 text-[10px] tracking-[0.2em] uppercase font-bold">
-                    <div class="flex flex-col space-y-6">
-                        <a href="#" class="hover:text-monarch-gold transition-colors">Home</a>
-                        <a href="#" class="hover:text-monarch-gold transition-colors">Portfolio</a>
-                        <a href="#" class="hover:text-monarch-gold transition-colors">Philosophy</a>
-                    </div>
-                    <div class="flex flex-col space-y-6">
-                        <a id="link-insta" href="#" class="hover:text-monarch-gold transition-colors">Instagram</a>
-                        <a id="link-linkedin" href="#" class="hover:text-monarch-gold transition-colors">LinkedIn</a>
-                        <a id="link-zillow" href="#" class="hover:text-monarch-gold transition-colors">Zillow</a>
+                <div>
+                    <h4 class="text-xs font-bold tracking-widest uppercase mb-6 text-white/40">Social</h4>
+                    <div class="flex space-x-6 text-xl">
+                        <a id="link-insta" href="#" class="hover:text-luxury-gold transition-colors"><i class="fab fa-instagram"></i></a>
+                        <a id="link-linkedin" href="#" class="hover:text-luxury-gold transition-colors"><i class="fab fa-linkedin"></i></a>
+                        <a id="link-zillow" href="#" class="hover:text-luxury-gold transition-colors"><i class="fas fa-home"></i></a>
                     </div>
                 </div>
             </div>
             
-            <div class="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center text-[10px] tracking-[0.2em] uppercase opacity-30">
-                <p>&copy; <span id="copyright-year"></span> <span id="copyright-name"></span>.</p>
-                <p class="mt-2 md:mt-0">HANDCRAFTED BY AI</p>
+            <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/10 text-[10px] tracking-widest uppercase text-white/30">
+                <p>&copy; <span id="copyright-year"></span> <span id="copyright-name"></span></p>
+                <p class="mt-2 md:mt-0">Luxury Real Estate Template</p>
             </div>
         </div>
     </footer>
 
     {{AGENT_CONFIG_SCRIPT}}
+    
     <script>
-        // --- 1. Load Data from agent-config.js ---
+        // --- Data Injection & Logic ---
         document.addEventListener("DOMContentLoaded", () => {
-            if(typeof agentConfig === 'undefined') {
-                alert("Error: agent-config.js not found. Please ensure both files are in the same folder.");
-                return;
-            }
+            if(typeof agentConfig === 'undefined') return;
 
             // General
-            document.title = agentConfig.name + " | " + agentConfig.title;
+            document.title = agentConfig.name + " | Luxury Real Estate";
             document.getElementById('nav-agent-name').innerText = agentConfig.name;
             document.getElementById('nav-brokerage').innerText = agentConfig.brokerage;
+            document.getElementById('footer-name').innerText = agentConfig.name;
+            document.getElementById('footer-brokerage').innerText = agentConfig.brokerage;
             document.getElementById('copyright-name').innerText = agentConfig.name;
             document.getElementById('copyright-year').innerText = new Date().getFullYear();
 
             // Hero
-            document.getElementById('hero-headline').innerHTML = agentConfig.hero.headline;
+            // document.getElementById('hero-headline').innerHTML = agentConfig.hero.headline; // Replaced by typewriter
             document.getElementById('hero-bg').style.backgroundImage = "url('" + agentConfig.hero.backgroundImage + "')";
+
+            // Typewriter Effect
+            const headlineText = agentConfig.hero.headline.replace(/<br>/g, ' '); // Strip HTML for typewriter, or handle differently
+            const headlineEl = document.getElementById('hero-headline');
+            headlineEl.innerHTML = ''; // Clear initial text
+            headlineEl.classList.add('typewriter-cursor');
+            
+            let charIndex = 0;
+            const fullText = "Redefining Luxury Living"; // Use static or dynamic text. 
+            // Note: agentConfig.hero.headline might contain HTML like <span class="italic">. 
+            // For true typewriter with HTML, we need a parser. 
+            // For simplicity, let's type the plain text part or a fixed string, 
+            // OR we can type into the element text content.
+            
+            // Let's type the first part, then fade in the second part?
+            // Or just type the text content.
+            
+            // Better approach for this specific template which has "Redefining <br> <span...>Luxury Living</span>"
+            // We will type the "Redefining" part, then reveal the rest?
+            
+            // Let's implement the generic requested function:
+            function typeWriter(text, element, speed = 100) {
+                let i = 0;
+                element.innerHTML = '';
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, Math.random() * (speed - 30) + 30);
+                    }
+                }
+                type();
+            }
+
+            // Using the requested logic on the headline
+            // We will clear the complex HTML and just type a simple version for this demo, 
+            // OR we can type the first line "Redefining" and then fade in the rest.
+            
+            // Let's modify the hero HTML structure slightly to separate the typed part
+            headlineEl.innerHTML = '<span id="typed-text"></span><br><span class="italic text-luxury-gold opacity-0 transition-opacity duration-1000" id="fade-text">Luxury Living</span>';
+            
+            const typedSpan = document.getElementById('typed-text');
+            const fadeSpan = document.getElementById('fade-text');
+            
+            let i = 0;
+            const textToType = "Redefining";
+            
+            function type() {
+                if(i < textToType.length) { 
+                    typedSpan.innerHTML += textToType.charAt(i); 
+                    i++; 
+                    setTimeout(type, Math.floor(Math.random() * (150 - 50 + 1) + 50)); 
+                } else {
+                    // Finished typing, show the rest
+                    fadeSpan.classList.remove('opacity-0');
+                    headlineEl.classList.remove('typewriter-cursor'); // Stop blinking cursor
+                }
+            }
+            
+            setTimeout(type, 1000); // Start after 1s
 
             // Philosophy
             document.getElementById('phil-headline').innerHTML = agentConfig.philosophy.headline;
@@ -262,39 +397,38 @@ export const WEBSITE_TEMPLATE = `
             document.getElementById('phil-stat-producer').innerText = agentConfig.philosophy.stats.producer;
             document.getElementById('phil-label-producer').innerText = agentConfig.philosophy.stats.producerLabel;
             document.getElementById('phil-image').src = agentConfig.philosophy.image;
+            document.getElementById('stat-1-val').innerText = agentConfig.philosophy.stats.years;
 
             // Portfolio
-            document.getElementById('portfolio-location').innerText = agentConfig.location;
+            document.getElementById('portfolio-location').innerText = "Exclusive Listings in " + agentConfig.location;
             
-            // Active Listing
+            // Active
             document.getElementById('active-title').innerText = agentConfig.portfolio.active.title;
-            document.getElementById('active-specs').innerText = agentConfig.portfolio.active.price + " | " + agentConfig.portfolio.active.specs;
+            document.getElementById('active-specs').innerText = agentConfig.portfolio.active.price + " • " + agentConfig.portfolio.active.specs;
             document.getElementById('active-img').src = agentConfig.portfolio.active.image;
-            document.getElementById('hotspot-1-title').innerText = agentConfig.portfolio.active.hotspots[0].title;
-            document.getElementById('hotspot-1-desc').innerText = agentConfig.portfolio.active.hotspots[0].desc;
-            document.getElementById('hotspot-2-title').innerText = agentConfig.portfolio.active.hotspots[1].title;
-            document.getElementById('hotspot-2-desc').innerText = agentConfig.portfolio.active.hotspots[1].desc;
 
-            // Sold Listing
+            // Sold
             document.getElementById('sold-title').innerText = agentConfig.portfolio.sold.title;
             document.getElementById('sold-status').innerText = agentConfig.portfolio.sold.status;
             document.getElementById('sold-img').src = agentConfig.portfolio.sold.image;
 
-            // Services Grid
+            // Services
             const servicesContainer = document.getElementById('services-grid');
-            agentConfig.services.forEach((service, index) => {
-                const isMiddle = index === 1 ? 'md:-mt-12 bg-white/5' : '';
-                const html = '<div class="p-8 border border-white/5 hover:border-monarch-gold/30 transition-colors duration-500 ' + isMiddle + '">' +
-                    '<span class="text-monarch-gold text-2xl mb-4 block"><i class="fas ' + service.icon + '"></i></span>' +
-                    '<h4 class="font-serif text-2xl mb-2">' + service.title + '</h4>' +
-                    '<p class="text-xs opacity-60 leading-relaxed">' + service.desc + '</p>' +
-                 '</div>';
-                 servicesContainer.innerHTML += html;
+            servicesContainer.innerHTML = ''; // Clear defaults
+            agentConfig.services.forEach((service) => {
+                const html = \`
+                    <div class="group p-6 hover:bg-gray-50 transition-colors duration-300 border-l-2 border-transparent hover:border-luxury-gold">
+                        <div class="text-luxury-gold text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas \${service.icon}"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl mb-3 text-luxury-charcoal">\${service.title}</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">\${service.desc}</p>
+                    </div>
+                \`;
+                servicesContainer.innerHTML += html;
             });
 
-            // Contact / Footer
-            document.getElementById('footer-name').innerText = agentConfig.name;
-            document.getElementById('footer-brokerage').innerText = agentConfig.brokerage;
+            // Contact
             document.getElementById('footer-email').innerText = agentConfig.email;
             document.getElementById('footer-email').href = "mailto:" + agentConfig.email;
             document.getElementById('footer-phone').innerText = agentConfig.phone;
@@ -305,90 +439,61 @@ export const WEBSITE_TEMPLATE = `
             document.getElementById('link-linkedin').href = agentConfig.social.linkedin;
             document.getElementById('link-zillow').href = agentConfig.social.zillow;
 
-            // Initialize Timer
-            startTimer(agentConfig.locationData);
-        });
+            // Scroll Animation Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
 
-        // --- 2. Timer Logic ---
-        function startTimer(data) {
-            let currentIndex = 0;
-            const timeElement = document.getElementById('location-time');
-            const destElement = document.getElementById('location-dest');
-            const progressCircle = document.getElementById('timer-progress');
-            const totalDash = 283; 
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+            
+            // Navbar Scroll Effect
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    nav.classList.add('bg-luxury-black/90', 'backdrop-blur-md', 'py-4', 'shadow-lg');
+                    nav.classList.remove('py-6');
+                } else {
+                    nav.classList.remove('bg-luxury-black/90', 'backdrop-blur-md', 'py-4', 'shadow-lg');
+                    nav.classList.add('py-6');
+                }
 
-            function update() {
-                timeElement.style.opacity = '0';
-                destElement.style.opacity = '0';
-                progressCircle.style.transition = 'none';
-                progressCircle.style.strokeDashoffset = totalDash;
-
-                setTimeout(() => {
-                    const item = data[currentIndex];
-                    timeElement.innerText = item.time;
-                    destElement.innerHTML = item.text;
+                // Donut Chart Scroll Logic
+                const section = document.getElementById('market-trends');
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    const viewHeight = window.innerHeight;
+                    const sectionHeight = section.offsetHeight;
                     
-                    timeElement.style.opacity = '1';
-                    destElement.style.opacity = '1';
+                    // Calculate how far we are into the section
+                    // We start counting when top enters view, and finish when bottom leaves view?
+                    // Or standard scrollytelling: 0% at top of viewport, 100% when scrolled past
+                    
+                    // Using the provided logic: Math.abs(rect.top) / (sectionHeight - viewHeight)
+                    // This assumes the section is taller than the viewport and we want to track progress while it's passing through
+                    
+                    if (rect.top <= viewHeight / 2 && rect.bottom >= 0) {
+                        let ratio = Math.abs(rect.top - (viewHeight / 2)) / (sectionHeight / 1.5);
+                        
+                        // Clamp ratio between 0 and 1
+                        ratio = Math.max(0, Math.min(1, ratio));
+                        
+                        updateRing(ratio);
+                    }
+                }
+            });
 
-                    progressCircle.style.transition = 'stroke-dashoffset 2s ease-out';
-                    const percentage = item.time / 40; 
-                    const offset = totalDash - (totalDash * percentage);
-                    progressCircle.style.strokeDashoffset = offset;
-
-                    currentIndex = (currentIndex + 1) % data.length;
-                }, 500);
-            }
-            update();
-            setInterval(update, 4000);
-        }
-
-        // --- 3. Tab Switching Logic ---
-        function switchTab(tabName) {
-            const btnSold = document.getElementById('btn-sold');
-            const btnActive = document.getElementById('btn-active');
-            const contentSold = document.getElementById('sold-content');
-            const contentActive = document.getElementById('active-content');
-
-            if (tabName === 'sold') {
-                btnSold.classList.remove('opacity-60', 'hover:bg-white/5');
-                btnSold.classList.add('bg-monarch-gold', 'text-monarch-dark', 'shadow-lg', 'opacity-100');
+            function updateRing(percent) {
+                const circle = document.getElementById('scroll-ring');
+                const text = document.getElementById('chart-percentage');
+                const circumference = 283;
                 
-                btnActive.classList.remove('bg-monarch-gold', 'text-monarch-dark', 'shadow-lg');
-                btnActive.classList.add('opacity-60', 'hover:bg-white/5');
-
-                contentActive.classList.remove('active');
-                setTimeout(() => {
-                    contentActive.classList.add('hidden');
-                    contentSold.classList.remove('hidden');
-                    setTimeout(() => contentSold.classList.add('active'), 10);
-                }, 300);
-
-            } else {
-                btnActive.classList.remove('opacity-60', 'hover:bg-white/5');
-                btnActive.classList.add('bg-monarch-gold', 'text-monarch-dark', 'shadow-lg', 'opacity-100');
-                
-                btnSold.classList.remove('bg-monarch-gold', 'text-monarch-dark', 'shadow-lg');
-                btnSold.classList.add('opacity-60', 'hover:bg-white/5');
-
-                contentSold.classList.remove('active');
-                setTimeout(() => {
-                    contentSold.classList.add('hidden');
-                    contentActive.classList.remove('hidden');
-                    setTimeout(() => contentActive.classList.add('active'), 10);
-                }, 300);
-            }
-        }
-
-        // --- 4. Navbar Scroll Effect ---
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                nav.classList.add('bg-monarch-darker/90', 'backdrop-blur-md', 'py-4');
-                nav.classList.remove('py-6');
-            } else {
-                nav.classList.remove('bg-monarch-darker/90', 'backdrop-blur-md', 'py-4');
-                nav.classList.add('py-6');
+                const offset = circumference - (percent * circumference);
+                circle.style.strokeDashoffset = offset;
+                text.innerText = Math.round(percent * 100) + '%';
             }
         });
     </script>

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { WEBSITE_TEMPLATE } from "./template.ts";
+import { WEBSITE_TEMPLATE as FALLBACK_TEMPLATE } from "./template.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -105,16 +105,50 @@ serve(async (req: Request) => {
 
         console.log(`Starting static provisioning for: ${agent_data.agent_name}`);
 
-        const generatedHtml = generateHtml(WEBSITE_TEMPLATE, agent_data);
+        // Initialize Supabase client
+        const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Fetch template from DB or use fallback
+        let templateHtml = FALLBACK_TEMPLATE;
+        
+        // If preferred_template is specified (e.g. UUID), try to fetch it
+        // Or fetch the most recent active template as default
+        if (agent_data.preferred_template) {
+             const { data: templateData } = await supabase
+                .from('website_templates')
+                .select('html_content')
+                .eq('id', agent_data.preferred_template)
+                .maybeSingle();
+             
+             if (templateData) {
+                 console.log("Using custom template:", agent_data.preferred_template);
+                 templateHtml = templateData.html_content;
+             }
+        } else {
+             // Try to find a default active template if none specified
+             const { data: defaultTemplate } = await supabase
+                .from('website_templates')
+                .select('html_content')
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+             if (defaultTemplate) {
+                 console.log("Using latest active template from DB");
+                 templateHtml = defaultTemplate.html_content;
+             }
+        }
+
+        const generatedHtml = generateHtml(templateHtml, agent_data);
         let storageUrl = "";
         let uploadErrorDetail = null;
 
         if (save_to_storage) {
             console.log("Saving to Supabase Storage...");
-            const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-            const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-            const supabase = createClient(supabaseUrl, supabaseKey);
-
+            
             const { error: bucketError } = await supabase.storage.getBucket("sites");
             if (bucketError) {
                 console.log("Bucket 'sites' not found, creating...");

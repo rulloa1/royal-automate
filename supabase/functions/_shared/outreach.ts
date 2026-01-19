@@ -1,6 +1,7 @@
 import { Lead } from "./types.ts";
 import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import nodemailer from "npm:nodemailer@6.9.10";
+import { decrypt } from "./crypto.ts";
 
 export class OutreachService {
   private resendApiKey?: string;
@@ -32,7 +33,7 @@ export class OutreachService {
         
         // Handle password decryption if needed (assuming stored as plain text or handled elsewhere for now)
         // In a real app, you should decrypt the password here.
-        const password = settings.smtp_password; 
+        const password = await decrypt(settings.smtp_password); 
 
         this.smtpTransporter = nodemailer.createTransport({
           host: settings.smtp_host,
