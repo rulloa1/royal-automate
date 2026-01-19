@@ -58,9 +58,9 @@ export async function decrypt(text: string): Promise<string> {
   const encrypted = hexDecode(new TextEncoder().encode(encryptedHex));
 
   const decrypted = await crypto.subtle.decrypt(
-    { name: ALGORITHM, iv },
+    { name: ALGORITHM, iv: new Uint8Array(iv) },
     key,
-    encrypted
+    new Uint8Array(encrypted)
   );
 
   return new TextDecoder().decode(decrypted);
