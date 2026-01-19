@@ -27,7 +27,10 @@ Deno.serve(async (req) => {
     const sheetService = new SheetService(sheetId);
     const enrichmentService = new EnrichmentService();
     const siteBuilderService = new SiteBuilderService();
-    const outreachService = new OutreachService();
+    
+    // Initialize OutreachService with Supabase client and load settings
+    const outreachService = new OutreachService(supabaseClient);
+    await outreachService.initialize();
 
     const logs: string[] = [];
     const log = (msg: string) => {
