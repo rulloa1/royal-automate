@@ -97,7 +97,7 @@ serve(async (req: Request) => {
     }
 
     try {
-        const { agent_data, save_to_storage } = await req.json();
+        const { agent_data, save_to_storage, netlify_deploy } = await req.json();
 
         if (!agent_data) {
             throw new Error("Missing agent_data in request body");
@@ -155,6 +155,98 @@ serve(async (req: Request) => {
         const generatedHtml = generateHtml(templateHtml, agent_data);
         let storageUrl = "";
         let uploadErrorDetail = null;
+        let netlifyUrl = "";
+        let netlifyError = null;
+
+        // Deploy to Netlify if requested or if Supabase Storage is problematic
+        if (netlify_deploy) {
+            console.log("Deploying to Netlify...");
+            try {
+                const NETLIFY_ACCESS_TOKEN = "nfp_TUCzPndK2v6FhWZ9QQ8EdnEKB1s3rPp89e5d"; // Hardcoded for immediate fix as requested
+                
+                // 1. Create a new site (or use existing if we had logic for it, but creating new is safer for "provisioning")
+                // Actually, let's just deploy to a new site every time for simplicity in this MVP
+                const siteName = `royal-site-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+                
+                const createSiteRes = await fetch("https://api.netlify.com/api/v1/sites", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${NETLIFY_ACCESS_TOKEN}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: siteName,
+                        custom_domain: null // Optional: user could provide this later
+                    })
+                });
+
+                if (!createSiteRes.ok) {
+                    throw new Error(`Failed to create Netlify site: ${await createSiteRes.text()}`);
+                }
+
+                const siteData = await createSiteRes.json();
+                const siteId = siteData.site_id;
+                console.log(`Created Netlify Site ID: ${siteId}`);
+
+                // 2. Deploy the HTML content
+                // Netlify API allows deploying via ZIP or digest. For a single file, digest is complex.
+                // EASIER: Use "Test Site" deploy or "Deploy with files" endpoint which is simpler.
+                // Actually, the standard API requires a ZIP or a digest map.
+                // Let's try the direct deploy endpoint if available, or just create a ZIP in memory.
+                
+                // Alternative: Use Drop endpoint? No.
+                // Let's use the digest method (File-based deploy)
+                
+                // Step 1: Calculate SHA1 of content
+                const encoder = new TextEncoder();
+                const data = encoder.encode(generatedHtml);
+                const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const sha1 = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                // Step 2: Start deploy
+                const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${NETLIFY_ACCESS_TOKEN}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            "/index.html": sha1
+                        }
+                    })
+                });
+                
+                if (!deployRes.ok) throw new Error(`Failed to start deploy: ${await deployRes.text()}`);
+                const deployData = await deployRes.json();
+                const deployId = deployData.id;
+
+                // Step 3: Upload the file content
+                const uploadRes = await fetch(`https://api.netlify.com/api/v1/deploys/${deployId}/files/index.html`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `Bearer ${NETLIFY_ACCESS_TOKEN}`,
+                        "Content-Type": "application/octet-stream"
+                    },
+                    body: generatedHtml
+                });
+
+                if (!uploadRes.ok) throw new Error(`Failed to upload file content: ${await uploadRes.text()}`);
+
+                console.log("Netlify deploy successful!");
+                netlifyUrl = siteData.ssl_url || siteData.url;
+                
+                // If we successfully deployed to Netlify, we can use this as the storageUrl
+                if (!storageUrl) {
+                    storageUrl = netlifyUrl;
+                }
+
+            } catch (err: any) {
+                console.error("Netlify deployment failed:", err);
+                netlifyError = err.message;
+            }
+        }
 
         if (save_to_storage) {
             console.log("Saving to Supabase Storage...");
@@ -200,7 +292,9 @@ serve(async (req: Request) => {
                 details: {
                     method: "static_template_replacement",
                     storage_enabled: !!save_to_storage,
-                    upload_error: uploadErrorDetail
+                    upload_error: uploadErrorDetail,
+                    netlify_url: netlifyUrl,
+                    netlify_error: netlifyError
                 }
             }),
             {
