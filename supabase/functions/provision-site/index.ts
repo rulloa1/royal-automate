@@ -113,22 +113,30 @@ serve(async (req: Request) => {
         // Fetch template from DB or use fallback
         let templateHtml = FALLBACK_TEMPLATE;
         
-        // If preferred_template is specified (e.g. UUID), try to fetch it
-        // Or fetch the most recent active template as default
-        if (agent_data.preferred_template) {
-             const { data: templateData } = await supabase
+        // 1. Direct HTML injection (Highest Priority)
+        if (agent_data.custom_template_html) {
+             console.log("Using custom template HTML from request payload");
+             templateHtml = agent_data.custom_template_html;
+        } 
+        // 2. Fetch by ID
+        else if (agent_data.preferred_template) {
+             const { data: templateData, error } = await supabase
                 .from('website_templates')
                 .select('html_content')
                 .eq('id', agent_data.preferred_template)
                 .maybeSingle();
              
              if (templateData) {
-                 console.log("Using custom template:", agent_data.preferred_template);
+                 console.log("Using custom template from DB:", agent_data.preferred_template);
                  templateHtml = templateData.html_content;
+             } else {
+                 console.warn("Template ID provided but not found or table missing. Using fallback.", error);
              }
-        } else {
+        } 
+        // 3. Default active template from DB
+        else {
              // Try to find a default active template if none specified
-             const { data: defaultTemplate } = await supabase
+             const { data: defaultTemplate, error } = await supabase
                 .from('website_templates')
                 .select('html_content')
                 .eq('is_active', true)
@@ -139,6 +147,8 @@ serve(async (req: Request) => {
              if (defaultTemplate) {
                  console.log("Using latest active template from DB");
                  templateHtml = defaultTemplate.html_content;
+             } else {
+                 console.warn("No active template found in DB. Using hardcoded fallback.", error);
              }
         }
 
