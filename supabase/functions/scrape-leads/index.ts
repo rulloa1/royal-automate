@@ -64,7 +64,7 @@ serve(async (req)=>{
             industry: "Real Estate",
             phone: null, // Will be enriched later
             email: null, // Will be enriched later
-            website: item.url || null,
+            website_url: item.url || null, // Mapped to website_url column
             ai_score: 5, 
             status: "new",
             notes: `Scraped via Firecrawl (Basic): ${item.description || ''}`.slice(0, 500),
