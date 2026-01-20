@@ -5,7 +5,7 @@ INSERT INTO public.website_templates (name, description, html_content, is_active
 VALUES (
   'Luxury Real Estate',
   'Premium dark theme with gold accents, scroll animations, donut chart, and typewriter effect.',
-  E'<!DOCTYPE html>
+  $html$<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -27,25 +27,25 @@ VALUES (
                 extend: {
                     colors: {
                         luxury: {
-                            black: \'#0a0a0a\',
-                            charcoal: \'#1a1a1a\',
-                            gold: \'#d4af37\',
-                            cream: \'#f5f5f0\',
-                            white: \'#ffffff\',
-                            gray: \'#8a8a8a\'
+                            black: '#0a0a0a',
+                            charcoal: '#1a1a1a',
+                            gold: '#d4af37',
+                            cream: '#f5f5f0',
+                            white: '#ffffff',
+                            gray: '#8a8a8a'
                         }
                     },
                     fontFamily: {
-                        serif: [\'"Cormorant Garamond"\', \'serif\'],
-                        sans: [\'"Montserrat"\', \'sans-serif\'],
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['"Montserrat"', 'sans-serif'],
                     },
                     animation: {
-                        \'fade-in\': \'fadeIn 1.2s ease-out forwards\',
-                        \'slide-up\': \'slideUp 1s ease-out forwards\',
+                        'fade-in': 'fadeIn 1.2s ease-out forwards',
+                        'slide-up': 'slideUp 1s ease-out forwards',
                     },
                     keyframes: {
-                        fadeIn: { \'0%\': { opacity: \'0\' }, \'100%\': { opacity: \'1\' } },
-                        slideUp: { \'0%\': { transform: \'translateY(30px)\', opacity: \'0\' }, \'100%\': { transform: \'translateY(0)\', opacity: \'1\' } }
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(30px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     }
                 }
             }
@@ -69,7 +69,7 @@ VALUES (
         
         /* Typewriter Effect */
         .typewriter-cursor::after {
-            content: \'|\';
+            content: '|';
             animation: cursor-blink 1s step-start infinite;
         }
         @keyframes cursor-blink {
@@ -94,24 +94,24 @@ VALUES (
                 <a href="#contact" class="hover:text-luxury-gold transition-colors duration-300">CONTACT</a>
             </div>
             
-            <button class="md:hidden text-white mix-blend-difference text-xl z-50" onclick="document.getElementById(\'mobile-menu\').classList.toggle(\'hidden\')">
+            <button class="md:hidden text-white mix-blend-difference text-xl z-50" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
         
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden absolute top-0 left-0 w-full h-screen bg-luxury-black text-white flex flex-col items-center justify-center space-y-8 z-40">
-            <a href="#hero" class="text-2xl font-serif" onclick="document.getElementById(\'mobile-menu\').classList.add(\'hidden\')">Home</a>
-            <a href="#philosophy" class="text-2xl font-serif" onclick="document.getElementById(\'mobile-menu\').classList.add(\'hidden\')">Philosophy</a>
-            <a href="#portfolio" class="text-2xl font-serif" onclick="document.getElementById(\'mobile-menu\').classList.add(\'hidden\')">Portfolio</a>
-            <a href="#contact" class="text-2xl font-serif" onclick="document.getElementById(\'mobile-menu\').classList.add(\'hidden\')">Contact</a>
-            <button class="absolute top-6 right-6 text-2xl" onclick="document.getElementById(\'mobile-menu\').classList.add(\'hidden\')"><i class="fas fa-times"></i></button>
+            <a href="#hero" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Home</a>
+            <a href="#philosophy" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Philosophy</a>
+            <a href="#portfolio" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Portfolio</a>
+            <a href="#contact" class="text-2xl font-serif" onclick="document.getElementById('mobile-menu').classList.add('hidden')">Contact</a>
+            <button class="absolute top-6 right-6 text-2xl" onclick="document.getElementById('mobile-menu').classList.add('hidden')"><i class="fas fa-times"></i></button>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <header id="hero" class="relative h-screen w-full flex items-center justify-center overflow-hidden">
-        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] ease-linear hover:scale-105" style="background-image: url(\'https://images.unsplash.com/photo-1600596542815-2495db9dc2c3?q=80&w=2070&auto=format&fit=crop\');"></div>
+        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] ease-linear hover:scale-105" style="background-image: url('https://images.unsplash.com/photo-1600596542815-2495db9dc2c3?q=80&w=2070&auto=format&fit=crop');"></div>
         <div class="absolute inset-0 hero-gradient"></div>
         
         <div class="relative z-10 text-center px-4 max-w-5xl animate-slide-up">
@@ -148,7 +148,7 @@ VALUES (
                         Beyond the Transaction
                     </h2>
                     <p id="phil-text" class="text-luxury-charcoal/70 leading-relaxed font-light text-lg">
-                        Real estate is not just about property; it\'s about lifestyle, legacy, and investment.
+                        Real estate is not just about property; it's about lifestyle, legacy, and investment.
                     </p>
                     
                     <div class="grid grid-cols-2 gap-8 pt-8 border-t border-luxury-charcoal/10">
@@ -253,7 +253,7 @@ VALUES (
                     <i class="fas fa-key text-4xl text-luxury-gold mb-6"></i>
                     <h4 class="text-3xl font-serif mb-4">Unlock Value</h4>
                     <p class="text-white/60 text-sm leading-relaxed mb-8 max-w-xs">
-                        Let us help you find your next investment or dream home in the city\'s most coveted neighborhoods.
+                        Let us help you find your next investment or dream home in the city's most coveted neighborhoods.
                     </p>
                     <a href="#contact" class="text-xs tracking-widest uppercase border-b border-white/30 pb-1 hover:text-luxury-gold hover:border-luxury-gold transition-colors">
                         Start Your Search
@@ -322,44 +322,44 @@ VALUES (
     <script>
         // --- Data Injection & Logic ---
         document.addEventListener("DOMContentLoaded", () => {
-            if(typeof agentConfig === \'undefined\') return;
+            if(typeof agentConfig === 'undefined') return;
 
             // General
             document.title = agentConfig.name + " | Luxury Real Estate";
-            document.getElementById(\'nav-agent-name\').innerText = agentConfig.name;
-            document.getElementById(\'nav-brokerage\').innerText = agentConfig.brokerage;
-            document.getElementById(\'footer-name\').innerText = agentConfig.name;
-            document.getElementById(\'footer-brokerage\').innerText = agentConfig.brokerage;
-            document.getElementById(\'copyright-name\').innerText = agentConfig.name;
-            document.getElementById(\'copyright-year\').innerText = new Date().getFullYear();
+            document.getElementById('nav-agent-name').innerText = agentConfig.name;
+            document.getElementById('nav-brokerage').innerText = agentConfig.brokerage;
+            document.getElementById('footer-name').innerText = agentConfig.name;
+            document.getElementById('footer-brokerage').innerText = agentConfig.brokerage;
+            document.getElementById('copyright-name').innerText = agentConfig.name;
+            document.getElementById('copyright-year').innerText = new Date().getFullYear();
 
             // Hero
-            // document.getElementById(\'hero-headline\').innerHTML = agentConfig.hero.headline; // Replaced by typewriter
-            document.getElementById(\'hero-bg\').style.backgroundImage = "url(\'" + agentConfig.hero.backgroundImage + "\')";
+            // document.getElementById('hero-headline').innerHTML = agentConfig.hero.headline; // Replaced by typewriter
+            document.getElementById('hero-bg').style.backgroundImage = "url('" + agentConfig.hero.backgroundImage + "')";
 
             // Typewriter Effect
-            const headlineText = agentConfig.hero.headline.replace(/<br>/g, \' \'); // Strip HTML for typewriter, or handle differently
-            const headlineEl = document.getElementById(\'hero-headline\');
-            headlineEl.innerHTML = \'\'; // Clear initial text
-            headlineEl.classList.add(\'typewriter-cursor\');
+            const headlineText = agentConfig.hero.headline.replace(/<br>/g, ' '); // Strip HTML for typewriter, or handle differently
+            const headlineEl = document.getElementById('hero-headline');
+            headlineEl.innerHTML = ''; // Clear initial text
+            headlineEl.classList.add('typewriter-cursor');
             
             let charIndex = 0;
             const fullText = "Redefining Luxury Living"; // Use static or dynamic text. 
             // Note: agentConfig.hero.headline might contain HTML like <span class="italic">. 
             // For true typewriter with HTML, we need a parser. 
-            // For simplicity, let\'s type the plain text part or a fixed string, 
+            // For simplicity, let's type the plain text part or a fixed string, 
             // OR we can type into the element text content.
             
-            // Let\'s type the first part, then fade in the second part?
+            // Let's type the first part, then fade in the second part?
             // Or just type the text content.
             
             // Better approach for this specific template which has "Redefining <br> <span...>Luxury Living</span>"
             // We will type the "Redefining" part, then reveal the rest?
             
-            // Let\'s implement the generic requested function:
+            // Let's implement the generic requested function:
             function typeWriter(text, element, speed = 100) {
                 let i = 0;
-                element.innerHTML = \'\';
+                element.innerHTML = '';
                 function type() {
                     if (i < text.length) {
                         element.innerHTML += text.charAt(i);
@@ -374,11 +374,11 @@ VALUES (
             // We will clear the complex HTML and just type a simple version for this demo, 
             // OR we can type the first line "Redefining" and then fade in the rest.
             
-            // Let\'s modify the hero HTML structure slightly to separate the typed part
-            headlineEl.innerHTML = \'<span id="typed-text"></span><br><span class="italic text-luxury-gold opacity-0 transition-opacity duration-1000" id="fade-text">Luxury Living</span>\';
+            // Let's modify the hero HTML structure slightly to separate the typed part
+            headlineEl.innerHTML = '<span id="typed-text"></span><br><span class="italic text-luxury-gold opacity-0 transition-opacity duration-1000" id="fade-text">Luxury Living</span>';
             
-            const typedSpan = document.getElementById(\'typed-text\');
-            const fadeSpan = document.getElementById(\'fade-text\');
+            const typedSpan = document.getElementById('typed-text');
+            const fadeSpan = document.getElementById('fade-text');
             
             let i = 0;
             const textToType = "Redefining";
@@ -390,85 +390,85 @@ VALUES (
                     setTimeout(type, Math.floor(Math.random() * (150 - 50 + 1) + 50)); 
                 } else {
                     // Finished typing, show the rest
-                    fadeSpan.classList.remove(\'opacity-0\');
-                    headlineEl.classList.remove(\'typewriter-cursor\'); // Stop blinking cursor
+                    fadeSpan.classList.remove('opacity-0');
+                    headlineEl.classList.remove('typewriter-cursor'); // Stop blinking cursor
                 }
             }
             
             setTimeout(type, 1000); // Start after 1s
 
             // Philosophy
-            document.getElementById(\'phil-headline\').innerHTML = agentConfig.philosophy.headline;
-            document.getElementById(\'phil-text\').innerText = agentConfig.philosophy.text;
-            document.getElementById(\'phil-stat-producer\').innerText = agentConfig.philosophy.stats.producer;
-            document.getElementById(\'phil-label-producer\').innerText = agentConfig.philosophy.stats.producerLabel;
-            document.getElementById(\'phil-image\').src = agentConfig.philosophy.image;
-            document.getElementById(\'stat-1-val\').innerText = agentConfig.philosophy.stats.years;
+            document.getElementById('phil-headline').innerHTML = agentConfig.philosophy.headline;
+            document.getElementById('phil-text').innerText = agentConfig.philosophy.text;
+            document.getElementById('phil-stat-producer').innerText = agentConfig.philosophy.stats.producer;
+            document.getElementById('phil-label-producer').innerText = agentConfig.philosophy.stats.producerLabel;
+            document.getElementById('phil-image').src = agentConfig.philosophy.image;
+            document.getElementById('stat-1-val').innerText = agentConfig.philosophy.stats.years;
 
             // Portfolio
-            document.getElementById(\'portfolio-location\').innerText = "Exclusive Listings in " + agentConfig.location;
+            document.getElementById('portfolio-location').innerText = "Exclusive Listings in " + agentConfig.location;
             
             // Active
-            document.getElementById(\'active-title\').innerText = agentConfig.portfolio.active.title;
-            document.getElementById(\'active-specs\').innerText = agentConfig.portfolio.active.price + " • " + agentConfig.portfolio.active.specs;
-            document.getElementById(\'active-img\').src = agentConfig.portfolio.active.image;
+            document.getElementById('active-title').innerText = agentConfig.portfolio.active.title;
+            document.getElementById('active-specs').innerText = agentConfig.portfolio.active.price + " • " + agentConfig.portfolio.active.specs;
+            document.getElementById('active-img').src = agentConfig.portfolio.active.image;
 
             // Sold
-            document.getElementById(\'sold-title\').innerText = agentConfig.portfolio.sold.title;
-            document.getElementById(\'sold-status\').innerText = agentConfig.portfolio.sold.status;
-            document.getElementById(\'sold-img\').src = agentConfig.portfolio.sold.image;
+            document.getElementById('sold-title').innerText = agentConfig.portfolio.sold.title;
+            document.getElementById('sold-status').innerText = agentConfig.portfolio.sold.status;
+            document.getElementById('sold-img').src = agentConfig.portfolio.sold.image;
 
             // Services
-            const servicesContainer = document.getElementById(\'services-grid\');
-            servicesContainer.innerHTML = \'\'; // Clear defaults
+            const servicesContainer = document.getElementById('services-grid');
+            servicesContainer.innerHTML = ''; // Clear defaults
             agentConfig.services.forEach((service) => {
-                const html = \`
+                const html = `
                     <div class="group p-6 hover:bg-gray-50 transition-colors duration-300 border-l-2 border-transparent hover:border-luxury-gold">
                         <div class="text-luxury-gold text-3xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas \${service.icon}"></i>
+                            <i class="fas ${service.icon}"></i>
                         </div>
-                        <h3 class="font-serif text-2xl mb-3 text-luxury-charcoal">\${service.title}</h3>
-                        <p class="text-sm text-gray-500 leading-relaxed">\${service.desc}</p>
+                        <h3 class="font-serif text-2xl mb-3 text-luxury-charcoal">${service.title}</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">${service.desc}</p>
                     </div>
-                \`;
+                `;
                 servicesContainer.innerHTML += html;
             });
 
             // Contact
-            document.getElementById(\'footer-email\').innerText = agentConfig.email;
-            document.getElementById(\'footer-email\').href = "mailto:" + agentConfig.email;
-            document.getElementById(\'footer-phone\').innerText = agentConfig.phone;
-            document.getElementById(\'footer-phone\').href = "tel:" + agentConfig.phoneClean;
-            document.getElementById(\'footer-note\').innerHTML = agentConfig.location + "<br>" + agentConfig.brokerPageNote;
+            document.getElementById('footer-email').innerText = agentConfig.email;
+            document.getElementById('footer-email').href = "mailto:" + agentConfig.email;
+            document.getElementById('footer-phone').innerText = agentConfig.phone;
+            document.getElementById('footer-phone').href = "tel:" + agentConfig.phoneClean;
+            document.getElementById('footer-note').innerHTML = agentConfig.location + "<br>" + agentConfig.brokerPageNote;
             
-            document.getElementById(\'link-insta\').href = agentConfig.social.instagram;
-            document.getElementById(\'link-linkedin\').href = agentConfig.social.linkedin;
-            document.getElementById(\'link-zillow\').href = agentConfig.social.zillow;
+            document.getElementById('link-insta').href = agentConfig.social.instagram;
+            document.getElementById('link-linkedin').href = agentConfig.social.linkedin;
+            document.getElementById('link-zillow').href = agentConfig.social.zillow;
 
             // Scroll Animation Observer
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add(\'visible\');
+                        entry.target.classList.add('visible');
                     }
                 });
             }, { threshold: 0.1 });
 
-            document.querySelectorAll(\'.reveal-on-scroll\').forEach(el => observer.observe(el));
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
             
             // Navbar Scroll Effect
-            window.addEventListener(\'scroll\', () => {
-                const nav = document.getElementById(\'navbar\');
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
                 if (window.scrollY > 50) {
-                    nav.classList.add(\'bg-luxury-black/90\', \'backdrop-blur-md\', \'py-4\', \'shadow-lg\');
-                    nav.classList.remove(\'py-6\');
+                    nav.classList.add('bg-luxury-black/90', 'backdrop-blur-md', 'py-4', 'shadow-lg');
+                    nav.classList.remove('py-6');
                 } else {
-                    nav.classList.remove(\'bg-luxury-black/90\', \'backdrop-blur-md\', \'py-4\', \'shadow-lg\');
-                    nav.classList.add(\'py-6\');
+                    nav.classList.remove('bg-luxury-black/90', 'backdrop-blur-md', 'py-4', 'shadow-lg');
+                    nav.classList.add('py-6');
                 }
 
                 // Donut Chart Scroll Logic
-                const section = document.getElementById(\'market-trends\');
+                const section = document.getElementById('market-trends');
                 if (section) {
                     const rect = section.getBoundingClientRect();
                     const viewHeight = window.innerHeight;
@@ -479,7 +479,7 @@ VALUES (
                     // Or standard scrollytelling: 0% at top of viewport, 100% when scrolled past
                     
                     // Using the provided logic: Math.abs(rect.top) / (sectionHeight - viewHeight)
-                    // This assumes the section is taller than the viewport and we want to track progress while it\'s passing through
+                    // This assumes the section is taller than the viewport and we want to track progress while it's passing through
                     
                     if (rect.top <= viewHeight / 2 && rect.bottom >= 0) {
                         let ratio = Math.abs(rect.top - (viewHeight / 2)) / (sectionHeight / 1.5);
@@ -493,17 +493,17 @@ VALUES (
             });
 
             function updateRing(percent) {
-                const circle = document.getElementById(\'scroll-ring\');
-                const text = document.getElementById(\'chart-percentage\');
+                const circle = document.getElementById('scroll-ring');
+                const text = document.getElementById('chart-percentage');
                 const circumference = 283;
                 
                 const offset = circumference - (percent * circumference);
                 circle.style.strokeDashoffset = offset;
-                text.innerText = Math.round(percent * 100) + \'%\';
+                text.innerText = Math.round(percent * 100) + '%';
             }
         });
     </script>
 </body>
-</html>',
+</html>$html$,
   true
 );
