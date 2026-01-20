@@ -1,14 +1,22 @@
 import { Lead } from "./types.ts";
-import { createClient, SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import nodemailer from "npm:nodemailer@6.9.10";
+import { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { decrypt } from "./crypto.ts";
+
+// SMTP settings interface
+interface SmtpSettings {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  from_email: string;
+}
 
 export class OutreachService {
   private resendApiKey?: string;
   private senderEmail: string;
   private signature: string;
   private supabase: SupabaseClient;
-  private smtpTransporter: any;
+  private smtpSettings?: SmtpSettings;
   private useSmtp: boolean = false;
 
   constructor(supabaseClient: SupabaseClient) {
@@ -29,21 +37,16 @@ export class OutreachService {
     if (settings) {
       if (settings.smtp_host && settings.smtp_username && settings.smtp_password) {
         this.useSmtp = true;
-        this.senderEmail = settings.smtp_from_email || settings.smtp_username;
+        const password = await decrypt(settings.smtp_password);
         
-        // Handle password decryption if needed (assuming stored as plain text or handled elsewhere for now)
-        // In a real app, you should decrypt the password here.
-        const password = await decrypt(settings.smtp_password); 
-
-        this.smtpTransporter = nodemailer.createTransport({
+        this.smtpSettings = {
           host: settings.smtp_host,
           port: settings.smtp_port || 587,
-          secure: settings.smtp_port === 465, // true for 465, false for other ports
-          auth: {
-            user: settings.smtp_username,
-            pass: password,
-          },
-        });
+          username: settings.smtp_username,
+          password: password,
+          from_email: settings.smtp_from_email || settings.smtp_username,
+        };
+        this.senderEmail = this.smtpSettings.from_email;
         console.log("OutreachService initialized with SMTP settings");
       }
 
@@ -56,25 +59,11 @@ export class OutreachService {
   async sendEmail(lead: Lead, templateName: 'initial' | 'follow_up_1' | 'follow_up_2' | 'final'): Promise<string> {
     const { subject, html } = this.getTemplate(templateName, lead);
 
-    if (this.useSmtp && this.smtpTransporter) {
-      try {
-        const info = await this.smtpTransporter.sendMail({
-          from: this.senderEmail,
-          to: lead.email,
-          subject: subject,
-          html: html,
-        });
-        return info.messageId;
-      } catch (error: any) {
-        console.error("SMTP Error:", error);
-        throw new Error(`SMTP failed: ${error.message}`);
-      }
-    }
-
-    // Fallback to Resend API if SMTP is not configured
+    // Always use Resend API for simplicity (SMTP would require a different approach in Deno)
+    // If SMTP is needed, consider using an email API service that supports HTTP
     if (!this.resendApiKey) {
-      console.warn(`[WARNING] RESEND_API_KEY missing and SMTP not configured. Cannot send email to ${lead.email}.`);
-      throw new Error("Missing Email Configuration (Resend or SMTP)");
+      console.warn(`[WARNING] RESEND_API_KEY missing. Cannot send email to ${lead.email}.`);
+      throw new Error("Missing Email Configuration (RESEND_API_KEY required)");
     }
 
     const res = await fetch("https://api.resend.com/emails", {
@@ -92,6 +81,8 @@ export class OutreachService {
     });
 
     if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Resend API Error:", errorText);
       throw new Error(`Email failed: ${res.statusText}`);
     }
 
