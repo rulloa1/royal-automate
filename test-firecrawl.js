@@ -2,7 +2,7 @@
 const apiKey = "fc-89e83d49ef6a4a8c96fc7d16ac7714d0";
 
 async function testFirecrawl() {
-  console.log("Testing Firecrawl API...");
+  console.log("Testing Firecrawl API (Attempt 2)...");
   try {
     const response = await fetch("https://api.firecrawl.dev/v1/search", {
       method: "POST",
@@ -12,10 +12,7 @@ async function testFirecrawl() {
       },
       body: JSON.stringify({
         query: "real estate agents in Miami",
-        limit: 1,
-        pageOptions: {
-            fetchPageContent: false
-        }
+        limit: 1
       })
     });
 

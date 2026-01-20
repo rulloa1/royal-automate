@@ -39,10 +39,7 @@ serve(async (req)=>{
       },
       body: JSON.stringify({
         query: `real estate agents in ${city}`,
-        limit: 10,
-        pageOptions: {
-            fetchPageContent: false // Just get the search results (title, url, description)
-        }
+        limit: 10
       })
     });
 
