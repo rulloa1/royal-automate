@@ -30,6 +30,7 @@ serve(async (req)=>{
 
     // 1. Search for agents using Firecrawl Map/Search
     // We search for "real estate agents in [City]" to get a list of profiles/websites
+    // SIMPLIFIED: Using basic search first to ensure connectivity.
     const searchResponse = await fetch("https://api.firecrawl.dev/v1/search", {
       method: "POST",
       headers: {
@@ -38,27 +39,16 @@ serve(async (req)=>{
       },
       body: JSON.stringify({
         query: `real estate agents in ${city}`,
-        limit: 5, // Start with 5 for testing
-        scrapeOptions: {
-           formats: ["markdown", "extract"],
-           extract: {
-             schema: {
-               type: "object",
-               properties: {
-                 business_name: { type: "string" },
-                 phone: { type: "string" },
-                 email: { type: "string" },
-                 website: { type: "string" }
-               },
-               required: ["business_name"]
-             }
-           }
+        limit: 10,
+        pageOptions: {
+            fetchPageContent: false // Just get the search results (title, url, description)
         }
       })
     });
 
     if (!searchResponse.ok) {
         const errText = await searchResponse.text();
+        console.error(`Firecrawl API Error: ${searchResponse.status} ${errText}`);
         throw new Error(`Firecrawl Search Failed: ${errText}`);
     }
 
@@ -71,22 +61,16 @@ serve(async (req)=>{
 
     // 2. Map Firecrawl results to our Lead schema
     const leadsToInsert = searchResult.data.map((item: any) => {
-        // Firecrawl search items usually have 'url', 'title', 'description'
-        // If we used 'scrapeOptions', the extracted data might be in 'metadata' or 'extract' depending on implementation
-        // For standard search, we get list of pages. We might need to map them roughly.
-        
-        // Fallback mapping if extraction is partial
-        const extracted = item.extract || {};
-        
+        // Basic search returns: title, url, description, etc.
         return {
-            business_name: extracted.business_name || item.title || "Unknown Agent",
+            business_name: item.title || "Unknown Agent",
             industry: "Real Estate",
-            phone: extracted.phone || null,
-            email: extracted.email || null,
-            website: extracted.website || item.url || null,
-            ai_score: 5, // Default score for new real leads
+            phone: null, // Will be enriched later
+            email: null, // Will be enriched later
+            website: item.url || null,
+            ai_score: 5, 
             status: "new",
-            notes: `Scraped via Firecrawl from ${item.url}`,
+            notes: `Scraped via Firecrawl (Basic): ${item.description || ''}`.slice(0, 500),
             user_id: userId,
             city: city
         };
