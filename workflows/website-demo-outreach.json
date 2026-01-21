@@ -1,0 +1,176 @@
+{ 
+   "name": "Website Demo Outreach - GitHub Pages", 
+   "nodes": [ 
+     { 
+       "parameters": { 
+         "pollTimes": { 
+           "item": [{"mode": "everyMinute", "minute": 10}] 
+         }, 
+         "documentId": {"__rl": true, "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA", "mode": "id"}, 
+         "sheetName": {"__rl": true, "value": "Outreach", "mode": "name"}, 
+         "event": "rowAdded" 
+       }, 
+       "id": "trigger", 
+       "name": "New Lead Added", 
+       "type": "n8n-nodes-base.googleSheetsTrigger", 
+       "typeVersion": 1, 
+       "position": [0, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "conditions": { 
+           "conditions": [ 
+             {"leftValue": "={{ $json['Status'] }}", "rightValue": "Generate Website", "operator": {"type": "string", "operation": "equals"}}, 
+             {"leftValue": "={{ $json['Email'] }}", "rightValue": "", "operator": {"type": "string", "operation": "notEquals"}} 
+           ], 
+           "combinator": "and" 
+         } 
+       }, 
+       "id": "filter", 
+       "name": "Ready?", 
+       "type": "n8n-nodes-base.filter", 
+       "typeVersion": 2, 
+       "position": [220, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "model": "gpt-4o", 
+         "messages": { 
+           "values": [ 
+             { 
+               "content": "Create a professional, modern landing page for:\n\nBusiness: {{ $json['Business Name'] }}\nIndustry: {{ $json['Industry'] }}\nLocation: {{ $json['City'] }}, {{ $json['State'] }}\nPhone: {{ $json['Phone'] || '(555) 000-0000' }}\n\nGenerate a COMPLETE HTML file with:\n- Hero section with business name, tagline, CTA button\n- Services section (5-6 relevant services)\n- About Us section (local expertise focus)\n- Why Choose Us (3-4 benefits with icons)\n- Testimonials (3 realistic reviews)\n- Contact section with phone and contact form placeholder\n- Professional footer\n- Modern gradient color scheme appropriate for {{ $json['Industry'] }}\n- Mobile responsive (flexbox/grid)\n- Google Fonts (Inter)\n- Font Awesome 6 icons via CDN\n- Smooth scroll behavior\n- All CSS inline\n- No external JavaScript\n\nReturn ONLY the HTML starting with <!DOCTYPE html>" 
+             } 
+           ] 
+         }, 
+         "options": {"temperature": 0.7, "maxTokens": 5000} 
+       }, 
+       "id": "generate", 
+       "name": "Generate Website", 
+       "type": "@n8n/n8n-nodes-langchain.openAi", 
+       "typeVersion": 1.5, 
+       "position": [440, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "jsCode": "const lead = $('Ready?').item.json;\nlet html = $json.message.content.replace(/```html\\n?/gi, '').replace(/```\\n?/g, '').trim();\n\nconst slug = lead['Business Name'].toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 25);\nconst id = Date.now().toString(36);\nconst filename = `${slug}-${id}.html`;\n\nreturn [{\n  businessName: lead['Business Name'],\n  industry: lead['Industry'],\n  city: lead['City'],\n  state: lead['State'],\n  phone: lead['Phone'],\n  email: lead['Email'],\n  contactName: lead['Contact Name'] || '',\n  html: html,\n  filename: filename,\n  base64: Buffer.from(html).toString('base64')\n}];" 
+       }, 
+       "id": "prepare", 
+       "name": "Prepare File", 
+       "type": "n8n-nodes-base.code", 
+       "typeVersion": 2, 
+       "position": [660, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "method": "PUT", 
+         "url": "= `https://api.github.com/repos/rulloa1/client-demos/contents/{{`  $json.filename }}", 
+        "authentication": "predefinedCredentialType", 
+        "nodeCredentialType": "githubApi", 
+        "sendHeaders": true, 
+         "headerParameters": { 
+           "parameters": [{"name": "Accept", "value": "application/vnd.github.v3+json"}] 
+         }, 
+         "sendBody": true, 
+         "specifyBody": "json", 
+         "jsonBody": "={\n  \"message\": \"Add demo: {{ $json.businessName }}\",\n  \"content\": \"{{ $json.base64 }}\"\n}" 
+       }, 
+       "id": "github-upload", 
+       "name": "Upload to GitHub", 
+       "type": "n8n-nodes-base.httpRequest", 
+       "typeVersion": 4.2, 
+       "position": [880, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "jsCode": "const lead = $('Prepare File').item.json;\nconst ghResponse = $json;\n\n// GitHub Pages URL\nconst username = 'rulloa1'; // Replace with your GitHub username\nconst liveUrl = ` `https://${username}.github.io/client-demos/${lead.filename}` `;\n\nreturn [{\n  ...lead,\n  liveUrl: liveUrl,\n  githubPath: ghResponse.content?.path || lead.filename\n}];" 
+      }, 
+       "id": "make-url", 
+       "name": "Generate Live URL", 
+       "type": "n8n-nodes-base.code", 
+       "typeVersion": 2, 
+       "position": [1100, 0] 
+     }, 
+     { 
+       "parameters": {"amount": 60, "unit": "seconds"}, 
+       "id": "wait", 
+       "name": "Wait 60s for Deploy", 
+       "type": "n8n-nodes-base.wait", 
+       "typeVersion": 1.1, 
+       "position": [1320, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "model": "gpt-4o-mini", 
+         "messages": { 
+           "values": [ 
+             { 
+               "content": "Write a short cold email (under 100 words). Friendly, casual, not salesy.\n\nBusiness: {{ $json.businessName }}\nIndustry: {{ $json.industry }}\nCity: {{ $json.city }}\nDemo site I built: {{ $json.liveUrl }}\n\nKey points:\n- Noticed they need a better web presence\n- Built them a FREE demo site\n- Just need their logo/photos to finish\n- Reply if interested\n- No pressure\n- I'm Roy from RoysCompany\n\nJSON: {\"subject\": \"catchy subject under 50 chars\", \"body\": \"email with \\n line breaks\"}" 
+             } 
+           ] 
+         }, 
+         "options": {"temperature": 0.8, "responseFormat": "json_object"} 
+       }, 
+       "id": "write-email", 
+       "name": "Write Email", 
+       "type": "@n8n/n8n-nodes-langchain.openAi", 
+       "typeVersion": 1.5, 
+       "position": [1540, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "jsCode": "const lead = $('Generate Live URL').item.json;\nconst email = JSON.parse($json.message.content);\n\nreturn [{\n  to: lead.email,\n  subject: email.subject,\n  body: email.body,\n  businessName: lead.businessName,\n  liveUrl: lead.liveUrl\n}];" 
+       }, 
+       "id": "format", 
+       "name": "Format Email", 
+       "type": "n8n-nodes-base.code", 
+       "typeVersion": 2, 
+       "position": [1760, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "sendTo": "={{ $json.to }}", 
+         "subject": "={{ $json.subject }}", 
+         "emailType": "text", 
+         "message": "={{ $json.body }}" 
+       }, 
+       "id": "send", 
+       "name": "Send Email", 
+       "type": "n8n-nodes-base.gmail", 
+       "typeVersion": 2.1, 
+       "position": [1980, 0] 
+     }, 
+     { 
+       "parameters": { 
+         "operation": "update", 
+         "documentId": {"__rl": true, "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA", "mode": "id"}, 
+         "sheetName": {"__rl": true, "value": "Outreach", "mode": "name"}, 
+         "columns": { 
+           "mappingMode": "defineBelow", 
+           "value": { 
+             "Status": "Email Sent", 
+             "Demo URL": "={{ $('Generate Live URL').item.json.liveUrl }}", 
+             "Email Sent": "={{ new Date().toISOString() }}", 
+             "Subject Used": "={{ $json.subject }}" 
+           } 
+         } 
+       }, 
+       "id": "update", 
+       "name": "Update Sheet", 
+       "type": "n8n-nodes-base.googleSheets", 
+       "typeVersion": 4.5, 
+       "position": [2200, 0] 
+     } 
+   ], 
+   "connections": { 
+     "New Lead Added": {"main": [[{"node": "Ready?", "type": "main", "index": 0}]]}, 
+     "Ready?": {"main": [[{"node": "Generate Website", "type": "main", "index": 0}]]}, 
+     "Generate Website": {"main": [[{"node": "Prepare File", "type": "main", "index": 0}]]}, 
+     "Prepare File": {"main": [[{"node": "Upload to GitHub", "type": "main", "index": 0}]]}, 
+     "Upload to GitHub": {"main": [[{"node": "Generate Live URL", "type": "main", "index": 0}]]}, 
+     "Generate Live URL": {"main": [[{"node": "Wait 60s for Deploy", "type": "main", "index": 0}]]}, 
+     "Wait 60s for Deploy": {"main": [[{"node": "Write Email", "type": "main", "index": 0}]]}, 
+     "Write Email": {"main": [[{"node": "Format Email", "type": "main", "index": 0}]]}, 
+     "Format Email": {"main": [[{"node": "Send Email", "type": "main", "index": 0}]]}, 
+     "Send Email": {"main": [[{"node": "Update Sheet", "type": "main", "index": 0}]]} 
+   } 
+ }
