@@ -75,13 +75,40 @@ const LeadForm = () => {
     setIsSubmitting(true);
 
     try {
-      const action = values.type === "call" ? "call-lead" : "message-lead";
-
-      const { error } = await supabase.functions.invoke("n8n-proxy", {
-        body: { action, ...values },
+      // Generate a unique session ID for this lead
+      const sessionId = `lead_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      
+      // Insert lead into database
+      const { error: dbError } = await supabase.from("leads").insert({
+        session_id: sessionId,
+        contact_name: values.name,
+        phone: values.phone || null,
+        email: values.email || null,
+        pain_points: values.message || null,
+        source: values.type === "call" ? "lead_form_call" : "lead_form_message",
+        interests: values.url ? ["website_url:" + values.url] : [],
+        priority: "high",
+        status: "new",
       });
 
-      if (error) throw new Error(error.message);
+      if (dbError) throw dbError;
+
+      // Send email notification via Resend
+      const { error: emailError } = await supabase.functions.invoke("notify-new-lead", {
+        body: {
+          leadName: values.name,
+          email: values.email || "not-provided@placeholder.com",
+          phone: values.phone,
+          selectedPackage: values.type === "call" ? "Instant Callback Request" : "Message Inquiry",
+          projectDetails: values.message,
+          source: values.type === "call" ? "Lead Form - Call" : "Lead Form - Message",
+        },
+      });
+
+      if (emailError) {
+        console.warn("Email notification failed:", emailError);
+        // Don't throw - lead is saved, just notify user
+      }
 
       toast.success(
         values.type === "call"
@@ -90,7 +117,7 @@ const LeadForm = () => {
       );
       
       form.reset({
-        type: activeTab, // Keep current tab
+        type: activeTab,
         name: "",
         phone: "",
         email: "",

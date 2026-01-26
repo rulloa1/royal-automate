@@ -5,6 +5,7 @@
         "strict": false
     },
     "imports": {
-        "openai": "https://esm.sh/openai@4.52.5"
+        "openai": "https://esm.sh/openai@4.52.5",
+        "resend": "https://esm.sh/resend@2.0.0"
     }
 }
