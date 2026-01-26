@@ -99,6 +99,7 @@ const WebDesign = () => {
     setIsSubmitting(true);
 
     try {
+      // Insert lead into database
       const { error } = await supabase.from("leads").insert({
         session_id: `web_design_${Date.now()}`,
         contact_name: formData.name,
@@ -113,6 +114,19 @@ const WebDesign = () => {
       });
 
       if (error) throw error;
+
+      // Send email notifications
+      await supabase.functions.invoke("notify-new-lead", {
+        body: {
+          leadName: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          businessName: formData.businessName,
+          selectedPackage: formData.selectedPackage,
+          projectDetails: formData.projectDetails,
+          source: "Web Design Page",
+        },
+      });
 
       toast.success("Thank you! We'll be in touch within 24 hours.");
       setShowLeadForm(false);
