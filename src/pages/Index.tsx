@@ -3,6 +3,7 @@ import FluidBackground from "@/components/landing/FluidBackground";
 import LandingHeader from "@/components/landing/LandingHeader";
 import HeroSection from "@/components/landing/HeroSection";
 import ServicesSection from "@/components/landing/ServicesSection";
+import VoiceBotSection from "@/components/landing/VoiceBotSection";
 import ProcessSection from "@/components/landing/ProcessSection";
 import UseCasesSection from "@/components/landing/UseCasesSection";
 import AboutSection from "@/components/landing/AboutSection";
@@ -28,6 +29,7 @@ const Index = () => {
         <HeroSection />
         <UseCasesSection />
         <ServicesSection />
+        <VoiceBotSection />
         <ProcessSection />
         <AboutSection />
         <PricingSection />
