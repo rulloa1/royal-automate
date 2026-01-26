@@ -68,6 +68,56 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_conversations: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          ended_at: string | null
+          full_transcript: string | null
+          id: string
+          lead_id: string | null
+          metadata: Json | null
+          session_id: string
+          started_at: string
+          status: string | null
+          transcript: Json | null
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          full_transcript?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          session_id: string
+          started_at?: string
+          status?: string | null
+          transcript?: Json | null
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          full_transcript?: string | null
+          id?: string
+          lead_id?: string | null
+          metadata?: Json | null
+          session_id?: string
+          started_at?: string
+          status?: string | null
+          transcript?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
