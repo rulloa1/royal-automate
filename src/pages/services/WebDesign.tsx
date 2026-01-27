@@ -99,18 +99,19 @@ const WebDesign = () => {
     setIsSubmitting(true);
 
     try {
-      // Insert lead into database
-      const { error } = await supabase.from("leads").insert({
-        session_id: `web_design_${Date.now()}`,
-        contact_name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        business_name: formData.businessName,
-        interests: ["web_design", formData.selectedPackage],
-        pain_points: formData.projectDetails,
-        source: "web_design_page",
-        priority: formData.selectedPackage === "Enterprise" ? "high" : "medium",
-        qualification_score: formData.selectedPackage === "Enterprise" ? 80 : 60,
+      // Insert lead via Edge Function (backend-only access)
+      const { error } = await supabase.functions.invoke("create-lead", {
+        body: {
+          contact_name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          business_name: formData.businessName,
+          interests: ["web_design", formData.selectedPackage],
+          pain_points: formData.projectDetails,
+          source: "web_design_page",
+          priority: formData.selectedPackage === "Enterprise" ? "high" : "medium",
+          qualification_score: formData.selectedPackage === "Enterprise" ? 80 : 60,
+        },
       });
 
       if (error) throw error;

@@ -75,20 +75,17 @@ const LeadForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Generate a unique session ID for this lead
-      const sessionId = `lead_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      
-      // Insert lead into database
-      const { error: dbError } = await supabase.from("leads").insert({
-        session_id: sessionId,
-        contact_name: values.name,
-        phone: values.phone || null,
-        email: values.email || null,
-        pain_points: values.message || null,
-        source: values.type === "call" ? "lead_form_call" : "lead_form_message",
-        interests: values.url ? ["website_url:" + values.url] : [],
-        priority: "high",
-        status: "new",
+      // Insert lead via Edge Function (backend-only access)
+      const { data: leadData, error: dbError } = await supabase.functions.invoke("create-lead", {
+        body: {
+          contact_name: values.name,
+          phone: values.phone || null,
+          email: values.email || null,
+          pain_points: values.message || null,
+          source: values.type === "call" ? "lead_form_call" : "lead_form_message",
+          interests: values.url ? ["website_url:" + values.url] : [],
+          priority: "high",
+        },
       });
 
       if (dbError) throw dbError;
