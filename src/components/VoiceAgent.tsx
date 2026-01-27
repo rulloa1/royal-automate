@@ -1,186 +1,187 @@
-import { useConversation } from "@elevenlabs/react";
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Mic, MicOff, Phone, PhoneOff } from "lucide-react";
+import { Mic, MicOff, Phone, PhoneOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface TranscriptEntry {
-  role: string;
+  role: "user" | "agent";
   text: string;
   timestamp: string;
 }
 
-export function VoiceAgent() {
-  const [isConnecting, setIsConnecting] = useState(false);
+export default function VoiceAgent() {
+  const [isSessionActive, setIsSessionActive] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcripts, setTranscripts] = useState<TranscriptEntry[]>([]);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
   const sessionIdRef = useRef<string>("");
-  const conversationIdRef = useRef<string>("");
-  const startTimeRef = useRef<Date | null>(null);
 
-  const saveConversation = useCallback(async (ended: boolean = false) => {
-    if (!conversationIdRef.current) return;
-
-    const duration = startTimeRef.current
-      ? Math.round((Date.now() - startTimeRef.current.getTime()) / 1000)
-      : 0;
-
-    const fullTranscript = transcripts
-      .map((t) => `${t.role === "user" ? "User" : "Agent"}: ${t.text}`)
-      .join("\n");
-
-    try {
-      await supabase
-        .from("voice_conversations")
-        .update({
-          transcript: JSON.parse(JSON.stringify(transcripts)),
-          full_transcript: fullTranscript,
-          duration_seconds: duration,
-          status: ended ? "completed" : "active",
-          ended_at: ended ? new Date().toISOString() : null,
-        })
-        .eq("id", conversationIdRef.current);
-    } catch (error) {
-      console.error("Failed to save conversation:", error);
-    }
-  }, [transcripts]);
-
-  // Auto-save transcripts periodically
   useEffect(() => {
-    if (transcripts.length > 0 && conversationIdRef.current) {
-      const timeout = setTimeout(() => saveConversation(false), 2000);
-      return () => clearTimeout(timeout);
+    return () => {
+      // Cleanup: stop speech synthesis when component unmounts
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // Stop any current speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
     }
-  }, [transcripts, saveConversation]);
+  };
 
-  const conversation = useConversation({
-    onConnect: () => {
-      console.log("Connected to voice agent");
-      toast.success("Connected to AI Voice Agent");
-    },
-    onDisconnect: () => {
-      console.log("Disconnected from voice agent");
-      saveConversation(true);
-    },
-    onMessage: (message) => {
-      console.log("Message:", message);
-      
-      // Type-safe message handling
-      const msg = message as unknown as Record<string, unknown>;
-      
-      // Handle user transcripts
-      if (msg.type === "user_transcript") {
-        const event = msg.user_transcription_event as Record<string, unknown> | undefined;
-        const userText = event?.user_transcript as string | undefined;
-        if (userText) {
-          setTranscripts((prev) => [
-            ...prev,
-            { role: "user", text: userText, timestamp: new Date().toISOString() },
-          ]);
-        }
-      }
-      
-      // Handle agent responses
-      if (msg.type === "agent_response") {
-        const event = msg.agent_response_event as Record<string, unknown> | undefined;
-        const agentText = event?.agent_response as string | undefined;
-        if (agentText) {
-          setTranscripts((prev) => [
-            ...prev,
-            { role: "agent", text: agentText, timestamp: new Date().toISOString() },
-          ]);
-        }
-      }
-    },
-    onError: (error) => {
-      console.error("Voice agent error:", error);
-      toast.error("Voice connection error. Please try again.");
-    },
-  });
-
-  const startConversation = useCallback(async () => {
-    setIsConnecting(true);
-    setTranscripts([]);
-    
+  const processAudio = async (audioBlob: Blob) => {
+    setIsProcessing(true);
     try {
-      // Request microphone permission
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // 1. Send Audio to Deepgram (via Supabase Edge Function)
+      const formData = new FormData();
+      formData.append('file', audioBlob);
 
-      // Generate session ID
-      sessionIdRef.current = `voice_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-      startTimeRef.current = new Date();
-
-      // Create voice conversation record
-      const { data: voiceConvo, error: dbError } = await supabase
-        .from("voice_conversations")
-        .insert({
-          session_id: sessionIdRef.current,
-          status: "active",
-          started_at: startTimeRef.current.toISOString(),
-        })
-        .select("id")
-        .single();
-
-      if (dbError) {
-        console.error("Failed to create voice conversation record:", dbError);
-      } else {
-        conversationIdRef.current = voiceConvo.id;
-      }
-
-      // Get token from edge function
-      const { data, error } = await supabase.functions.invoke(
-        "elevenlabs-voice-token"
-      );
-
-      if (error || !data?.token) {
-        throw new Error(error?.message || "No token received");
-      }
-
-      // Start the conversation with WebRTC
-      await conversation.startSession({
-        conversationToken: data.token,
-        connectionType: "webrtc",
+      const { data: sttData, error: sttError } = await supabase.functions.invoke("process-audio", {
+        body: formData,
       });
+
+      if (sttError) throw new Error("Transcription failed");
+      const userText = sttData?.text;
+
+      if (!userText || userText.trim().length === 0) {
+        toast.info("No speech detected");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Add User Transcript
+      setTranscripts(prev => [...prev, {
+        role: "user",
+        text: userText,
+        timestamp: new Date().toISOString()
+      }]);
+
+      // 2. Get AI Response (Re-using sales-chat function)
+      // Format messages for the sales-chat point
+      const conversationHistory = transcripts.map(t => ({
+        role: t.role === "user" ? "user" : "assistant",
+        content: t.text
+      }));
+      conversationHistory.push({ role: "user", content: userText });
+
+      const { data: aiData, error: aiError } = await supabase.functions.invoke("sales-chat", {
+        body: {
+          messages: conversationHistory,
+          sessionId: sessionIdRef.current
+        },
+      });
+
+      if (aiError) throw new Error("AI processing failed");
+      const agentText = aiData?.content;
+
+      if (agentText) {
+        // Add Agent Transcript
+        setTranscripts(prev => [...prev, {
+          role: "agent",
+          text: agentText,
+          timestamp: new Date().toISOString()
+        }]);
+
+        // 3. Speak Response
+        speakText(agentText);
+      }
+
     } catch (error) {
-      console.error("Failed to start conversation:", error);
-      toast.error("Failed to connect. Please check microphone permissions.");
+      console.error("Voice agent error:", error);
+      toast.error("Process failed. Please try again.");
     } finally {
-      setIsConnecting(false);
+      setIsProcessing(false);
     }
-  }, [conversation]);
+  };
 
-  const stopConversation = useCallback(async () => {
-    await saveConversation(true);
-    await conversation.endSession();
-    toast.success("Call ended. Transcript saved.");
-  }, [conversation, saveConversation]);
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
 
-  const isConnected = conversation.status === "connected";
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        processAudio(audioBlob);
+        // Stop all tracks
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+
+      // Stop speaking if playing
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+
+    } catch (err) {
+      console.error("Microphone error:", err);
+      toast.error("Could not access microphone");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const startSession = () => {
+    sessionIdRef.current = `voice_${Date.now()}`;
+    setTranscripts([]);
+    setIsSessionActive(true);
+    toast.success("Voice session started - Internal Mic Ready");
+  };
+
+  const endSession = () => {
+    setIsSessionActive(false);
+    setIsRecording(false);
+    setIsSpeaking(false);
+    window.speechSynthesis.cancel();
+    toast.info("Session ended");
+  };
 
   return (
     <div className="flex flex-col items-center gap-6">
       {/* Status indicator */}
       <div className="flex items-center gap-3">
         <div
-          className={`w-3 h-3 rounded-full ${
-            isConnected
-              ? "bg-emerald-500 animate-pulse"
-              : "bg-muted-foreground"
-          }`}
+          className={`w-3 h-3 rounded-full ${isSessionActive ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"
+            }`}
         />
         <span className="text-sm text-muted-foreground">
-          {isConnected
-            ? conversation.isSpeaking
+          {isSessionActive
+            ? isSpeaking
               ? "AI is speaking..."
-              : "Listening..."
+              : isProcessing
+                ? "Processing..."
+                : isRecording
+                  ? "Listening..."
+                  : "Ready"
             : "Ready to connect"}
         </span>
       </div>
 
       {/* Live transcript preview */}
-      {isConnected && transcripts.length > 0 && (
-        <div className="w-full max-h-32 overflow-y-auto bg-secondary/30 rounded-lg p-3 text-xs space-y-2">
-          {transcripts.slice(-3).map((t, i) => (
+      {isSessionActive && transcripts.length > 0 && (
+        <div className="w-full max-h-48 overflow-y-auto bg-secondary/30 rounded-lg p-3 text-xs space-y-2">
+          {transcripts.map((t, i) => (
             <p key={i} className={t.role === "user" ? "text-primary" : "text-muted-foreground"}>
               <span className="font-medium">{t.role === "user" ? "You" : "AI"}:</span> {t.text}
             </p>
@@ -188,76 +189,66 @@ export function VoiceAgent() {
         </div>
       )}
 
-      {/* Voice visualizer */}
-      {isConnected && (
-        <div className="flex items-center justify-center gap-1 h-16">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className={`w-1 bg-primary rounded-full transition-all duration-150 ${
-                conversation.isSpeaking ? "animate-pulse" : ""
-              }`}
-              style={{
-                height: conversation.isSpeaking
-                  ? `${Math.random() * 40 + 20}px`
-                  : "8px",
-                animationDelay: `${i * 100}ms`,
-              }}
-            />
-          ))}
-        </div>
-      )}
-
       {/* Control buttons */}
-      <div className="flex items-center gap-4">
-        {!isConnected ? (
+      <div className="flex flex-col items-center gap-4">
+        {!isSessionActive ? (
           <Button
-            onClick={startConversation}
-            disabled={isConnecting}
+            onClick={startSession}
             size="lg"
-            className="gap-2"
+            className="gap-2 bg-blue-600 hover:bg-blue-700"
           >
-            {isConnecting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                Connecting...
-              </>
-            ) : (
-              <>
-                <Phone className="w-5 h-5" />
-                Start Voice Chat
-              </>
-            )}
+            <Phone className="w-5 h-5" />
+            Start Voice Chat
           </Button>
         ) : (
-          <Button
-            onClick={stopConversation}
-            size="lg"
-            variant="destructive"
-            className="gap-2"
-          >
-            <PhoneOff className="w-5 h-5" />
-            End Call
-          </Button>
+          <div className="flex items-center gap-4">
+            {/* Push to Talk Button */}
+            <Button
+              onMouseDown={startRecording}
+              onMouseUp={stopRecording}
+              onTouchStart={startRecording}
+              onTouchEnd={stopRecording}
+              disabled={isProcessing}
+              size="lg"
+              className={`h-16 w-16 rounded-full transition-all duration-300 ${isRecording
+                ? "bg-red-500 scale-110 ring-4 ring-red-500/30"
+                : isProcessing
+                  ? "bg-amber-500"
+                  : "bg-blue-600 hover:bg-blue-700"
+                }`}
+            >
+              {isProcessing ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : isRecording ? (
+                <div className="h-3 w-3 bg-white rounded-sm animate-pulse" />
+              ) : (
+                <Mic className="w-6 h-6" />
+              )}
+            </Button>
+
+            <Button
+              onClick={endSession}
+              size="icon"
+              variant="destructive"
+              className="h-10 w-10 rounded-full"
+              title="End Session"
+            >
+              <PhoneOff className="w-4 h-4" />
+            </Button>
+          </div>
         )}
       </div>
 
       {/* Microphone status */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        {isConnected ? (
-          <>
-            <Mic className="w-3 h-3" />
-            <span>Microphone active • Recording transcript</span>
-          </>
+        {isSessionActive ? (
+          <span>{isRecording ? "Release to Send" : "Hold button to speak"}</span>
         ) : (
-          <>
-            <MicOff className="w-3 h-3" />
-            <span>Click to enable voice</span>
-          </>
+          <span>Powered by Deepgram & Gemini</span>
         )}
       </div>
     </div>
   );
 }
 
-export default VoiceAgent;
+
