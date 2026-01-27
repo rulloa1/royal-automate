@@ -35,9 +35,8 @@ const VoiceBotSection = () => {
     <section id="voice-bot" className="py-24 px-6 max-w-7xl mx-auto">
       <div
         ref={headerRef as React.RefObject<HTMLDivElement>}
-        className={`text-center mb-16 transition-all duration-700 ${
-          headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`text-center mb-16 transition-all duration-700 ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
       >
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm mb-6">
           <Mic className="w-4 h-4" />
@@ -54,9 +53,8 @@ const VoiceBotSection = () => {
 
       <div
         ref={contentRef as React.RefObject<HTMLDivElement>}
-        className={`grid lg:grid-cols-2 gap-12 items-center transition-all duration-700 delay-150 ${
-          contentVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`grid lg:grid-cols-2 gap-12 items-center transition-all duration-700 delay-150 ${contentVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
       >
         {/* Features grid */}
         <div className="grid sm:grid-cols-2 gap-6">
@@ -101,7 +99,7 @@ const VoiceBotSection = () => {
           </Suspense>
 
           <p className="text-xs text-neutral-600 text-center mt-8">
-            Powered by ElevenLabs Conversational AI
+            Powered by Deepgram & Gemini
           </p>
         </div>
       </div>
