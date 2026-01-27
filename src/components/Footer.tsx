@@ -2,14 +2,27 @@ import { Linkedin, Twitter, Send } from "lucide-react";
 import logo from "@/assets/royal-logo.png";
 import partnerLogo from "@/assets/royscompany-logo.png";
 import { scrollToSection } from "@/lib/utils";
+import { useLocation } from "react-router-dom";
 
 const Footer = () => {
+  const location = useLocation();
+
+  const handleScroll = (href: string, e: React.MouseEvent) => {
+    if (href.startsWith("/#") && location.pathname !== "/") {
+      return; // Allow default navigation
+    }
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      scrollToSection(href.substring(1));
+    }
+  };
+
   const navLinks = [
-    { label: "Services", href: "#services" },
+    { label: "Services", href: "/#services" },
     { label: "Chatbot Dev", href: "/services/chatbot-development" },
     { label: "Blog", href: "/blog" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "Contact", href: "#contact" },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "Contact", href: "/#contact" },
   ];
 
   const socialLinks = [
@@ -24,7 +37,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
           {/* Brand */}
           <div className="max-w-sm">
-            <a href="#" className="flex items-center mb-6">
+            <a href="/" className="flex items-center mb-6">
               <img
                 src={logo}
                 alt="AI Solutions"
@@ -43,12 +56,13 @@ const Footer = () => {
               <ul className="space-y-3">
                 {navLinks.map((link, index) => (
                   <li key={index}>
-                    <button
-                      onClick={() => scrollToSection(link.href)}
+                    <a
+                      href={link.href}
+                      onClick={(e) => handleScroll(link.href, e)}
                       className="text-muted-foreground hover:text-foreground transition-colors text-sm"
                     >
                       {link.label}
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>

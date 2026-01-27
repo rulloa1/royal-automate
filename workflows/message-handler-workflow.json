@@ -1,0 +1,128 @@
+{
+    "name": "Message Lead Handler",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "message-lead",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ],
+            "id": "webhook-message",
+            "name": "Webhook (Message Lead)"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Message received from \" + $json.name\n}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                470,
+                100
+            ],
+            "id": "respond-to-webhook",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA",
+                    "mode": "id"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "Sheet1",
+                    "mode": "name"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Name": "={{ $json.name }}",
+                        "Email": "={{ $json.email }}",
+                        "Phone": "={{ $json.phone }}",
+                        "Message": "={{ $json.message }}",
+                        "Website URL": "={{ $json.url }}",
+                        "Timestamp": "={{ $now.toISO() }}"
+                    }
+                },
+                "options": {}
+            },
+            "id": "append-to-sheet",
+            "name": "Append to Leads Request",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                470,
+                300
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "KtDaFIOItvL4H7UDe",
+                    "name": "Google Sheets Account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        { "name": "email", "value": "={{ $json.email }}" },
+                        { "name": "phone", "value": "={{ $json.phone }}" },
+                        { "name": "firstName", "value": "={{ $json.name.split(' ')[0] }}" },
+                        { "name": "lastName", "value": "={{ $json.name.split(' ').slice(1).join(' ') }}" },
+                        { "name": "name", "value": "={{ $json.name }}" },
+                        { "name": "message", "value": "={{ $json.message }}" },
+                        { "name": "tags", "value": "inbound-message" },
+                        { "name": "source", "value": "royal-automate" }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Sync to GoHighLevel",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                470,
+                500
+            ],
+            "id": "ghl-sync"
+        }
+    ],
+    "connections": {
+        "Webhook (Message Lead)": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Append to Leads Request",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Sync to GoHighLevel",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

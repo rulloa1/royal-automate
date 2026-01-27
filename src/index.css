@@ -1,230 +1,248 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   :root {
-    /* ... existing vars ... */
-    --background: 0 0% 0%;
-    /* ... */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    /* ... in @layer components ... */
-    /* Gradient text - Gold */
-    .gradient-text-gold {
-      @apply bg-clip-text text-transparent bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#BF953F] animate-gradient-shift bg-300%;
-    }
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    .gradient-text {
-      @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-neutral-200 to-neutral-400;
-    }
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --foreground: 0 0% 100%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
 
-    /* Cards with very subtle gray */
-    --card: 0 0% 3%;
-    --card-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 100%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    /* Primary - clean white for accents */
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 0 0% 8%;
-    --secondary-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 55%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
-    /* Accent - subtle gray */
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 100%;
+    --radius: 0.5rem;
+  }
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
 
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 0 0% 100%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
 
-    --radius: 1rem;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Extended palette */
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 100%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    /* Sidebar */
-    --sidebar-background: 0 0% 0%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 8%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 0 0% 100%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
-  }
-
-  html {
-    scroll-behavior: smooth;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-display font-medium tracking-tight;
+    @apply bg-background text-foreground;
   }
 }
 
-@layer components {
 
-  /* Clean minimal card */
-  .glass-card {
-    @apply bg-card border border-border rounded-2xl;
+/* --- Custom Design From Dentist Template --- */
+
+body {
+  font-family: 'Inter', sans-serif;
+  /* We keep the project's variable background but allow overrides */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-serif {
+  font-family: 'Instrument Serif', serif;
+}
+
+/* Noise Texture */
+.noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Custom Scrollbar - apply globally or to specific class */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #020202;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Marquee Animation */
+.marquee-container {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee-content {
+  animation: scroll 40s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
   }
 
-  .glass-card-hover {
-    @apply glass-card transition-all duration-500 hover:border-foreground/20 hover:bg-card/80;
-  }
-
-  /* Gradient text - subtle */
-  .gradient-text {
-    @apply text-foreground;
-  }
-
-  .gradient-text-gold {
-    @apply text-foreground;
-  }
-
-  /* Clean button styles */
-  .gradient-button {
-    @apply bg-foreground text-background font-medium px-8 py-4 rounded-xl transition-all duration-300 hover:opacity-90 hover:scale-[1.02];
-  }
-
-  .gradient-button-secondary {
-    @apply bg-transparent text-foreground font-medium px-8 py-4 rounded-xl border border-border transition-all duration-300 hover:border-foreground/30 hover:bg-secondary;
-  }
-
-  .featured-border {
-    @apply border-foreground/20;
-  }
-
-  /* Status indicator */
-  .status-dot {
-    @apply w-2 h-2 rounded-full bg-emerald-500;
-    box-shadow: 0 0 8px hsl(142 76% 36% / 0.5);
-  }
-
-  /* Subtle divider */
-  .divider {
-    @apply h-px bg-gradient-to-r from-transparent via-border to-transparent;
+  100% {
+    transform: translateX(-50%);
   }
 }
 
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.8s ease-out forwards;
-    opacity: 0;
-  }
-
-  .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
-    opacity: 0;
-  }
-
-  .animate-slide-in-left {
-    animation: slideInLeft 0.8s ease-out forwards;
-    opacity: 0;
-  }
-
-  .animate-slide-in-right {
-    animation: slideInRight 0.8s ease-out forwards;
-    opacity: 0;
-  }
-
-  .animation-delay-200 {
-    animation-delay: 200ms;
-  }
-
-  .animation-delay-400 {
-    animation-delay: 400ms;
-  }
-
-  .animation-delay-600 {
-    animation-delay: 600ms;
-  }
-
-  .animation-delay-800 {
-    animation-delay: 800ms;
-  }
-
-  .animation-delay-1000 {
-    animation-delay: 1000ms;
-  }
-
-  /* Text balance for headlines */
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Custom Checkbox/Radio */
+.custom-radio:checked+div {
+  border-color: rgba(255, 255, 255, 0.8);
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), transparent);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+.custom-radio:checked+div .indicator {
+  background-color: white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+/* Reveal Animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: revealAnim 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
+.delay-1 {
+  animation-delay: 0.1s;
+}
+
+.delay-2 {
+  animation-delay: 0.2s;
+}
+
+.delay-3 {
+  animation-delay: 0.3s;
+}
+
+@keyframes revealAnim {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
 
+/* Hide Scrollbar for Horizontal Scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeUp {
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
+/* Utilities from design */
+.text-gradient {
+  background: linear-gradient(to bottom right, #ffffff, #a3a3a3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Gradient Buttons */
+.gradient-button {
+  @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium text-white;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  transition: all 0.3s ease;
+}
+
+.gradient-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.5);
+}
+
+.gradient-button:active {
+  transform: translateY(0);
+}
+
+.gradient-button-secondary {
+  @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.gradient-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }

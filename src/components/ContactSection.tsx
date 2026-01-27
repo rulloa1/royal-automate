@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Clock, Check, Send, ArrowRight } from "lucide-react";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useToast } from "@/hooks/use-toast";
-
-const FORMSPREE_FORM_ID = "xgovwbrv"; 
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactSection = () => {
   const { ref, isVisible } = useIntersectionObserver();
@@ -20,7 +19,7 @@ const ContactSection = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email) {
       toast({
         title: "Required fields missing",
@@ -33,23 +32,32 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
+      const { error } = await supabase.functions.invoke("lead-qualifier", {
+        body: {
+          business_name: formData.company,
+          email: formData.email,
+          phone: "",
+          city: "",
+          state: "TX",
+          notes: `Name: ${formData.name}, Package: ${formData.package || "Not specified"}, Message: ${formData.message || "No message"}`,
+          source: "website",
         },
-        body: JSON.stringify({
+      });
+
+      if (error) throw error;
+
+      const { error: tgError } = await supabase.functions.invoke("telegram-forward", {
+        body: {
           name: formData.name,
           email: formData.email,
           company: formData.company,
           package: formData.package,
           message: formData.message,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
+      if (tgError) {
+        console.error("Telegram forward error:", tgError);
       }
 
       setIsSubmitted(true);
@@ -59,9 +67,10 @@ const ContactSection = () => {
         description: "We'll get back to you within 24 hours.",
       });
     } catch (error) {
+      console.error("Submission error:", error);
       toast({
         title: "Submission failed",
-        description: "Please try again or check your Formspree configuration.",
+        description: "Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -85,7 +94,7 @@ const ContactSection = () => {
           {/* Left: Contact Info */}
           <div className={isVisible ? "animate-slide-in-left" : "opacity-0"}>
             <p className="text-sm text-muted-foreground uppercase tracking-wider mb-4">Get In Touch</p>
-            
+
             <h2 className="text-3xl md:text-4xl lg:text-5xl mb-6">
               Start Your Transformation
             </h2>
@@ -111,9 +120,8 @@ const ContactSection = () => {
 
           {/* Right: Contact Form */}
           <div
-            className={`glass-card p-8 ${
-              isVisible ? "animate-slide-in-right animation-delay-200" : "opacity-0"
-            }`}
+            className={`glass-card p-8 ${isVisible ? "animate-slide-in-right animation-delay-200" : "opacity-0"
+              }`}
           >
             {isSubmitted ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-16">

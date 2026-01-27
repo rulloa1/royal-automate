@@ -1,0 +1,129 @@
+{
+    "name": "Speed-to-Lead Voice Caller",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "call-lead",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ],
+            "id": "webhook-trigger",
+            "name": "Webhook (Receive Lead)"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Call initiated for \" + $json.name\n}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                470,
+                100
+            ],
+            "id": "respond-to-webhook",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.vapi.ai/call",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer ec64907d-9c02-48e0-9ab7-4321ceda3250"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "phoneNumberId",
+                            "value": "b460a92e-229d-4919-b638-088d94f058d7"
+                        },
+                        {
+                            "name": "assistantId",
+                            "value": "44965d6c-9f89-47cb-8308-116f471ad08c"
+                        },
+                        {
+                            "name": "customer",
+                            "value": "={{ {\"number\": $json.phone, \"name\": $json.name || \"Customer\"} }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                470,
+                300
+            ],
+            "id": "vapi-api-call",
+            "name": "Trigger Vapi Call"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        { "name": "phone", "value": "={{ $json.phone }}" },
+                        { "name": "firstName", "value": "={{ $json.name.split(' ')[0] }}" },
+                        { "name": "lastName", "value": "={{ $json.name.split(' ').slice(1).join(' ') }}" },
+                        { "name": "name", "value": "={{ $json.name }}" },
+                        { "name": "tags", "value": "inbound-call-request" },
+                        { "name": "source", "value": "royal-automate" },
+                        { "name": "locationId", "value": "NInHwTLqrvG8hQm8B2hR" }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Sync to GoHighLevel",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                470,
+                500
+            ],
+            "id": "ghl-sync"
+        }
+    ],
+    "connections": {
+        "Webhook (Receive Lead)": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Trigger Vapi Call",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Sync to GoHighLevel",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

@@ -125,7 +125,7 @@ serve(async (req) => {
       }
     }
 
-    const origin = req.headers.get("origin") || "https://royaisolutions.me";
+    const origin = req.headers.get("origin") || "https://www.royscompany.com";
     const isSubscription = packageType === "growth";
 
     // Build line items
@@ -149,25 +149,13 @@ serve(async (req) => {
       customer_email: customerId ? undefined : email,
       line_items: lineItems,
       mode: isSubscription ? "subscription" : "payment",
-      success_url: `${origin}/?payment=success`,
+      success_url: `${origin}/activation`,
       cancel_url: `${origin}/?payment=canceled`,
       metadata: {
         package: packageType,
         customer_name: name || "",
       },
     };
-
-    // For subscription mode with one-time items, we need to use subscription_data.items
-    if (isSubscription) {
-      // Subscriptions can't have one-time items in line_items
-      // So we handle the setup fee separately via invoice_creation or just the subscription
-      sessionParams.line_items = [
-        {
-          price: PRICES.growth,
-          quantity: 1,
-        },
-      ];
-    }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
     logStep("Checkout session created", { sessionId: session.id });

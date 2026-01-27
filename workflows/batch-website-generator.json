@@ -1,0 +1,217 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "When clicking \"Execute Workflow\"",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        256,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "path": "run-batch",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        256,
+        112
+      ],
+      "id": "webhook-trigger",
+      "name": "Webhook (Run Batch)",
+      "webhookId": "957cdde9-8331-4886-b04d-676e17d07538"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": 1878509876
+        },
+        "options": {}
+      },
+      "id": "read-leads",
+      "name": "Read Leads from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        464,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SKgh8LTP0ScbeejZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().filter(item => !item.json[\"Website URL\"] || item.json[\"Website URL\"] === \"\");"
+      },
+      "id": "filter-processed",
+      "name": "Filter: Processed Leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  return {\n    json: {\n      agent_data: {\n        agent_name: item.json[\"Name\"] || item.json[\"Business Name\"] || \"Agent\",\n        brokerage: \"Real Estate\",\n        bio: \"Specializing in luxury properties for discerning clients.\",\n        city_area: item.json[\"Address\"] || \"City\"\n      },\n      save_to_storage: true,\n      original_name: item.json[\"Name\"] || item.json[\"Business Name\"]\n    }\n  }\n});"
+      },
+      "id": "format-payload",
+      "name": "Format Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        304 
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/provision-site",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "agent_data",
+              "value": "={{ $json.agent_data }}"
+            },
+            {
+              "name": "save_to_storage",
+              "value": "={{ $json.save_to_storage }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "provision-site",
+      "name": "Generate Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "options": {}
+      },
+      "id": "update-sheet",
+      "name": "Update URL in Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1264,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SKgh8LTP0ScbeejZ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking \"Execute Workflow\"": {
+      "main": [
+        [
+          {
+            "node": "Read Leads from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook (Run Batch)": {
+      "main": [
+        [
+          {
+            "node": "Read Leads from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Leads from Sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter: Processed Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Processed Leads": {
+      "main": [
+        [
+          {
+            "node": "Format Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Payload": {
+      "main": [
+        [
+          {
+            "node": "Generate Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Website": {
+      "main": [
+        [
+          {
+            "node": "Update URL in Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c27ab0d976bc3c05346812ce4190e0b2d6f800a161822efa17a6dd9763bd36f4"
+  }
+}

@@ -1,49 +1,42 @@
 import { Helmet } from "react-helmet-async";
-import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import ServicesSection from "@/components/ServicesSection";
+import FluidBackground from "@/components/landing/FluidBackground";
+import LandingHeader from "@/components/landing/LandingHeader";
+import HeroSection from "@/components/landing/HeroSection";
+import ServicesSection from "@/components/landing/ServicesSection";
+import VoiceBotSection from "@/components/landing/VoiceBotSection";
+import ProcessSection from "@/components/landing/ProcessSection";
+import UseCasesSection from "@/components/landing/UseCasesSection";
+import AboutSection from "@/components/landing/AboutSection";
 import PricingSection from "@/components/PricingSection";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
-import { BlogSection } from "@/components/BlogSection";
+import LandingContactSection from "@/components/landing/LandingContactSection";
+import LandingFooter from "@/components/landing/LandingFooter";
 
 const Index = () => {
   return (
     <>
       <Helmet>
-        <title>RoysCompany | Premium Automation & Lead Generation</title>
+        <title>Rory Ulloa | RoysCompany.com</title>
         <meta
           name="description"
-          content="Transform your business with enterprise-grade websites, intelligent lead generation, and powered by RoysCompany automation systems."
+          content="I architect AI systems that replace manual workflows. Specialized in n8n, Vapi, and LLM automation."
         />
-        <meta
-          name="keywords"
-          content="AI automation, lead generation, business automation, website design, CRM integration, chatbot"
-        />
-        <meta property="og:title" content="RoysCompany | Automate Your Growth" />
-        <meta
-          property="og:description"
-          content="Enterprise-grade automation solutions for modern businesses. AI-powered lead generation, automated workflows, and premium web design."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.royscompany.com/" />
-        <meta property="og:image" content="/og-image.png" />
-        <link rel="canonical" href="https://royscompany.com/" />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main>
-          <HeroSection />
-          <ServicesSection />
-          <BlogSection />
-          <PricingSection />
-          <ContactSection />
-        </main>
-        <Footer />
-        <BackToTop />
-      </div>
+      <FluidBackground />
+      <LandingHeader />
+
+      <main>
+        <HeroSection />
+        <UseCasesSection />
+        <ServicesSection />
+        <VoiceBotSection />
+        <ProcessSection />
+        <AboutSection />
+        <PricingSection />
+        <LandingContactSection />
+      </main>
+
+      <LandingFooter />
     </>
   );
 };

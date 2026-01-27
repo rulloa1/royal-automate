@@ -1,4 +1,4 @@
-project_id = "tujufrljfolexbdrxsbd"
+project_id = "pshjpksmzvwyzugrbmiu"
 
 [functions.create-checkout]
 verify_jwt = false
@@ -8,3 +8,10 @@ verify_jwt = false
 
 [functions.sales-chat]
 verify_jwt = false
+
+[functions.telegram-forward]
+verify_jwt = false
+
+[functions.provision-site]
+verify_jwt = false
+

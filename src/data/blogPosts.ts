@@ -6,8 +6,8 @@ export interface BlogPost {
     image_url: string;
     author: string;
     published_at: string;
+    created_at: string;
     slug: string;
-    created_at?: string;
 }
 
 export const blogPosts: BlogPost[] = [];

@@ -1,0 +1,179 @@
+{
+    "name": "Outreach Automation",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "manual-trigger",
+            "name": "When clicking \"Execute Workflow\"",
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "documentId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "mode": "name",
+                    "value": "Sheet1"
+                },
+                "options": {}
+            },
+            "id": "read-leads",
+            "name": "Read Leads",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                450,
+                300
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "KtDaFIOItvL4H7UDe",
+                    "name": "Google Sheets Account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Filter for leads that HAVE a Website URL but have NOT been sent an email yet\nreturn $input.all().filter(item => \n  item.json[\"Website URL\"] && \n  item.json[\"Website URL\"] !== \"\" && \n  (!item.json[\"Email Sent\"] || item.json[\"Email Sent\"] === \"\")\n);"
+            },
+            "id": "filter-unsent",
+            "name": "Filter: Ready to Send",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/send-manual-email",
+                "authentication": "none",
+                "sendBody": true,
+                "contentType": "json",
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "agent_name",
+                            "value": "={{ $json.Name }}"
+                        },
+                        {
+                            "name": "email",
+                            "value": "={{ $json.Email }}"
+                        },
+                        {
+                            "name": "website_url",
+                            "value": "={{ $json[\"Website URL\"] }}"
+                        },
+                        {
+                            "name": "source",
+                            "value": "royal-automate"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "send-webhook",
+            "name": "Webhook - LeadGenPro",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "documentId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "163IHmrJmhEn5x2sfi1PTMG5wavtdr5QiJq5tR_mgfXA"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "mode": "name",
+                    "value": "Sheet1"
+                },
+                "columnToMatchOn": "Name",
+                "valueToMatchOn": "={{ $json.Name }}",
+                "fieldsToUpdate": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Email Sent": "={{ $now.toISO() }}"
+                    }
+                }
+            },
+            "id": "update-sent-status",
+            "name": "Update: Email Sent",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                1050,
+                300
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "KtDaFIOItvL4H7UDe",
+                    "name": "Google Sheets Account"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "When clicking \"Execute Workflow\"": {
+            "main": [
+                [
+                    {
+                        "node": "Read Leads",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Read Leads": {
+            "main": [
+                [
+                    {
+                        "node": "Filter: Ready to Send",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filter: Ready to Send": {
+            "main": [
+                [
+                    {
+                        "node": "Webhook - LeadGenPro",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Webhook - LeadGenPro": {
+            "main": [
+                [
+                    {
+                        "node": "Update: Email Sent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
