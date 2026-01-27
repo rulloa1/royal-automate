@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, MessageCircle } from "lucide-react";
-import logo from "@/assets/royal-logo.png";
+import logo from "@/assets/roys-logo.jpg";
 import { scrollToSection } from "@/lib/utils";
 
 const Header = () => {

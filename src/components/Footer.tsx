@@ -1,5 +1,5 @@
 import { Linkedin, Twitter, Send } from "lucide-react";
-import logo from "@/assets/royal-logo.png";
+import logo from "@/assets/roys-logo.jpg";
 import partnerLogo from "@/assets/royscompany-logo.png";
 import { scrollToSection } from "@/lib/utils";
 import { useLocation } from "react-router-dom";

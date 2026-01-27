@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Send, Phone, Check, Sparkles, Loader2, MessageSquare, Globe } from "lucide-react";
 import { toast } from "sonner";
+
+// Lazy load VoiceAgent to improve initial load
+const VoiceAgent = lazy(() => import("@/components/VoiceAgent"));
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -112,7 +115,7 @@ const LeadForm = () => {
           ? "Request received! Expect a call shortly."
           : "Message sent! We'll get back to you ASAP."
       );
-      
+
       form.reset({
         type: activeTab,
         name: "",
@@ -159,8 +162,8 @@ const LeadForm = () => {
               : "text-muted-foreground hover:text-white hover:bg-white/5"
           )}
         >
-          <Phone className="w-4 h-4" />
-          Instant Call
+          <Sparkles className="w-4 h-4" />
+          Live Demo
         </button>
         <button
           type="button"
@@ -177,143 +180,105 @@ const LeadForm = () => {
         </button>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                  Full Name <span className="text-accent">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="John Doe" 
-                    className="bg-secondary/30 border-white/10 focus:border-primary/50" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {activeTab === "call" ? (
-            <>
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                      Phone Number <span className="text-accent">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="+1 (555) 000-0000" 
-                        type="tel"
-                        className="bg-secondary/30 border-white/10 focus:border-primary/50" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                      Website URL (Optional)
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          placeholder="https://example.com" 
-                          className="pl-9 bg-secondary/30 border-white/10 focus:border-primary/50" 
-                          {...field} 
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          ) : (
-            <>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                      Email Address <span className="text-accent">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="john@example.com" 
-                        type="email"
-                        className="bg-secondary/30 border-white/10 focus:border-primary/50" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                      Message <span className="text-accent">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Tell us about your project..." 
-                        className="min-h-[100px] bg-secondary/30 border-white/10 focus:border-primary/50 resize-none" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
-
-          <Button 
-            type="submit" 
-            disabled={isSubmitting}
-            className="w-full gradient-button py-6 text-base font-medium shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:-translate-y-0.5"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                {activeTab === "call" ? <Phone className="w-5 h-5 mr-2" /> : <Send className="w-5 h-5 mr-2" />}
-                {activeTab === "call" ? "Request Instant Call" : "Send Message"}
-              </>
-            )}
-          </Button>
-
-          {activeTab === "call" && (
-            <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 flex gap-3 text-blue-200/80 text-xs">
-              <Check className="w-4 h-4 shrink-0 mt-0.5" />
-              <p>This triggers a real call from our A.I. immediately. Please have your phone ready.</p>
+      {activeTab === "call" ? (
+        <div className="flex flex-col items-center justify-center py-8 min-h-[300px]">
+          <div className="mb-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <Sparkles className="w-8 h-8 text-blue-400" />
             </div>
-          )}
-        </form>
-      </Form>
+            <h4 className="text-xl font-medium mb-2">Experience AI Voice</h4>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              Speak naturally to our AI agent right now. No phone call needed.
+            </p>
+          </div>
+
+          <Suspense fallback={<Loader2 className="w-8 h-8 animate-spin" />}>
+            <VoiceAgent />
+          </Suspense>
+        </div>
+      ) : (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
+                    Full Name <span className="text-accent">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="John Doe"
+                      className="bg-secondary/30 border-white/10 focus:border-primary/50"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
+                    Email Address <span className="text-accent">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="john@example.com"
+                      type="email"
+                      className="bg-secondary/30 border-white/10 focus:border-primary/50"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
+                    Message <span className="text-accent">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Tell us about your project..."
+                      className="min-h-[100px] bg-secondary/30 border-white/10 focus:border-primary/50 resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full gradient-button py-6 text-base font-medium shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5 mr-2" />
+                  Send Message
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
+      )}
     </div>
   );
 };
