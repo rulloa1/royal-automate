@@ -36,33 +36,36 @@
   }
 
   .dark {
+    /* Cyberpunk Dark aesthetic for ROYSCOMPANY */
     --background: 0 0% 2%;
     --foreground: 0 0% 93%;
 
-    --card: 0 0% 4%;
+    --card: 0 0% 3%;
     --card-foreground: 0 0% 93%;
 
-    --popover: 0 0% 4%;
+    --popover: 0 0% 3%;
     --popover-foreground: 0 0% 93%;
 
-    --primary: 22 100% 49%;
+    /* Primary: Orange accent */
+    --primary: 22 95% 49%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 10%;
+    /* Secondary: Deep dark */
+    --secondary: 0 0% 8%;
     --secondary-foreground: 0 0% 93%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 50%;
 
-    --accent: 22 100% 49%;
+    --accent: 202 100% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 93%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 22 100% 49%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 22 95% 49%;
   }
 }
 
