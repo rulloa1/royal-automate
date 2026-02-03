@@ -8,7 +8,6 @@ import SystemsSection from "@/components/royscompany/SystemsSection";
 import PricingSection from "@/components/royscompany/PricingSection";
 import ContactSection from "@/components/royscompany/ContactSection";
 import RoysFooter from "@/components/royscompany/RoysFooter";
-import { RelevanceAIChat } from "@/components/RelevanceAIChat";
 
 const Index = () => {
   const [bootComplete, setBootComplete] = useState(false);
@@ -48,7 +47,6 @@ const Index = () => {
             <ContactSection />
           </main>
           <RoysFooter />
-          <RelevanceAIChat />
         </div>
       )}
     </>
