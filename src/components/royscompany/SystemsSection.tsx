@@ -1,13 +1,61 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
-import { Mic, MicOff, Phone } from "lucide-react";
+import { useRef, useState, useCallback } from "react";
+import { Mic, MicOff, Phone, Loader2 } from "lucide-react";
+import { useConversation } from "@elevenlabs/react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const SystemsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [isCallActive, setIsCallActive] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
 
+  const conversation = useConversation({
+    onConnect: () => {
+      console.log("NOVA connected");
+      toast.success("NOVA is now listening");
+    },
+    onDisconnect: () => {
+      console.log("NOVA disconnected");
+    },
+    onError: (error) => {
+      console.error("NOVA error:", error);
+      toast.error("Connection error. Please try again.");
+    },
+  });
+
+  const isCallActive = conversation.status === "connected";
+
+  const startCall = useCallback(async () => {
+    setIsConnecting(true);
+    try {
+      // Request microphone permission
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Get token from edge function
+      const { data, error } = await supabase.functions.invoke("elevenlabs-voice-token");
+
+      if (error || !data?.token) {
+        throw new Error(error?.message || "Failed to get voice token");
+      }
+
+      // Start conversation with WebRTC
+      await conversation.startSession({
+        conversationToken: data.token,
+        connectionType: "webrtc",
+      });
+    } catch (err) {
+      console.error("Failed to start NOVA:", err);
+      toast.error("Could not start voice call. Check microphone permissions.");
+    } finally {
+      setIsConnecting(false);
+    }
+  }, [conversation]);
+
+  const endCall = useCallback(async () => {
+    await conversation.endSession();
+  }, [conversation]);
   const capabilities = [
     {
       code: "INTELLIGENT_WORKFLOWS:",
@@ -87,32 +135,32 @@ const SystemsSection = () => {
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-2 h-2 rounded-full ${
-                      isCallActive ? "bg-green-500 animate-pulse" : "bg-primary"
+                      isCallActive ? "bg-green-500 animate-pulse" : isConnecting ? "bg-amber-500 animate-pulse" : "bg-primary"
                     }`}
                   />
                   <span className="font-mono text-xs">
                     NOVA //{" "}
-                    {isCallActive ? "ACTIVE" : "STANDBY"}
+                    {isConnecting ? "CONNECTING" : isCallActive ? "ACTIVE" : "STANDBY"}
                   </span>
                 </div>
                 <span className="text-xs text-muted-foreground font-mono">
-                  {isCallActive ? "Listening..." : "Ready for voice input"}
+                  {isConnecting ? "Initializing..." : isCallActive ? (conversation.isSpeaking ? "Speaking..." : "Listening...") : "Ready for voice input"}
                 </span>
               </div>
 
-              {/* Audio Visualizer Placeholder */}
+              {/* Audio Visualizer */}
               <div className="h-16 flex items-center justify-center gap-1 mb-4">
                 {Array.from({ length: 20 }).map((_, i) => (
                   <motion.div
                     key={i}
                     className="w-1 bg-primary rounded-full"
                     animate={{
-                      height: isCallActive
+                      height: isCallActive || isConnecting
                         ? [8, 24 + Math.random() * 16, 8]
                         : 8,
                     }}
                     transition={{
-                      repeat: isCallActive ? Infinity : 0,
+                      repeat: isCallActive || isConnecting ? Infinity : 0,
                       duration: 0.3 + Math.random() * 0.2,
                       delay: i * 0.05,
                     }}
@@ -122,14 +170,19 @@ const SystemsSection = () => {
 
               {/* Controls */}
               <button
-                onClick={() => setIsCallActive(!isCallActive)}
-                className={`w-full py-3 font-mono text-sm flex items-center justify-center gap-2 transition-colors ${
+                onClick={isCallActive ? endCall : startCall}
+                disabled={isConnecting}
+                className={`w-full py-3 font-mono text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   isCallActive
                     ? "bg-red-500/20 text-red-500 border border-red-500/50"
                     : "bg-primary text-primary-foreground"
                 }`}
               >
-                {isCallActive ? (
+                {isConnecting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> CONNECTING...
+                  </>
+                ) : isCallActive ? (
                   <>
                     <MicOff className="w-4 h-4" /> END DISCOVERY CALL
                   </>
