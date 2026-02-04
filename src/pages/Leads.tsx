@@ -2,7 +2,6 @@ import { Helmet } from "react-helmet-async";
 import LeadForm from "@/components/LeadForm";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { RelevanceAIChat } from "@/components/RelevanceAIChat";
 
 const Leads = () => {
   return (
@@ -50,9 +49,6 @@ const Leads = () => {
             <LeadForm />
           </div>
         </div>
-
-        {/* AI Chat Widget - Admin only */}
-        <RelevanceAIChat />
       </div>
     </>
   );
