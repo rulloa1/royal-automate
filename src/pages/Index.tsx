@@ -1,54 +1,37 @@
-import { useState } from "react";
-import { Helmet } from "react-helmet-async";
-import BootSequence from "@/components/royscompany/BootSequence";
-import RoysHeader from "@/components/royscompany/RoysHeader";
-import RoysHero from "@/components/royscompany/RoysHero";
-import AboutSection from "@/components/royscompany/AboutSection";
-import SystemsSection from "@/components/royscompany/SystemsSection";
-import PricingSection from "@/components/royscompany/PricingSection";
-import ContactSection from "@/components/royscompany/ContactSection";
-import RoysFooter from "@/components/royscompany/RoysFooter";
+ import { Helmet } from "react-helmet-async";
+ import CreativeHeader from "@/components/landing/CreativeHeader";
+ import CreativeHero from "@/components/landing/CreativeHero";
+ import ExpertiseSection from "@/components/landing/ExpertiseSection";
+ import WorkShowcase from "@/components/landing/WorkShowcase";
+ import CreativeAbout from "@/components/landing/CreativeAbout";
+ import CreativeContact from "@/components/landing/CreativeContact";
+ import CreativeFooter from "@/components/landing/CreativeFooter";
 
 const Index = () => {
-  const [bootComplete, setBootComplete] = useState(false);
-
   return (
     <>
       <Helmet>
         <title>ROYSCOMPANY | AI Automation Systems</title>
-        <meta
-          name="description"
-          content="AI automation systems that eliminate busywork and fill pipelines. Neural infrastructure for businesses that refuse to be slowed down by human latency."
-        />
+         <meta name="description" content="Creative automation studio blending strategy, AI, and technology to build systems that defy convention. Based in Miami, working globally." />
+         <meta property="og:title" content="Rory Ulloa | AI Automation Systems" />
+         <meta property="og:description" content="Creative automation studio blending strategy, AI, and technology to build systems that defy convention." />
+         <meta property="og:image" content="/og-image.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap"
-          rel="stylesheet"
-        />
+         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
       </Helmet>
 
-      {/* Boot Sequence */}
-      <BootSequence onComplete={() => setBootComplete(true)} />
-
-      {/* Main Content */}
-      {bootComplete && (
-        <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-          <RoysHeader />
-          <main>
-            <RoysHero />
-            <AboutSection />
-            <SystemsSection />
-            <PricingSection />
-            <ContactSection />
-          </main>
-          <RoysFooter />
-        </div>
-      )}
+       <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+         <CreativeHeader />
+         <main>
+           <CreativeHero />
+           <ExpertiseSection />
+           <WorkShowcase />
+           <CreativeAbout />
+           <CreativeContact />
+         </main>
+         <CreativeFooter />
+       </div>
     </>
   );
 };
