@@ -1,0 +1,68 @@
+{
+    "name": "Website Activation Receiver",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "activate-site",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ],
+            "id": "webhook-trigger",
+            "name": "Webhook (Activation Form)"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Activation received for \" + $json.businessName,\n  \"processId\": $executionId\n}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                500,
+                300
+            ],
+            "id": "respond-success",
+            "name": "Respond to Form"
+        },
+        {
+            "parameters": {
+                "operation": "toJson",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.itemLists",
+            "typeVersion": 1,
+            "position": [
+                750,
+                300
+            ],
+            "id": "parse-data",
+            "name": "(Optional) Save to Sheets/Email"
+        }
+    ],
+    "connections": {
+        "Webhook (Activation Form)": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Form",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "(Optional) Save to Sheets/Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

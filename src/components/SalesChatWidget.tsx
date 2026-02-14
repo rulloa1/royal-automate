@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Sparkles, Mic, Square } from "lucide-react";
+import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -34,9 +34,6 @@ export function SalesChatWidget() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sessionIdRef = useRef<string>(`chat_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
-  const [isRecording, setIsRecording] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,7 +65,7 @@ export function SalesChatWidget() {
           role: m.role === "user" ? "user" : "assistant",
           content: m.content,
         }));
-
+      
       // Add the new user message
       apiMessages.push({ role: "user", content: userMsg.content });
 
@@ -94,7 +91,7 @@ export function SalesChatWidget() {
     } catch (error) {
       console.error("Chat error:", error);
       toast.error("Failed to get response. Please try again.");
-
+      
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "bot",
@@ -104,60 +101,6 @@ export function SalesChatWidget() {
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
       setIsTyping(false);
-    }
-  };
-
-  const handleStartRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      chunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunksRef.current.push(e.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        const formData = new FormData();
-        formData.append('file', audioBlob);
-
-        setIsTyping(true);
-        try {
-          const { data, error } = await supabase.functions.invoke("process-audio", {
-            body: formData,
-          });
-
-          if (error) throw error;
-
-          if (data?.text) {
-            setInput(prev => prev + (prev ? " " : "") + data.text);
-          }
-        } catch (error) {
-          console.error("Error processing audio:", error);
-          toast.error("Failed to process audio. Please try again.");
-        } finally {
-          setIsTyping(false);
-          // Stop all tracks
-          stream.getTracks().forEach(track => track.stop());
-        }
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
-      toast.error("Could not access microphone");
-    }
-  };
-
-  const handleStopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
     }
   };
 
@@ -249,25 +192,12 @@ export function SalesChatWidget() {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={isRecording ? "Listening..." : "Type your message..."}
+                  placeholder="Type your message..."
                   className="flex-1 bg-transparent border border-border rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 hover:border-indigo-400 transition-all placeholder:text-muted-foreground text-foreground"
                 />
                 <button
-                  type="button"
-                  onClick={isRecording ? handleStopRecording : handleStartRecording}
-                  className={cn(
-                    "h-10 w-10 rounded-full flex items-center justify-center transition-colors",
-                    isRecording
-                      ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
-                      : "bg-muted hover:bg-muted/80 text-muted-foreground"
-                  )}
-                >
-                  {isRecording ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                </button>
-                <button
                   type="submit"
-                  disabled={!input.trim() || isRecording}
-                  className="h-10 w-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="h-10 w-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center transition-colors"
                 >
                   <Send className="h-4 w-4" />
                 </button>

@@ -1,133 +1,54 @@
-import { useState, useEffect, Suspense, lazy } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Send, Phone, Check, Sparkles, Loader2, MessageSquare, Globe } from "lucide-react";
+import { useState } from "react";
+import { Send, Phone, Check, Sparkles, Loader2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
-
-// Lazy load VoiceAgent to improve initial load
-const VoiceAgent = lazy(() => import("@/components/VoiceAgent"));
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
-
-// Base schema for shared fields
-const baseSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  url: z.string().url("Invalid URL").optional().or(z.literal("")),
-});
-
-// Schema for "Call" mode
-const callSchema = baseSchema.extend({
-  type: z.literal("call"),
-  phone: z.string().min(10, "Valid phone number required"),
-  // Email and message are optional/allowed in call mode but not required
-  email: z.string().email("Invalid email address").optional().or(z.literal("")),
-  message: z.string().optional(),
-});
-
-// Schema for "Message" mode
-const messageSchema = baseSchema.extend({
-  type: z.literal("message"),
-  // Phone is optional in message mode
-  phone: z.string().optional(),
-  email: z.string().email("Valid email is required"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
-
-// Discriminated Union
-const formSchema = z.discriminatedUnion("type", [callSchema, messageSchema]);
-
-type FormValues = z.infer<typeof formSchema>;
 
 const LeadForm = () => {
   const [activeTab, setActiveTab] = useState<"call" | "message">("call");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      type: "call",
-      name: "",
-      phone: "",
-      email: "",
-      message: "",
-      url: "",
-    },
-    mode: "onChange", // Real-time validation
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    message: "",
+    url: ""
   });
 
-  // Sync activeTab with form value
-  const handleTabChange = (tab: "call" | "message") => {
-    setActiveTab(tab);
-    form.setValue("type", tab);
-    form.clearErrors(); // Clear errors when switching modes
-  };
-
-  const onSubmit = async (values: FormValues) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Insert lead via Edge Function (backend-only access)
-      const { data: leadData, error: dbError } = await supabase.functions.invoke("create-lead", {
-        body: {
-          contact_name: values.name,
-          phone: values.phone || null,
-          email: values.email || null,
-          pain_points: values.message || null,
-          source: values.type === "call" ? "lead_form_call" : "lead_form_message",
-          interests: values.url ? ["website_url:" + values.url] : [],
-          priority: "high",
-        },
+      const webhookUrl = activeTab === "call"
+        ? "https://ulloarory.app.n8n.cloud/webhook/call-lead"
+        : "https://ulloarory.app.n8n.cloud/webhook/message-lead";
+
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
-      if (dbError) throw dbError;
-
-      // Send email notification via Resend
-      const { error: emailError } = await supabase.functions.invoke("notify-new-lead", {
-        body: {
-          leadName: values.name,
-          email: values.email || "not-provided@placeholder.com",
-          phone: values.phone,
-          selectedPackage: values.type === "call" ? "Instant Callback Request" : "Message Inquiry",
-          projectDetails: values.message,
-          source: values.type === "call" ? "Lead Form - Call" : "Lead Form - Message",
-        },
-      });
-
-      if (emailError) {
-        console.warn("Email notification failed:", emailError);
-        // Don't throw - lead is saved, just notify user
+      if (response.ok) {
+        toast.success(
+          activeTab === "call"
+            ? "Request received! Expect a call shortly."
+            : "Message sent! We'll get back to you ASAP."
+        );
+        setFormData({ name: "", phone: "", email: "", message: "", url: "" });
+      } else {
+        // Handle server-side errors
+        const errorData = await response.json().catch(() => ({})); // Prevent crash if no JSON
+        throw new Error(errorData.message || `Server error: ${response.status}`);
       }
-
-      toast.success(
-        values.type === "call"
-          ? "Request received! Expect a call shortly."
-          : "Message sent! We'll get back to you ASAP."
-      );
-
-      form.reset({
-        type: activeTab,
-        name: "",
-        phone: "",
-        email: "",
-        message: "",
-        url: "",
-      });
 
     } catch (error) {
       console.error("Submit error:", error);
-      toast.error("Failed to submit. Please try again.");
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        toast.error("Network connection failed. Please check your internet.");
+      } else {
+        toast.error("Failed to connect. Please try again later.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -146,7 +67,7 @@ const LeadForm = () => {
         <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
           {activeTab === "call"
             ? "Enter your details below. Our AI Voice Agent will call you within seconds to qualify your needs."
-            : "Prefer to chat? Leave a detailed message and our team will follow up via email."}
+            : "Prefer to chat? detailed message and our team will follow up via email."}
         </p>
       </div>
 
@@ -154,7 +75,7 @@ const LeadForm = () => {
       <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/50 rounded-xl border border-white/5 mb-8">
         <button
           type="button"
-          onClick={() => handleTabChange("call")}
+          onClick={() => setActiveTab("call")}
           className={cn(
             "flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-300",
             activeTab === "call"
@@ -162,12 +83,12 @@ const LeadForm = () => {
               : "text-muted-foreground hover:text-white hover:bg-white/5"
           )}
         >
-          <Sparkles className="w-4 h-4" />
-          Live Demo
+          <Phone className="w-4 h-4" />
+          Instant Call
         </button>
         <button
           type="button"
-          onClick={() => handleTabChange("message")}
+          onClick={() => setActiveTab("message")}
           className={cn(
             "flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-300",
             activeTab === "message"
@@ -180,105 +101,91 @@ const LeadForm = () => {
         </button>
       </div>
 
-      {activeTab === "call" ? (
-        <div className="flex flex-col items-center justify-center py-8 min-h-[300px]">
-          <div className="mb-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
-              <Sparkles className="w-8 h-8 text-blue-400" />
-            </div>
-            <h4 className="text-xl font-medium mb-2">Experience AI Voice</h4>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              Speak naturally to our AI agent right now. No phone call needed.
-            </p>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-condensed tracking-wider uppercase mb-1.5 text-muted-foreground">
+              Full Name <span className="text-accent">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600"
+              placeholder="John Doe"
+            />
           </div>
 
-          <Suspense fallback={<Loader2 className="w-8 h-8 animate-spin" />}>
-            <VoiceAgent />
-          </Suspense>
+          {activeTab === "call" ? (
+            <div>
+              <label className="block text-xs font-condensed tracking-wider uppercase mb-1.5 text-muted-foreground">
+                Phone Number <span className="text-accent">*</span>
+              </label>
+              <input
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600"
+                placeholder="+1 (555) 000-0000"
+              />
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className="block text-xs font-condensed tracking-wider uppercase mb-1.5 text-muted-foreground">
+                  Email Address <span className="text-accent">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600"
+                  placeholder="john@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-condensed tracking-wider uppercase mb-1.5 text-muted-foreground">
+                  Message
+                </label>
+                <textarea
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 min-h-[100px] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600 resize-none"
+                  placeholder="Tell us about your project..."
+                />
+              </div>
+            </>
+          )}
         </div>
-      ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                    Full Name <span className="text-accent">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="John Doe"
-                      className="bg-secondary/30 border-white/10 focus:border-primary/50"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                    Email Address <span className="text-accent">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="john@example.com"
-                      type="email"
-                      className="bg-secondary/30 border-white/10 focus:border-primary/50"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-condensed tracking-wider uppercase text-muted-foreground">
-                    Message <span className="text-accent">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us about your project..."
-                      className="min-h-[100px] bg-secondary/30 border-white/10 focus:border-primary/50 resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full gradient-button py-4 flex items-center justify-center gap-2 text-base font-medium group disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:-translate-y-0.5"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Sending...</span>
+            </>
+          ) : (
+            <>
+              {activeTab === "call" ? <Phone className="w-5 h-5" /> : <Send className="w-5 h-5" />}
+              <span>{activeTab === "call" ? "Request Instant Call" : "Send Message"}</span>
+            </>
+          )}
+        </button>
 
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full gradient-button py-6 text-base font-medium shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:-translate-y-0.5"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5 mr-2" />
-                  Send Message
-                </>
-              )}
-            </Button>
-          </form>
-        </Form>
-      )}
+        {activeTab === "call" && (
+          <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 flex gap-3 text-blue-200/80 text-xs">
+            <Check className="w-4 h-4 shrink-0 mt-0.5" />
+            <p>This triggers a real call from our A.I. immediately. Please have your phone ready.</p>
+          </div>
+        )}
+      </form>
     </div>
   );
 };

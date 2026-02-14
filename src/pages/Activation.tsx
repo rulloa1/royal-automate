@@ -3,9 +3,9 @@ import LandingHeader from "@/components/landing/LandingHeader";
 
 export default function Activation() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#00FF9D] selection:text-black">
+        <div className="min-h-screen bg-background">
             <LandingHeader />
-            <div className="pt-24 pb-12 bg-white/5">
+            <div className="pt-24 pb-12 bg-muted/20">
                 <ActivationForm />
             </div>
         </div>

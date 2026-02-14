@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface CheckoutButtonProps {
@@ -16,9 +17,6 @@ const CheckoutButton = ({ packageType, children, className, email, name }: Check
   const handleCheckout = async () => {
     setIsLoading(true);
     try {
-      // Dynamically import Supabase client to avoid initialization errors
-      const { supabase } = await import("@/integrations/supabase/client");
-      
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: { packageType, email, name },
       });

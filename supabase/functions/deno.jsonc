@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
         "allowJs": true,
-        "lib": ["deno.window"],
-        "strict": false
+        "lib": [
+            "deno.window"
+        ],
+        "strict": true
     },
     "imports": {
-        "openai": "https://esm.sh/openai@4.52.5",
-        "resend": "https://esm.sh/resend@2.0.0"
+        "google-spreadsheet": "npm:google-spreadsheet@4.1.4",
+        "google-auth-library": "npm:google-auth-library@9.0.0"
     }
 }

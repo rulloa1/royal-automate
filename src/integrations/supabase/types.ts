@@ -68,122 +68,15 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string
-          display_name: string | null
-          email: string | null
-          id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
-      voice_conversations: {
-        Row: {
-          created_at: string
-          duration_seconds: number | null
-          ended_at: string | null
-          full_transcript: string | null
-          id: string
-          lead_id: string | null
-          metadata: Json | null
-          session_id: string
-          started_at: string
-          status: string | null
-          transcript: Json | null
-        }
-        Insert: {
-          created_at?: string
-          duration_seconds?: number | null
-          ended_at?: string | null
-          full_transcript?: string | null
-          id?: string
-          lead_id?: string | null
-          metadata?: Json | null
-          session_id: string
-          started_at?: string
-          status?: string | null
-          transcript?: Json | null
-        }
-        Update: {
-          created_at?: string
-          duration_seconds?: number | null
-          ended_at?: string | null
-          full_transcript?: string | null
-          id?: string
-          lead_id?: string | null
-          metadata?: Json | null
-          session_id?: string
-          started_at?: string
-          status?: string | null
-          transcript?: Json | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "voice_conversations_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -310,8 +203,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "user"],
-    },
+    Enums: {},
   },
 } as const

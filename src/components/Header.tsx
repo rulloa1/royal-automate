@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, MessageCircle } from "lucide-react";
-import logo from "@/assets/roys-logo.jpg";
+import logo from "@/assets/royal-logo.png";
 import { scrollToSection } from "@/lib/utils";
 
 const Header = () => {
@@ -18,7 +18,6 @@ const Header = () => {
   const navLinks = [
     { href: "#services", label: "Services" },
     { href: "/services/chatbot-development", label: "Chatbot Dev" },
-    { href: "/services/automations", label: "Automations" },
     { href: "/blog", label: "Blog" },
     { href: "#pricing", label: "Pricing" },
     { href: "#contact", label: "Contact" },

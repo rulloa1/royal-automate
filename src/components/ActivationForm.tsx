@@ -29,8 +29,6 @@ import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Upload, CheckCircle2 } from "lucide-react";
 
-import ContractAgreement from "./ContractAgreement";
-
 // Zod Schema
 const formSchema = z.object({
     // Section 1 - Identity
@@ -51,7 +49,6 @@ const formSchema = z.object({
 
     // Section 4 - Branding
     logo: z.any().optional(), // File handling is manual
-    profilePicture: z.any().optional(), // File handling is manual
     brandColors: z.string().optional(),
     preferredFont: z.string().optional(),
 
@@ -68,43 +65,19 @@ const formSchema = z.object({
 
     // Section 7 - Lead Routing
     leadRouting: z.enum(["email", "phone", "both"]),
-    leadEmail: z.string().optional(),
+    leadEmail: z.string().email().optional(),
     leadPhone: z.string().optional(),
 
-    // Section 8 - Contract
-    isContractSigned: z.boolean().refine((val) => val === true, {
-        message: "You must sign the agreement to proceed.",
-    }),
-
-    // Section 9 - Final Confirmation
+    // Section 8 - Final Confirmation
     specialRequests: z.string().optional(),
     acknowledgeTimeline: z.boolean().refine((val) => val === true, {
         message: "You must acknowledge the timeline to proceed.",
     }),
-}).superRefine((data, ctx) => {
-    if ((data.leadRouting === "email" || data.leadRouting === "both") && (!data.leadEmail || !data.leadEmail.includes("@"))) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Valid lead email is required",
-            path: ["leadEmail"],
-        });
-    }
-    if ((data.leadRouting === "phone" || data.leadRouting === "both") && (!data.leadPhone || data.leadPhone.length < 10)) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Valid lead phone is required",
-            path: ["leadPhone"],
-        });
-    }
 });
 
 export function ActivationForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
-    const [generatedHtml, setGeneratedHtml] = useState<string | null>(null);
     const [logoFile, setLogoFile] = useState<File | null>(null);
-    const [profileFile, setProfileFile] = useState<File | null>(null);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -131,16 +104,14 @@ export function ActivationForm() {
             leadRouting: "email",
             leadEmail: "",
             leadPhone: "",
-            isContractSigned: false,
             specialRequests: "",
             acknowledgeTimeline: false,
         },
     });
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'profile') => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            if (type === 'logo') setLogoFile(e.target.files[0]);
-            else setProfileFile(e.target.files[0]);
+            setLogoFile(e.target.files[0]);
         }
     };
 
@@ -157,63 +128,28 @@ export function ActivationForm() {
         setIsSubmitting(true);
         try {
             let logoBase64 = "";
-            let profileBase64 = "";
-
             if (logoFile) {
                 logoBase64 = await convertToBase64(logoFile);
             }
-            if (profileFile) {
-                profileBase64 = await convertToBase64(profileFile);
-            }
 
-            // Map form values to agent_data structure expected by backend
             const payload = {
                 ...values,
                 logo: logoBase64,
-                profilePicture: profileBase64,
-                source: "Activation Form",
-                // Explicit mapping for template
-                agent_name: values.fullName,
-                brokerage: values.businessName,
-                city_area: values.areasServed.split(',')[0], // Take first area
-                bio: values.bio
+                source: "Activation Form"
             };
 
-            // 1. Send to n8n webhook (Logging & Data)
-            try {
-                await fetch("http://localhost:5680/webhook/activate-site", {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload),
-                });
-            } catch (err) {
-                console.error("n8n webhook failed (non-blocking)", err);
-            }
-
-            // 2. Send to Supabase Edge Function (Provisioning)
-            const provisionResponse = await fetch("https://pshjpksmzvwyzugrbmiu.supabase.co/functions/v1/provision-site", {
+            // Send to n8n webhook
+            // Replace with your actual n8n webhook URL
+            const response = await fetch("https://ulloarory.app.n8n.cloud/webhook/activate-site", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ agent_data: payload }),
+                body: JSON.stringify(payload),
             });
 
-            if (!provisionResponse.ok) throw new Error("Provisioning failed");
+            if (!response.ok) throw new Error("Submission failed");
 
-            const provisionData = await provisionResponse.json();
-
-            // Create a Blob URL for preview if HTML content is returned
-            if (provisionData.html_content) {
-                setGeneratedHtml(provisionData.html_content);
-                const blob = new Blob([provisionData.html_content], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                setGeneratedUrl(url);
-            }
-
-            toast.success("Activation submitted! Website generated.");
-            setIsSuccess(true);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            toast.success("Activation submitted! Provisioning started.");
+            // Optional: Redirect or show success state
 
         } catch (error) {
             console.error("Error submitting form", error);
@@ -221,47 +157,6 @@ export function ActivationForm() {
         } finally {
             setIsSubmitting(false);
         }
-    }
-
-    if (isSuccess) {
-        return (
-            <div className="max-w-3xl mx-auto py-20 px-4 text-center">
-                <div className="bg-green-500/10 text-green-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 className="w-10 h-10" />
-                </div>
-                <h2 className="text-3xl font-bold mb-4">Website Generated Successfully!</h2>
-                <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-8">
-                    Your website has been provisioned. You can preview it immediately below.
-                </p>
-
-                {generatedHtml && (
-                    <div className="mb-8">
-                        <Button
-                            size="lg"
-                            className="bg-[#00FF9D] text-black hover:bg-[#00FF9D]/90 font-bold text-lg px-8 py-6 h-auto shadow-[0_0_20px_rgba(0,255,157,0.3)]"
-                            onClick={() => {
-                                const newWindow = window.open();
-                                if (newWindow) {
-                                    newWindow.document.write(generatedHtml);
-                                    newWindow.document.close();
-                                }
-                            }}
-                        >
-                            PREVIEW MY WEBSITE
-                        </Button>
-                    </div>
-                )}
-
-                <div className="p-4 bg-muted/50 rounded-lg max-w-md mx-auto text-sm text-left">
-                    <p className="font-medium mb-2">What happens next?</p>
-                    <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                        <li>We are configuring your custom domain DNS (approx. 30 mins)</li>
-                        <li>Final QA check is performed</li>
-                        <li>Launch email sent to {form.getValues().businessEmail}</li>
-                    </ul>
-                </div>
-            </div>
-        );
     }
 
     return (
@@ -455,27 +350,12 @@ export function ActivationForm() {
                                         <Input
                                             type="file"
                                             accept="image/png, image/jpeg, image/svg+xml"
-                                            onChange={(e) => handleFileChange(e, 'logo')}
+                                            onChange={handleFileChange}
                                             className="cursor-pointer"
                                         />
                                     </div>
                                 </FormControl>
                                 <FormDescription>PNG, JPG, or SVG preferred.</FormDescription>
-                            </FormItem>
-
-                            <FormItem>
-                                <FormLabel>Upload your profile picture / headshot</FormLabel>
-                                <FormControl>
-                                    <div className="flex items-center gap-4">
-                                        <Input
-                                            type="file"
-                                            accept="image/png, image/jpeg"
-                                            onChange={(e) => handleFileChange(e, 'profile')}
-                                            className="cursor-pointer"
-                                        />
-                                    </div>
-                                </FormControl>
-                                <FormDescription>High quality headshot preferred.</FormDescription>
                             </FormItem>
 
                             <FormField
@@ -656,31 +536,9 @@ export function ActivationForm() {
                         </CardContent>
                     </Card>
 
-                    {/* Section 8: Contract */}
+                    {/* Section 8: Confirmation */}
                     <Card>
-                        <CardHeader><CardTitle>8. Service Agreement</CardTitle></CardHeader>
-                        <CardContent>
-                            <FormField
-                                control={form.control}
-                                name="isContractSigned"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <ContractAgreement
-                                                clientName={form.watch("fullName") || form.watch("businessName")}
-                                                onSigned={() => field.onChange(true)}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
-
-                    {/* Section 9: Confirmation */}
-                    <Card>
-                        <CardHeader><CardTitle>9. Final Confirmation</CardTitle></CardHeader>
+                        <CardHeader><CardTitle>8. Final Confirmation</CardTitle></CardHeader>
                         <CardContent className="grid gap-4">
                             <FormField
                                 control={form.control}
