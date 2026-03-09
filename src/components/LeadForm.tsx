@@ -1,11 +1,27 @@
 import { useState } from "react";
-import { Send, Phone, Check, Sparkles, Loader2, MessageSquare } from "lucide-react";
+import { Send, Phone, Check, Sparkles, Loader2, MessageSquare, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+
+const callSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(100, "Name must be under 100 characters"),
+  phone: z.string().trim().min(1, "Phone number is required").regex(/^\+?[\d\s\-()]{7,20}$/, "Please enter a valid phone number"),
+});
+
+const messageSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(100, "Name must be under 100 characters"),
+  email: z.string().trim().min(1, "Email is required").email("Please enter a valid email address"),
+  message: z.string().max(2000, "Message must be under 2000 characters").optional(),
+});
+
+type FieldErrors = Record<string, string>;
 
 const LeadForm = () => {
   const [activeTab, setActiveTab] = useState<"call" | "message">("call");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -14,8 +30,66 @@ const LeadForm = () => {
     url: ""
   });
 
+  const validateField = (field: string, value: string) => {
+    let schema: z.ZodType;
+    if (activeTab === "call") {
+      const fieldSchemas: Record<string, z.ZodType> = {
+        name: callSchema.shape.name,
+        phone: callSchema.shape.phone,
+      };
+      schema = fieldSchemas[field];
+    } else {
+      const fieldSchemas: Record<string, z.ZodType> = {
+        name: messageSchema.shape.name,
+        email: messageSchema.shape.email,
+        message: messageSchema.shape.message as z.ZodType,
+      };
+      schema = fieldSchemas[field];
+    }
+    if (!schema) return "";
+    const result = schema.safeParse(value);
+    return result.success ? "" : result.error.errors[0].message;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    const error = validateField(field, formData[field as keyof typeof formData]);
+    setErrors(prev => ({ ...prev, [field]: error }));
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (touched[field]) {
+      const error = validateField(field, value);
+      setErrors(prev => ({ ...prev, [field]: error }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate all fields
+    const schema = activeTab === "call" ? callSchema : messageSchema;
+    const dataToValidate = activeTab === "call"
+      ? { name: formData.name, phone: formData.phone }
+      : { name: formData.name, email: formData.email, message: formData.message };
+
+    const result = schema.safeParse(dataToValidate);
+    if (!result.success) {
+      const fieldErrors: FieldErrors = {};
+      const allTouched: Record<string, boolean> = {};
+      result.error.errors.forEach(err => {
+        const field = err.path[0] as string;
+        fieldErrors[field] = err.message;
+        allTouched[field] = true;
+      });
+      setErrors(fieldErrors);
+      setTouched(prev => ({ ...prev, ...allTouched }));
+      toast.error("Please fix the errors below.");
+      return;
+    }
+
+    setErrors({});
     setIsSubmitting(true);
 
     try {
@@ -36,12 +110,11 @@ const LeadForm = () => {
             : "Message sent! We'll get back to you ASAP."
         );
         setFormData({ name: "", phone: "", email: "", message: "", url: "" });
+        setTouched({});
       } else {
-        // Handle server-side errors
-        const errorData = await response.json().catch(() => ({})); // Prevent crash if no JSON
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `Server error: ${response.status}`);
       }
-
     } catch (error) {
       console.error("Submit error:", error);
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
@@ -53,6 +126,24 @@ const LeadForm = () => {
       setIsSubmitting(false);
     }
   };
+
+  const ErrorMessage = ({ field }: { field: string }) => {
+    if (!errors[field] || !touched[field]) return null;
+    return (
+      <p className="flex items-center gap-1.5 mt-1.5 text-xs text-destructive animate-fade-in">
+        <AlertCircle className="w-3 h-3 shrink-0" />
+        {errors[field]}
+      </p>
+    );
+  };
+
+  const inputClass = (field: string) =>
+    cn(
+      "w-full bg-secondary/30 border rounded-lg px-4 py-3 focus:outline-none transition-all text-foreground placeholder:text-neutral-600",
+      errors[field] && touched[field]
+        ? "border-destructive/50 focus:border-destructive focus:ring-1 focus:ring-destructive/50"
+        : "border-white/10 focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
+    );
 
   return (
     <div className="glass-card p-6 md:p-10 w-full max-w-xl mx-auto fade-in-up">
@@ -75,7 +166,7 @@ const LeadForm = () => {
       <div className="grid grid-cols-2 gap-2 p-1 bg-secondary/50 rounded-xl border border-white/5 mb-8">
         <button
           type="button"
-          onClick={() => setActiveTab("call")}
+          onClick={() => { setActiveTab("call"); setErrors({}); setTouched({}); }}
           className={cn(
             "flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-300",
             activeTab === "call"
@@ -88,7 +179,7 @@ const LeadForm = () => {
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab("message")}
+          onClick={() => { setActiveTab("message"); setErrors({}); setTouched({}); }}
           className={cn(
             "flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all duration-300",
             activeTab === "message"
@@ -101,7 +192,7 @@ const LeadForm = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-condensed tracking-wider uppercase mb-1.5 text-muted-foreground">
@@ -109,12 +200,13 @@ const LeadForm = () => {
             </label>
             <input
               type="text"
-              required
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600"
+              onChange={(e) => handleChange("name", e.target.value)}
+              onBlur={() => handleBlur("name")}
+              className={inputClass("name")}
               placeholder="John Doe"
             />
+            <ErrorMessage field="name" />
           </div>
 
           {activeTab === "call" ? (
@@ -124,12 +216,13 @@ const LeadForm = () => {
               </label>
               <input
                 type="tel"
-                required
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600"
+                onChange={(e) => handleChange("phone", e.target.value)}
+                onBlur={() => handleBlur("phone")}
+                className={inputClass("phone")}
                 placeholder="+1 (555) 000-0000"
               />
+              <ErrorMessage field="phone" />
             </div>
           ) : (
             <>
@@ -139,12 +232,13 @@ const LeadForm = () => {
                 </label>
                 <input
                   type="email"
-                  required
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600"
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  onBlur={() => handleBlur("email")}
+                  className={inputClass("email")}
                   placeholder="john@example.com"
                 />
+                <ErrorMessage field="email" />
               </div>
               <div>
                 <label className="block text-xs font-condensed tracking-wider uppercase mb-1.5 text-muted-foreground">
@@ -152,10 +246,12 @@ const LeadForm = () => {
                 </label>
                 <textarea
                   value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full bg-secondary/30 border border-white/10 rounded-lg px-4 py-3 min-h-[100px] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all text-foreground placeholder:text-neutral-600 resize-none"
+                  onChange={(e) => handleChange("message", e.target.value)}
+                  onBlur={() => handleBlur("message")}
+                  className={cn(inputClass("message"), "min-h-[100px] resize-none")}
                   placeholder="Tell us about your project..."
                 />
+                <ErrorMessage field="message" />
               </div>
             </>
           )}
