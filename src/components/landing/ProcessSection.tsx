@@ -1,81 +1,47 @@
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { Search, UserCheck, ShoppingBag, Heart } from "lucide-react";
+
+const steps = [
+    { icon: Search, title: "Browse Our Selection", description: "Explore our curated menu of flower, edibles, concentrates, and accessories." },
+    { icon: UserCheck, title: "Talk to a Budtender", description: "Our knowledgeable staff will help you find the perfect product for your needs." },
+    { icon: ShoppingBag, title: "Make Your Purchase", description: "All products are lab-tested and verified. We accept cash and card." },
+    { icon: Heart, title: "Enjoy Responsibly", description: "Take your premium products home and enjoy. Come back anytime!" },
+];
 
 const ProcessSection = () => {
-    const { ref: leftRef, isVisible: leftVisible } = useIntersectionObserver(0.2);
+    const { ref: headerRef, isVisible: headerVisible } = useIntersectionObserver(0.2);
     const { ref: stepsRef, isVisible: stepsVisible } = useIntersectionObserver(0.1);
 
     return (
-        <section id="process" className="py-24 border-y border-white/5 bg-neutral-900/20">
+        <section id="process" className="py-24 border-y border-border" style={{ background: 'hsla(120, 8%, 5%, 1)' }}>
             <div className="max-w-7xl mx-auto px-6">
-                <div className="flex flex-col lg:flex-row gap-20">
-                    {/* Left Sticky */}
-                    <div 
-                        ref={leftRef as React.RefObject<HTMLDivElement>}
-                        className={`lg:w-1/3 transition-all duration-700 ${leftVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}
-                    >
-                        <div className="sticky top-32">
-                            <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-6">Engineering, <br /> <span className="text-neutral-500">Not Magic.</span></h2>
-                            <p className="text-neutral-400 text-sm leading-relaxed mb-8">
-                                A transparent, logic-first approach to building your system. I don't rely on black boxes; I build auditable, scalable code.
-                            </p>
-                            <button className="px-5 py-2 rounded-lg bg-neutral-100 text-neutral-900 text-sm font-medium hover:bg-white transition-colors" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
-                                Start the Process
-                            </button>
-                        </div>
-                    </div>
+                <div
+                    ref={headerRef as React.RefObject<HTMLDivElement>}
+                    className={`text-center mb-16 transition-all duration-700 ${headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                >
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">How It Works</h2>
+                    <p className="text-muted-foreground max-w-md mx-auto text-sm">Your visit made simple.</p>
+                </div>
 
-                    {/* Right Steps */}
-                    <div 
-                        ref={stepsRef as React.RefObject<HTMLDivElement>}
-                        className={`lg:w-2/3 space-y-12 transition-all duration-700 delay-200 ${stepsVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
-                    >
-                        {/* Step 1 */}
-                        <div className="flex gap-6 group">
-                            <div className="flex flex-col items-center">
-                                <div className="w-8 h-8 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-xs font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all">1</div>
-                                <div className="w-px h-full bg-white/5 my-2 group-hover:bg-blue-500/20 transition-colors"></div>
+                <div
+                    ref={stepsRef as React.RefObject<HTMLDivElement>}
+                    className={`grid md:grid-cols-4 gap-8 transition-all duration-700 delay-200 ${stepsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                >
+                    {steps.map((step, i) => (
+                        <div key={step.title} className="text-center group">
+                            <div className="w-14 h-14 rounded-2xl mx-auto mb-5 flex items-center justify-center group-hover:scale-110 transition-transform"
+                                style={{
+                                    background: 'hsla(142, 50%, 45%, 0.1)',
+                                    border: '1px solid hsla(142, 50%, 45%, 0.15)',
+                                }}
+                            >
+                                <step.icon className="w-6 h-6 text-primary" />
                             </div>
-                            <div className="pb-10">
-                                <h3 className="text-lg font-medium text-white mb-2">Audit & Logic Design</h3>
-                                <p className="text-neutral-400 text-sm leading-relaxed">We map out your manual processes. I design the conversation state machine and database schema before writing a single line of code.</p>
-                            </div>
+                            <div className="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-widest">Step {i + 1}</div>
+                            <h3 className="text-base font-semibold text-foreground mb-2">{step.title}</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
                         </div>
-
-                        {/* Step 2 */}
-                        <div className="flex gap-6 group">
-                            <div className="flex flex-col items-center">
-                                <div className="w-8 h-8 rounded-full bg-neutral-800 border border-white/10 text-neutral-400 flex items-center justify-center text-xs font-semibold group-hover:border-neutral-600 group-hover:text-white transition-all">2</div>
-                                <div className="w-px h-full bg-white/5 my-2"></div>
-                            </div>
-                            <div className="pb-10">
-                                <h3 className="text-lg font-medium text-white mb-2">Build & Integration</h3>
-                                <p className="text-neutral-400 text-sm leading-relaxed">Connecting Vapi/Twilio with your CRM via n8n. Configuring the LLM system prompts to strictly adhere to your brand voice and sales objectives.</p>
-                            </div>
-                        </div>
-
-                        {/* Step 3 */}
-                        <div className="flex gap-6 group">
-                            <div className="flex flex-col items-center">
-                                <div className="w-8 h-8 rounded-full bg-neutral-800 border border-white/10 text-neutral-400 flex items-center justify-center text-xs font-semibold group-hover:border-neutral-600 group-hover:text-white transition-all">3</div>
-                                <div className="w-px h-full bg-white/5 my-2"></div>
-                            </div>
-                            <div className="pb-10">
-                                <h3 className="text-lg font-medium text-white mb-2">Testing with Real Data</h3>
-                                <p className="text-neutral-400 text-sm leading-relaxed">Rigorous adversarial testing. We ensure the AI handles objections, heavy accents, and edge cases gracefully. Latency optimization happens here.</p>
-                            </div>
-                        </div>
-
-                        {/* Step 4 */}
-                        <div className="flex gap-6 group">
-                            <div className="flex flex-col items-center">
-                                <div className="w-8 h-8 rounded-full bg-neutral-800 border border-white/10 text-neutral-400 flex items-center justify-center text-xs font-semibold group-hover:border-neutral-600 group-hover:text-white transition-all">4</div>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-medium text-white mb-2">Deployment & Handoff</h3>
-                                <p className="text-neutral-400 text-sm leading-relaxed">The system goes live. You receive a custom dashboard to monitor calls/leads and documentation so you own your infrastructure.</p>
-                            </div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </section>
